@@ -17,7 +17,8 @@
 
     "baseUrl": ".",
     "paths": {
-      "@app/*": ["src/*"]
+      "@app/*": ["src/*"],
+      "@db/*": ["src/database/*"]
     }
   },
   "include": ["src/**/*.ts"]
