@@ -1,0 +1,9 @@
+{
+  "name": "gestor-condominios-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "front",
+    "back/*"
+  ]
+}
