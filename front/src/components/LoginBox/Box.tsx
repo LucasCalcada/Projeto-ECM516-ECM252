@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-// Importamos os componentes que acabamos de criar
 import Logo from "./Logo";
 import TextField from "./TextField";
 import Button from "./Button";
@@ -14,7 +13,7 @@ export default function LoginBox() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-neutral-800">
+    <div className="w-full min-h-screen flex flex-col items-center justify-center bg-neutral-800">
       <Logo />
 
       <div className="bg-neutral-800 p-10 rounded-lg  w-full max-w-sm">
