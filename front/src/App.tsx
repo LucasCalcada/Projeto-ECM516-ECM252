@@ -1,20 +1,23 @@
-import "./App.css";
-import { BrowserRouter, Link, Route, Routes } from "react-router";
-import Home from "./views/Home";
-import Residents from "./views/Residents";
+import { BrowserRouter, Route, Routes } from "react-router";
+import routes from "./routes";
+import Sidebar from "./components/sidebar";
+
+function AppRoutes() {
+  return (
+    <Routes>
+      {routes.map((r) => (
+        <Route path={r.path} element={<r.viewComponent />} key={r.path} />
+      ))}
+    </Routes>
+  );
+}
 
 function App() {
   return (
     <BrowserRouter>
-      <nav>
-        <Link to="/">Home</Link>
-        <Link to="/residents">Residents</Link>
-      </nav>
+      <Sidebar />
       <div className="content">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/residents" element={<Residents />} />
-        </Routes>
+        <AppRoutes />
       </div>
     </BrowserRouter>
   );
