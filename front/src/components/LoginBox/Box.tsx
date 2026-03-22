@@ -1,30 +1,30 @@
-import React, { useState } from 'react';
-// Importamos os componentes que acabamos de criar
-import Logo from './Logo';
-import TextField from './TextField';
-import Button from './Button';
+import React, { useState } from "react";
+import Logo from "./Logo";
+import TextField from "./TextField";
+import Button from "./Button";
+import { useNavigate } from "react-router";
 
 export default function LoginBox() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log('Tentativa de login:', { username, password });
+    console.log("Tentativa de login:", { username, password });
+    navigate("/home", { replace: true });
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-neutral-800">
-      
+    <div className="w-full min-h-screen flex flex-col items-center justify-center bg-neutral-800">
       <Logo />
-      
+
       <div className="bg-neutral-800 p-10 rounded-lg  w-full max-w-sm">
         <h2 className="text-2xl font-bold text-center text-neutral-100 mb-8">
           Login
         </h2>
-        
+
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          
           <TextField
             id="username"
             label="Usuário"
@@ -44,9 +44,9 @@ export default function LoginBox() {
           />
 
           <Button text="Entrar" />
-          
         </form>
       </div>
     </div>
   );
 }
+
