@@ -1,4 +1,6 @@
-# Projeto ECM516/ECM252
+# CondoRs
+
+O app CondoRs oferece um sistema de gerenciamento para condomínios, com o foco em reduzir os conflitos entre moradores e a administração do prédio. O sistema oferece funcionalidades para o gerenciamento de acesso, controle e gestão dos automóveis e vagas, reservas das áreas comuns, notificações de eventos do condomínio, gerenciamento de encomendas e entrega de boletos.
 
 ## 👤 Integrantes
 
