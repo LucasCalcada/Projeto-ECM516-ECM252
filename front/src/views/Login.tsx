@@ -1,9 +1,10 @@
-import LoginBox from "../components/LoginBox/Box"
+import LoginBox from "../components/LoginBox/Box";
 
 export default function Login() {
   return (
     <>
-      <p>Login</p>
+      <LoginBox />
     </>
   );
 }
+
