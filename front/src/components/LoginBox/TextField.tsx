@@ -1,6 +1,3 @@
-import React from 'react';
-
-// Aqui dizemos ao TypeScript o que esse componente aceita receber
 interface TextFieldProps {
   id: string;
   label: string;
