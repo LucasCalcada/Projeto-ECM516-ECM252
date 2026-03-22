@@ -16,7 +16,7 @@ function App() {
   return (
     <BrowserRouter>
       <Sidebar />
-      <div className="p-2 w-full h-full">
+      <div className="p-2 w-full">
         <AppRoutes />
       </div>
     </BrowserRouter>

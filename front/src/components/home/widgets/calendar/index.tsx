@@ -16,7 +16,7 @@ function CalendarEventEntry(props: { event: CalendarEvent }) {
 
 export default function CalendarWidget(props: { events: CalendarEvent[] }) {
   return (
-    <div className="border-1 border-neutral-800 rounded-xl p-4">
+    <div className="border-1 border-neutral-800 rounded-xl p-4 flex-1 self-stretch">
       <div className="flex gap-2 items-center">
         <Calendar />
         <p className="font-bold text-2xl">Calendar</p>
