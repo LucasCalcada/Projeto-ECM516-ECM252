@@ -4,7 +4,7 @@ import Options from "./options";
 
 function SideBar() {
   return (
-    <div className="flex flex-col left-0 absolute h-screen bg-neutral-900 p-2">
+    <div className="flex flex-col left-0 absolute h-screen bg-neutral-900 p-2 border-neutral-800 border-r-1">
       <Header />
       <SideNav />
       <Options />
