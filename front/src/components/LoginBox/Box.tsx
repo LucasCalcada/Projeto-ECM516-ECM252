@@ -2,14 +2,17 @@ import React, { useState } from "react";
 import Logo from "./Logo";
 import TextField from "./TextField";
 import Button from "./Button";
+import { useNavigate } from "react-router";
 
 export default function LoginBox() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log("Tentativa de login:", { username, password });
+    navigate("/home", { replace: true });
   };
 
   return (

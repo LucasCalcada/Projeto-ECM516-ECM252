@@ -6,7 +6,7 @@ import type { RouteConfig } from "./route";
 
 const routes: RouteConfig[] = [
   {
-    path: "/",
+    path: "/home",
     viewComponent: Home,
     layout: "sidebar",
     visible: true,
