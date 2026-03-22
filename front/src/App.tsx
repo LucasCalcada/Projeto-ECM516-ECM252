@@ -1,7 +1,6 @@
 import { BrowserRouter, Route, Routes } from "react-router";
 import routes from "./routes";
 import Sidebar from "./components/sidebar";
-import LoginBox from "./components/LoginBox/Box";
 
 function AppRoutes() {
   return (
@@ -13,20 +12,15 @@ function AppRoutes() {
   );
 }
 
-// function App() {
-//   return (
-//     <BrowserRouter>
-//       <Sidebar />
-//       <div className="content">
-//         <AppRoutes />
-//       </div>
-//     </BrowserRouter>
-//   );
+
 // }
 function App() {
   return (
     <BrowserRouter>
-      <LoginBox />
+      <Sidebar />
+      <div className="p-2 w-full h-full">
+        <AppRoutes />
+      </div>
     </BrowserRouter>
   );
 }

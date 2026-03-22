@@ -18,7 +18,7 @@ function NavEntry(props: NavEntryProps) {
 
   return (
     <NavLink to={route.path} className={highlight}>
-      <div className="p-1 px-3 text-neutral-300 flex gap-2 items-center">
+      <div className="p-1 px-3 flex gap-2 items-center">
         <route.display.icon size="16"></route.display.icon>
         <p>{route.display.label}</p>
       </div>
