@@ -17,4 +17,4 @@ export type VisibleRouteConfig = RouteConfigBase & {
 
 export type RouteConfig =
   | VisibleRouteConfig
-  | (RouteConfigBase & { visible: false });
+  | (RouteConfigBase & { visible: false; display?: RouteDisplay });

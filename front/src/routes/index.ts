@@ -15,7 +15,7 @@ const routes: RouteConfig[] = [
   },
   {
     path: "/residents",
-    visible: true,
+    visible: false,
     viewComponent: Residents,
     display: {
       label: "Residents",
