@@ -1,6 +1,7 @@
 import { HomeIcon, UserRound } from "lucide-react";
 import Home from "../views/Home";
 import Residents from "../views/Residents";
+import Login from "../views/Login";
 import type { RouteConfig } from "./route";
 
 const routes: RouteConfig[] = [
@@ -22,6 +23,12 @@ const routes: RouteConfig[] = [
       icon: UserRound,
     },
   },
+  {
+    path: "/login",
+    visible: false,
+    viewComponent: Login,
+  },
+
 ];
 
 export default routes;
