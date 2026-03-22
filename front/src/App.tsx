@@ -1,26 +1,27 @@
-import { BrowserRouter, Route, Routes } from "react-router";
+import { BrowserRouter, Outlet, Route, Routes } from "react-router";
 import routes from "./routes";
-import Sidebar from "./components/sidebar";
+import SidebarLayout from "./layouts/sidebarLayout";
+import type { RouteConfig } from "./routes/route";
 
-function AppRoutes() {
-  return (
-    <Routes>
-      {routes.map((r) => (
-        <Route path={r.path} element={<r.viewComponent />} key={r.path} />
-      ))}
-    </Routes>
-  );
+function CreateRouteEntry(r: RouteConfig) {
+  return <Route path={r.path} element={<r.viewComponent />} key={r.path} />;
 }
 
-
-// }
 function App() {
+  const sidebarViews = routes
+    .filter((r) => r.layout == "sidebar")
+    .map(CreateRouteEntry);
+
+  const defaultViews = routes
+    .filter((r) => r.layout == "none")
+    .map(CreateRouteEntry);
+
   return (
     <BrowserRouter>
-      <Sidebar />
-      <div className="p-2 w-full">
-        <AppRoutes />
-      </div>
+      <Routes>
+        <Route>{defaultViews}</Route>
+        <Route element={<SidebarLayout />}>{sidebarViews}</Route>
+      </Routes>
     </BrowserRouter>
   );
 }

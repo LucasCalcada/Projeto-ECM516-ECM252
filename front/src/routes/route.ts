@@ -5,9 +5,12 @@ export interface RouteDisplay {
   icon: LucideIcon;
 }
 
+export type RouteLayout = "sidebar" | "none";
+
 interface RouteConfigBase {
   path: string;
   viewComponent: any;
+  layout: RouteLayout;
 }
 
 export type VisibleRouteConfig = RouteConfigBase & {

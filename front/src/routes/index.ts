@@ -7,8 +7,9 @@ import type { RouteConfig } from "./route";
 const routes: RouteConfig[] = [
   {
     path: "/",
-    visible: true,
     viewComponent: Home,
+    layout: "sidebar",
+    visible: true,
     display: {
       label: "Home",
       icon: HomeIcon,
@@ -16,8 +17,9 @@ const routes: RouteConfig[] = [
   },
   {
     path: "/residents",
-    visible: false,
     viewComponent: Residents,
+    layout: "sidebar",
+    visible: true,
     display: {
       label: "Residents",
       icon: UserRound,
@@ -25,10 +27,10 @@ const routes: RouteConfig[] = [
   },
   {
     path: "/login",
-    visible: false,
     viewComponent: Login,
+    layout: "none",
+    visible: false,
   },
-
 ];
 
 export default routes;
