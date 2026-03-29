@@ -1,7 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 
 export interface RouteDisplay {
-  label: string;
+  labelKey: string;
   icon: LucideIcon;
 }
 

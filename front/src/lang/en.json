@@ -1,1 +1,13 @@
-{}
+{
+  "sidebar": {
+    "routes": {
+      "home": "Home",
+      "residents": "Residents",
+      "reservations": "Reservations"
+    },
+    "options": {
+      "settings": "Settings",
+      "logout": "Sign out"
+    }
+  }
+}

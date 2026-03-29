@@ -12,7 +12,7 @@ const routes: RouteConfig[] = [
     layout: 'sidebar',
     visible: true,
     display: {
-      label: 'Home',
+      labelKey: 'sidebar.routes.home',
       icon: HomeIcon,
     },
   },
@@ -22,7 +22,7 @@ const routes: RouteConfig[] = [
     layout: 'sidebar',
     visible: true,
     display: {
-      label: 'Residents',
+      labelKey: 'sidebar.routes.residents',
       icon: UserRound,
     },
   },
@@ -32,7 +32,7 @@ const routes: RouteConfig[] = [
     layout: 'sidebar',
     visible: true,
     display: {
-      label: 'Reservas',
+      labelKey: 'sidebar.routes.reservations',
       icon: CalendarCheck2,
     },
   },

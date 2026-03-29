@@ -1,1 +1,13 @@
-{}
+{
+  "sidebar": {
+    "routes": {
+      "home": "Início",
+      "residents": "Moradores",
+      "reservations": "Reservas"
+    },
+    "options": {
+      "settings": "Configurações",
+      "logout": "Desconectar"
+    }
+  }
+}
