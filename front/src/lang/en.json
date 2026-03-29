@@ -27,6 +27,9 @@
         "nov": "Nov",
         "dec": "Dec"
       }
+    },
+    "announcements": {
+      "title": "Announcements"
     }
   }
 }

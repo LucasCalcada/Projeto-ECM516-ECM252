@@ -3,6 +3,7 @@ import type {
   Announcement,
   AnnouncementTag,
 } from "../../../../types/Announcement";
+import { useTranslation } from "react-i18next";
 
 function AnnouncementTagEntry(props: { tag: AnnouncementTag }) {
   return (
@@ -31,11 +32,12 @@ function AnnouncementEntry(props: { announcement: Announcement }) {
 export default function AnnouncementWidget(props: {
   announcements: Announcement[];
 }) {
+  const { t } = useTranslation();
   return (
     <div className="border-1 border-neutral-800 rounded-xl p-4 flex-2 self-stretch">
       <div className="flex gap-2 items-center">
         <Megaphone />
-        <p className="font-bold text-2xl">Announcements</p>
+        <p className="font-bold text-2xl">{t("apps.announcements.title")}</p>
       </div>
       <div className="pt-2 overflow-y-scroll grid grid-cols-2 gap-4">
         {props.announcements.map((a) => (

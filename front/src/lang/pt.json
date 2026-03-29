@@ -27,6 +27,9 @@
         "nov": "Nov",
         "dec": "Dez"
       }
+    },
+    "announcements": {
+      "title": "Avisos"
     }
   }
 }
