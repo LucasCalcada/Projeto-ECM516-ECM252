@@ -3,8 +3,11 @@ import Logo from "./Logo";
 import TextField from "./TextField";
 import Button from "./Button";
 import { useNavigate } from "react-router";
+import { useTranslation } from "react-i18next";
 
 export default function LoginBox() {
+  const { t } = useTranslation();
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
@@ -27,26 +30,25 @@ export default function LoginBox() {
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <TextField
             id="username"
-            label="Usuário"
+            label={t("login.fields.username.label")}
             type="text"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            placeholder="Digite seu usuário"
+            placeholder={t("login.fields.username.placeholder")}
           />
 
           <TextField
             id="password"
-            label="Senha"
+            label={t("login.fields.password.label")}
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="Digite sua senha"
+            placeholder={t("login.fields.password.placeholder")}
           />
 
-          <Button text="Entrar" />
+          <Button text={t("login.login")} />
         </form>
       </div>
     </div>
   );
 }
-

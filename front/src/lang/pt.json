@@ -1,4 +1,17 @@
 {
+  "login": {
+    "fields": {
+      "username": {
+        "label": "Usuário",
+        "placeholder": "Digite seu nome de usuário"
+      },
+      "password": {
+        "label": "Senha",
+        "placeholder": "Digite sua senha"
+      }
+    },
+    "login": "Entrar"
+  },
   "sidebar": {
     "routes": {
       "home": "Início",
