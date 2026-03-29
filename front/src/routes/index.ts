@@ -1,34 +1,45 @@
-import { HomeIcon, UserRound } from "lucide-react";
-import Home from "../views/Home";
-import Residents from "../views/Residents";
-import Login from "../views/Login";
-import type { RouteConfig } from "./route";
+import { CalendarCheck2, HomeIcon, UserRound } from 'lucide-react';
+import Home from '../views/Home';
+import Residents from '../views/Residents';
+import Login from '../views/Login';
+import Reservations from '../views/Reservations';
+import type { RouteConfig } from './route';
 
 const routes: RouteConfig[] = [
   {
-    path: "/home",
+    path: '/home',
     viewComponent: Home,
-    layout: "sidebar",
+    layout: 'sidebar',
     visible: true,
     display: {
-      label: "Home",
+      label: 'Home',
       icon: HomeIcon,
     },
   },
   {
-    path: "/residents",
+    path: '/residents',
     viewComponent: Residents,
-    layout: "sidebar",
+    layout: 'sidebar',
     visible: true,
     display: {
-      label: "Residents",
+      label: 'Residents',
       icon: UserRound,
     },
   },
   {
-    path: "/login",
+    path: '/reservations',
+    viewComponent: Reservations,
+    layout: 'sidebar',
+    visible: true,
+    display: {
+      label: 'Reservas',
+      icon: CalendarCheck2,
+    },
+  },
+  {
+    path: '/login',
     viewComponent: Login,
-    layout: "none",
+    layout: 'none',
     visible: false,
   },
 ];
