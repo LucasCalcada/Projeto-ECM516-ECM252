@@ -1,12 +1,13 @@
-import { NavLink, type NavLinkRenderProps } from "react-router";
-import type { RouteConfig, VisibleRouteConfig } from "../../routes/route";
-import routes from "../../routes";
+import { NavLink, type NavLinkRenderProps } from 'react-router';
+import type { RouteConfig, VisibleRouteConfig } from '../../routes/route';
+import routes from '../../routes';
+import { useTranslation } from 'react-i18next';
 
 function highlight(link: NavLinkRenderProps): string {
   if (link.isActive) {
-    return "bg-neutral-800 rounded-md";
+    return 'bg-neutral-800 rounded-md';
   }
-  return "";
+  return '';
 }
 
 interface NavEntryProps {
@@ -14,13 +15,14 @@ interface NavEntryProps {
 }
 
 function NavEntry(props: NavEntryProps) {
+  const { t } = useTranslation();
   const { route } = props;
 
   return (
     <NavLink to={route.path} className={highlight}>
       <div className="p-1 px-3 flex gap-2 items-center">
         <route.display.icon size="16"></route.display.icon>
-        <p>{route.display.label}</p>
+        <p>{t(route.display.labelKey)}</p>
       </div>
     </NavLink>
   );

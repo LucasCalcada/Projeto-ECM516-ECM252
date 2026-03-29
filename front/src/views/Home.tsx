@@ -1,7 +1,7 @@
-import CalendarWidget from "../components/home/widgets/calendar";
-import AnnouncementWidget from "../components/home/widgets/announcements";
-import calendarEvents from "../mockedData/calendar";
-import announcements from "../mockedData/announcements";
+import CalendarWidget from '../components/home/widgets/calendar';
+import AnnouncementWidget from '../components/home/widgets/announcements';
+import calendarEvents from '../mockedData/calendar';
+import announcements from '../mockedData/announcements';
 
 function Home() {
   return (

@@ -1,0 +1,67 @@
+{
+  "login": {
+    "fields": {
+      "username": {
+        "label": "Usuário",
+        "placeholder": "Digite seu nome de usuário"
+      },
+      "password": {
+        "label": "Senha",
+        "placeholder": "Digite sua senha"
+      }
+    },
+    "login": "Entrar"
+  },
+  "sidebar": {
+    "routes": {
+      "home": "Início",
+      "residents": "Moradores",
+      "reservations": "Reservas"
+    },
+    "options": {
+      "settings": "Configurações",
+      "logout": "Desconectar"
+    }
+  },
+  "apps": {
+    "calendar": {
+      "title": "Calendário",
+      "months": {
+        "jan": "Jan",
+        "feb": "Fev",
+        "mar": "Mar",
+        "apr": "Abr",
+        "may": "Mai",
+        "jun": "Jun",
+        "jul": "Jul",
+        "aug": "Ago",
+        "sep": "Set",
+        "oct": "Out",
+        "nov": "Nov",
+        "dec": "Dez"
+      }
+    },
+    "announcements": {
+      "title": "Avisos"
+    },
+    "reservations": {
+      "title": "Reservas",
+      "description": "Gerencie reservas de churrasqueira, salão de festas e demais ambientes.",
+      "upcoming": "Próximas Reservas",
+      "status": {
+        "pending": "Pendente",
+        "confirmed": "Confirmada",
+        "cancelled": "Cancelada"
+      },
+      "form": {
+        "resident": "Morador",
+        "resource": "Area Comum",
+        "date": "Data",
+        "startDate": "Horário de Início",
+        "endDate": "Horário de Fim",
+        "comment": "Observações",
+        "confirm": "Solicitar reserva"
+      }
+    }
+  }
+}

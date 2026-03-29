@@ -1,6 +1,7 @@
-import { Calendar } from "lucide-react";
-import type { CalendarEvent } from "../../../../types/CalendarEvent";
-import CalendarDate from "./calendarEventDate";
+import { Calendar } from 'lucide-react';
+import type { CalendarEvent } from '../../../../types/CalendarEvent';
+import CalendarDate from './calendarEventDate';
+import { useTranslation } from 'react-i18next';
 
 function CalendarEventEntry(props: { event: CalendarEvent }) {
   return (
@@ -15,11 +16,13 @@ function CalendarEventEntry(props: { event: CalendarEvent }) {
 }
 
 export default function CalendarWidget(props: { events: CalendarEvent[] }) {
+  const { t } = useTranslation();
+
   return (
     <div className="border-1 border-neutral-800 rounded-xl p-4 flex-1 self-stretch">
       <div className="flex gap-2 items-center">
         <Calendar />
-        <p className="font-bold text-2xl">Calendar</p>
+        <p className="font-bold text-2xl">{t('apps.calendar.title')}</p>
       </div>
       <div className="flex flex-col overflow-y-scroll pt-2">
         {props.events.map((e) => (

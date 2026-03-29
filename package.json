@@ -5,5 +5,18 @@
   "workspaces": [
     "front",
     "back/*"
-  ]
+  ],
+  "scripts": {
+    "lint:front": "eslint 'front/**/*.{ts,tsx}' 'back/**/*.{ts,js,json}'",
+    "format:check": "prettier --check 'front/**/*.{ts,tsx,js,json,css}' 'back/**/*.{ts,js,json}'",
+    "format": "prettier --write 'front/**/*.{ts,tsx,js,json,css}' 'back/**/*.{ts,js,json}'"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.57.2",
+    "@typescript-eslint/parser": "^8.57.2",
+    "eslint": "^10.1.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.5",
+    "prettier": "^3.8.1"
+  }
 }

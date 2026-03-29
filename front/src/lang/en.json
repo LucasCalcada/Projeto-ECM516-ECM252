@@ -1,0 +1,67 @@
+{
+  "login": {
+    "fields": {
+      "username": {
+        "label": "Username",
+        "placeholder": "Enter your username"
+      },
+      "password": {
+        "label": "Password",
+        "placeholder": "Enter your password"
+      }
+    },
+    "login": "Login"
+  },
+  "sidebar": {
+    "routes": {
+      "home": "Home",
+      "residents": "Residents",
+      "reservations": "Reservations"
+    },
+    "options": {
+      "settings": "Settings",
+      "logout": "Sign out"
+    }
+  },
+  "apps": {
+    "calendar": {
+      "title": "Calendar",
+      "months": {
+        "jan": "Jan",
+        "feb": "Feb",
+        "mar": "Mar",
+        "apr": "Apr",
+        "may": "May",
+        "jun": "Jun",
+        "jul": "Jul",
+        "aug": "Aug",
+        "sep": "Sep",
+        "oct": "Oct",
+        "nov": "Nov",
+        "dec": "Dec"
+      }
+    },
+    "announcements": {
+      "title": "Announcements"
+    },
+    "reservations": {
+      "title": "Reservations",
+      "description": "Manage reservations for the barbecue, party room, and other facilities.",
+      "upcoming": "Upcoming Reservations",
+      "status": {
+        "pending": "Pending",
+        "confirmed": "Confirmed",
+        "cancelled": "Cancelled"
+      },
+      "form": {
+        "resident": "Resident",
+        "resource": "Common Area",
+        "date": "Date",
+        "startDate": "Start Time",
+        "endDate": "End Time",
+        "comment": "Comments",
+        "confirm": "Request reservation"
+      }
+    }
+  }
+}

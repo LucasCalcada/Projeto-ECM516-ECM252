@@ -12,4 +12,3 @@ export default function Button({ text }: ButtonProps) {
     </button>
   );
 }
-
