@@ -1,4 +1,4 @@
-import { Building } from "lucide-react";
+import { Building } from 'lucide-react';
 
 export default function BuldingInfo() {
   return (

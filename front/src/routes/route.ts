@@ -1,11 +1,11 @@
-import type { LucideIcon } from "lucide-react";
+import type { LucideIcon } from 'lucide-react';
 
 export interface RouteDisplay {
   labelKey: string;
   icon: LucideIcon;
 }
 
-export type RouteLayout = "sidebar" | "none";
+export type RouteLayout = 'sidebar' | 'none';
 
 interface RouteConfigBase {
   path: string;

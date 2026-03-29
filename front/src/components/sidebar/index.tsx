@@ -1,6 +1,6 @@
-import Header from "./header";
-import SideNav from "./sideNav";
-import Options from "./options";
+import Header from './header';
+import SideNav from './sideNav';
+import Options from './options';
 
 function SideBar() {
   return (

@@ -17,14 +17,8 @@ function asDateTime(date: string, time: string): Date {
   return new Date(`${date}T${time}:00`);
 }
 
-function hasTimeConflict(
-  candidate: Reservation,
-  existing: Reservation[],
-): boolean {
-  const candidateStart = asDateTime(
-    candidate.date,
-    candidate.startTime,
-  ).getTime();
+function hasTimeConflict(candidate: Reservation, existing: Reservation[]): boolean {
+  const candidateStart = asDateTime(candidate.date, candidate.startTime).getTime();
   const candidateEnd = asDateTime(candidate.date, candidate.endTime).getTime();
 
   return existing.some((r) => {
@@ -32,10 +26,7 @@ function hasTimeConflict(
       return false;
     }
 
-    if (
-      r.commonAreaId !== candidate.commonAreaId ||
-      r.date !== candidate.date
-    ) {
+    if (r.commonAreaId !== candidate.commonAreaId || r.date !== candidate.date) {
       return false;
     }
 
@@ -57,8 +48,7 @@ function formatDate(date: string): string {
 export default function Reservations() {
   const { t } = useTranslation();
 
-  const [reservations, setReservations] =
-    useState<Reservation[]>(initialReservations);
+  const [reservations, setReservations] = useState<Reservation[]>(initialReservations);
   const [feedback, setFeedback] = useState<string>('');
   const [form, setForm] = useState<NewReservationForm>({
     residentName: '',
@@ -77,14 +67,9 @@ export default function Reservations() {
     });
   }, [reservations]);
 
-  const selectedArea = commonAreas.find(
-    (area) => area.id === form.commonAreaId,
-  );
+  const selectedArea = commonAreas.find((area) => area.id === form.commonAreaId);
 
-  function onInputChange<K extends keyof NewReservationForm>(
-    key: K,
-    value: NewReservationForm[K],
-  ) {
+  function onInputChange<K extends keyof NewReservationForm>(key: K, value: NewReservationForm[K]) {
     setForm((prev) => ({ ...prev, [key]: value }));
   }
 
@@ -140,43 +125,34 @@ export default function Reservations() {
   }
 
   return (
-    <div className='h-full p-4 md:p-8'>
-      <div className='mb-6'>
-        <h1 className='text-2xl font-bold text-neutral-100'>
-          {t("apps.reservations.title")}
-        </h1>
-        <p className='text-neutral-400'>
-          {t("apps.reservations.description")}
-        </p>
+    <div className="h-full p-4 md:p-8">
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-neutral-100">{t('apps.reservations.title')}</h1>
+        <p className="text-neutral-400">{t('apps.reservations.description')}</p>
       </div>
 
-      <div className='grid grid-cols-1 gap-4 lg:grid-cols-5'>
-        <section className='rounded-xl border border-neutral-800 bg-neutral-900/40 p-4 lg:col-span-3'>
-          <h2 className='mb-3 text-lg font-semibold'>{t("apps.reservations.upcoming")}</h2>
-          <div className='space-y-3'>
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-5">
+        <section className="rounded-xl border border-neutral-800 bg-neutral-900/40 p-4 lg:col-span-3">
+          <h2 className="mb-3 text-lg font-semibold">{t('apps.reservations.upcoming')}</h2>
+          <div className="space-y-3">
             {upcomingReservations.map((reservation) => (
               <article
                 key={reservation.id}
-                className='rounded-lg border border-neutral-800 bg-neutral-950 p-3'
+                className="rounded-lg border border-neutral-800 bg-neutral-950 p-3"
               >
-                <div className='flex flex-wrap items-center justify-between gap-2'>
-                  <p className='font-medium text-neutral-100'>
-                    {reservation.commonAreaName}
-                  </p>
-                  <span className='rounded-full border border-neutral-700 px-2 py-0.5 text-xs text-neutral-300'>
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <p className="font-medium text-neutral-100">{reservation.commonAreaName}</p>
+                  <span className="rounded-full border border-neutral-700 px-2 py-0.5 text-xs text-neutral-300">
                     {t(`apps.reservations.status.${reservation.status}`)}
                   </span>
                 </div>
-                <p className='text-sm text-neutral-300'>
-                  {formatDate(reservation.date)} - {reservation.startTime} as{' '}
-                  {reservation.endTime}
+                <p className="text-sm text-neutral-300">
+                  {formatDate(reservation.date)} - {reservation.startTime} as {reservation.endTime}
                 </p>
-                <p className='text-sm text-neutral-400'>
-                  {reservation.residentName}
-                </p>
+                <p className="text-sm text-neutral-400">{reservation.residentName}</p>
                 {reservation.notes ? (
-                  <p className='mt-1 text-sm text-neutral-500'>
-                    {t("apps.reservations.form.comment")}: {reservation.notes}
+                  <p className="mt-1 text-sm text-neutral-500">
+                    {t('apps.reservations.form.comment')}: {reservation.notes}
                   </p>
                 ) : null}
               </article>
@@ -184,27 +160,27 @@ export default function Reservations() {
           </div>
         </section>
 
-        <section className='rounded-xl border border-neutral-800 bg-neutral-900/40 p-4 lg:col-span-2'>
-          <h2 className='mb-3 text-lg font-semibold'>Nova reserva</h2>
-          <form className='space-y-3' onSubmit={onSubmit}>
-            <label className='block'>
-              <span className='mb-1 block text-sm text-neutral-300'>
-                {t("apps.reservations.form.resident")}
+        <section className="rounded-xl border border-neutral-800 bg-neutral-900/40 p-4 lg:col-span-2">
+          <h2 className="mb-3 text-lg font-semibold">Nova reserva</h2>
+          <form className="space-y-3" onSubmit={onSubmit}>
+            <label className="block">
+              <span className="mb-1 block text-sm text-neutral-300">
+                {t('apps.reservations.form.resident')}
               </span>
               <input
-                className='w-full rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm'
+                className="w-full rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm"
                 value={form.residentName}
                 onChange={(e) => onInputChange('residentName', e.target.value)}
-                placeholder='Ex.: Joao - Apto 41'
+                placeholder="Ex.: Joao - Apto 41"
               />
             </label>
 
-            <label className='block'>
-              <span className='mb-1 block text-sm text-neutral-300'>
-                {t("apps.reservations.form.resource")}
+            <label className="block">
+              <span className="mb-1 block text-sm text-neutral-300">
+                {t('apps.reservations.form.resource')}
               </span>
               <select
-                className='w-full rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm'
+                className="w-full rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm"
                 value={form.commonAreaId}
                 onChange={(e) => onInputChange('commonAreaId', e.target.value)}
               >
@@ -217,71 +193,68 @@ export default function Reservations() {
             </label>
 
             {selectedArea ? (
-              <p className='text-xs text-neutral-500'>
-                Horario de funcionamento: {selectedArea.openingHour} as{' '}
-                {selectedArea.closingHour}
+              <p className="text-xs text-neutral-500">
+                Horario de funcionamento: {selectedArea.openingHour} as {selectedArea.closingHour}
               </p>
             ) : null}
 
-            <div className='grid grid-cols-1 gap-3 md:grid-cols-2'>
-              <label className='block'>
-                <span className='mb-1 block text-sm text-neutral-300'>
-                  {t("apps.reservations.form.date")}
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+              <label className="block">
+                <span className="mb-1 block text-sm text-neutral-300">
+                  {t('apps.reservations.form.date')}
                 </span>
                 <input
-                  type='date'
-                  className='w-full rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm'
+                  type="date"
+                  className="w-full rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm"
                   value={form.date}
                   onChange={(e) => onInputChange('date', e.target.value)}
                 />
               </label>
-              <label className='block'>
-                <span className='mb-1 block text-sm text-neutral-300'>
-                  {t("apps.reservations.form.startDate")}
+              <label className="block">
+                <span className="mb-1 block text-sm text-neutral-300">
+                  {t('apps.reservations.form.startDate')}
                 </span>
                 <input
-                  type='time'
-                  className='w-full rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm'
+                  type="time"
+                  className="w-full rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm"
                   value={form.startTime}
                   onChange={(e) => onInputChange('startTime', e.target.value)}
                 />
               </label>
             </div>
 
-            <label className='block'>
-              <span className='mb-1 block text-sm text-neutral-300'>
-                {t("apps.reservations.form.endDate")}
+            <label className="block">
+              <span className="mb-1 block text-sm text-neutral-300">
+                {t('apps.reservations.form.endDate')}
               </span>
               <input
-                type='time'
-                className='w-full rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm'
+                type="time"
+                className="w-full rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm"
                 value={form.endTime}
                 onChange={(e) => onInputChange('endTime', e.target.value)}
               />
             </label>
 
-            <label className='block'>
-              <span className='mb-1 block text-sm text-neutral-300'>
-                {t("apps.reservations.form.comment")}
+            <label className="block">
+              <span className="mb-1 block text-sm text-neutral-300">
+                {t('apps.reservations.form.comment')}
               </span>
               <textarea
-                className='min-h-20 w-full rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm'
+                className="min-h-20 w-full rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm"
                 value={form.notes}
                 onChange={(e) => onInputChange('notes', e.target.value)}
               />
             </label>
 
             <button
-              type='submit'
-              className='w-full rounded-md bg-neutral-100 px-3 py-2 text-sm font-medium text-neutral-900 transition hover:bg-white'
+              type="submit"
+              className="w-full rounded-md bg-neutral-100 px-3 py-2 text-sm font-medium text-neutral-900 transition hover:bg-white"
             >
-              {t("apps.reservations.form.confirm")}
+              {t('apps.reservations.form.confirm')}
             </button>
           </form>
 
-          {feedback ? (
-            <p className='mt-3 text-sm text-neutral-300'>{feedback}</p>
-          ) : null}
+          {feedback ? <p className="mt-3 text-sm text-neutral-300">{feedback}</p> : null}
         </section>
       </div>
     </div>

@@ -1,18 +1,18 @@
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'react-i18next';
 
 const monthKeys = [
-  "jan",
-  "feb",
-  "mar",
-  "apr",
-  "may",
-  "jun",
-  "jul",
-  "aug",
-  "sep",
-  "oct",
-  "nov",
-  "dec",
+  'jan',
+  'feb',
+  'mar',
+  'apr',
+  'may',
+  'jun',
+  'jul',
+  'aug',
+  'sep',
+  'oct',
+  'nov',
+  'dec',
 ];
 
 export default function CalendarDate(props: { date: Date }) {
@@ -21,7 +21,7 @@ export default function CalendarDate(props: { date: Date }) {
   const monthKey = monthKeys[props.date.getMonth()];
   const monthLabel = t(`apps.calendar.months.${monthKey}`).toUpperCase();
 
-  const dateLabel = String(props.date.getDate()).padStart(2, "0");
+  const dateLabel = String(props.date.getDate()).padStart(2, '0');
   return (
     <div className="flex flex-col justify-center font-bold text-center aspect-square">
       <p className="text-neutral-500">{monthLabel}</p>
