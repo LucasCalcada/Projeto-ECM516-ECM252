@@ -2,6 +2,7 @@ import { type FormEvent, useMemo, useState } from 'react';
 import commonAreas from '../mockedData/commonAreas';
 import initialReservations from '../mockedData/reservations';
 import type { Reservation } from '../types/Reservation';
+import { useTranslation } from 'react-i18next';
 
 interface NewReservationForm {
   residentName: string;
@@ -54,6 +55,8 @@ function formatDate(date: string): string {
 }
 
 export default function Reservations() {
+  const { t } = useTranslation();
+
   const [reservations, setReservations] =
     useState<Reservation[]>(initialReservations);
   const [feedback, setFeedback] = useState<string>('');
@@ -140,17 +143,16 @@ export default function Reservations() {
     <div className='h-full p-4 md:p-8'>
       <div className='mb-6'>
         <h1 className='text-2xl font-bold text-neutral-100'>
-          Reservas de Areas Comuns
+          {t("apps.reservations.title")}
         </h1>
         <p className='text-neutral-400'>
-          Gerencie reservas de churrasqueira, salao de festas e demais
-          ambientes.
+          {t("apps.reservations.description")}
         </p>
       </div>
 
       <div className='grid grid-cols-1 gap-4 lg:grid-cols-5'>
         <section className='rounded-xl border border-neutral-800 bg-neutral-900/40 p-4 lg:col-span-3'>
-          <h2 className='mb-3 text-lg font-semibold'>Proximas reservas</h2>
+          <h2 className='mb-3 text-lg font-semibold'>{t("apps.reservations.upcoming")}</h2>
           <div className='space-y-3'>
             {upcomingReservations.map((reservation) => (
               <article
@@ -162,7 +164,7 @@ export default function Reservations() {
                     {reservation.commonAreaName}
                   </p>
                   <span className='rounded-full border border-neutral-700 px-2 py-0.5 text-xs text-neutral-300'>
-                    {reservation.status}
+                    {t(`apps.reservations.status.${reservation.status}`)}
                   </span>
                 </div>
                 <p className='text-sm text-neutral-300'>
@@ -174,7 +176,7 @@ export default function Reservations() {
                 </p>
                 {reservation.notes ? (
                   <p className='mt-1 text-sm text-neutral-500'>
-                    Obs: {reservation.notes}
+                    {t("apps.reservations.form.comment")}: {reservation.notes}
                   </p>
                 ) : null}
               </article>
@@ -187,7 +189,7 @@ export default function Reservations() {
           <form className='space-y-3' onSubmit={onSubmit}>
             <label className='block'>
               <span className='mb-1 block text-sm text-neutral-300'>
-                Morador
+                {t("apps.reservations.form.resident")}
               </span>
               <input
                 className='w-full rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm'
@@ -199,7 +201,7 @@ export default function Reservations() {
 
             <label className='block'>
               <span className='mb-1 block text-sm text-neutral-300'>
-                Area comum
+                {t("apps.reservations.form.resource")}
               </span>
               <select
                 className='w-full rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm'
@@ -224,7 +226,7 @@ export default function Reservations() {
             <div className='grid grid-cols-1 gap-3 md:grid-cols-2'>
               <label className='block'>
                 <span className='mb-1 block text-sm text-neutral-300'>
-                  Data
+                  {t("apps.reservations.form.date")}
                 </span>
                 <input
                   type='date'
@@ -235,7 +237,7 @@ export default function Reservations() {
               </label>
               <label className='block'>
                 <span className='mb-1 block text-sm text-neutral-300'>
-                  Inicio
+                  {t("apps.reservations.form.startDate")}
                 </span>
                 <input
                   type='time'
@@ -247,7 +249,9 @@ export default function Reservations() {
             </div>
 
             <label className='block'>
-              <span className='mb-1 block text-sm text-neutral-300'>Fim</span>
+              <span className='mb-1 block text-sm text-neutral-300'>
+                {t("apps.reservations.form.endDate")}
+              </span>
               <input
                 type='time'
                 className='w-full rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm'
@@ -258,7 +262,7 @@ export default function Reservations() {
 
             <label className='block'>
               <span className='mb-1 block text-sm text-neutral-300'>
-                Observacao (opcional)
+                {t("apps.reservations.form.comment")}
               </span>
               <textarea
                 className='min-h-20 w-full rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm'
@@ -271,7 +275,7 @@ export default function Reservations() {
               type='submit'
               className='w-full rounded-md bg-neutral-100 px-3 py-2 text-sm font-medium text-neutral-900 transition hover:bg-white'
             >
-              Solicitar reserva
+              {t("apps.reservations.form.confirm")}
             </button>
           </form>
 

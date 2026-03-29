@@ -43,6 +43,25 @@
     },
     "announcements": {
       "title": "Avisos"
+    },
+    "reservations": {
+      "title": "Reservas",
+      "description": "Gerencie reservas de churrasqueira, salão de festas e demais ambientes.",
+      "upcoming": "Próximas Reservas",
+      "status": {
+        "pending": "Pendente",
+        "confirmed": "Confirmada",
+        "cancelled": "Cancelada"
+      },
+      "form": {
+        "resident": "Morador",
+        "resource": "Area Comum",
+        "date": "Data",
+        "startDate": "Horário de Início",
+        "endDate": "Horário de Fim",
+        "comment": "Observações",
+        "confirm": "Solicitar reserva"
+      }
     }
   }
 }
