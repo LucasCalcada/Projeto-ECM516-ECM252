@@ -1,0 +1,207 @@
+.reservation-calendar {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 0.75rem;
+  background-color: rgba(23, 23, 23, 0.4);
+  border: 1px solid rgb(38, 38, 38);
+  border-radius: 0.5rem;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.calendar-header .month-year {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: rgb(229, 229, 229);
+  flex: 1;
+  text-align: center;
+  text-transform: capitalize;
+}
+
+.calendar-header .nav-button {
+  background: none;
+  border: 1px solid rgb(64, 64, 64);
+  color: rgb(163, 163, 163);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: all 0.2s;
+}
+
+.calendar-header .nav-button:hover {
+  background-color: rgb(38, 38, 38);
+  color: rgb(229, 229, 229);
+}
+
+.weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.weekday {
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: rgb(115, 115, 115);
+  padding: 0.25rem;
+}
+
+.days-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.25rem;
+}
+
+.day {
+  position: relative;
+  aspect-ratio: 1;
+  padding: 0.25rem;
+  border: 1px solid rgb(64, 64, 64);
+  border-radius: 0.375rem;
+  background-color: rgb(28, 28, 28);
+  color: rgb(163, 163, 163);
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 500;
+  flex-direction: column;
+}
+
+.day:disabled,
+.day.disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.day.empty {
+  cursor: default;
+  background-color: transparent;
+  border-color: transparent;
+}
+
+.day:not(.empty):hover {
+  background-color: rgb(38, 38, 38);
+  border-color: rgb(82, 82, 82);
+  color: rgb(229, 229, 229);
+}
+
+.day.available {
+  background-color: rgb(28, 28, 28);
+  border-color: rgb(64, 64, 64);
+  color: rgb(163, 163, 163);
+}
+
+.day.reserved {
+  background-color: rgba(220, 38, 38, 0.15);
+  border-color: rgb(200, 30, 30);
+  color: rgb(200, 30, 30);
+}
+
+.day.user-reserved {
+  background-color: rgba(34, 197, 94, 0.15);
+  border-color: rgb(34, 197, 94);
+  color: rgb(34, 197, 94);
+}
+
+.day.selected {
+  background-color: rgb(59, 130, 246);
+  border-color: rgb(59, 130, 246);
+  color: white;
+  font-weight: 700;
+}
+
+.day.selected.reserved {
+  background-color: rgba(200, 30, 30, 0.8);
+  border-color: rgb(200, 30, 30);
+  color: white;
+}
+
+.day.selected.user-reserved {
+  background-color: rgba(34, 197, 94, 0.8);
+  border-color: rgb(34, 197, 94);
+  color: white;
+}
+
+.day-number {
+  display: block;
+  line-height: 1;
+}
+
+.reservation-indicator {
+  display: block;
+  font-size: 0.625rem;
+  margin-top: 0.125rem;
+  opacity: 0.8;
+}
+
+.day-reservations {
+  margin-top: 0.5rem;
+  padding: 0.75rem;
+  background-color: rgb(23, 23, 23);
+  border: 1px solid rgb(38, 38, 38);
+  border-radius: 0.375rem;
+}
+
+.reservations-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: rgb(229, 229, 229);
+  margin-bottom: 0.5rem;
+  margin-top: 0;
+}
+
+.alert-message {
+  font-size: 0.8125rem;
+  color: rgb(200, 30, 30);
+  background-color: rgba(200, 30, 30, 0.1);
+  border: 1px solid rgba(200, 30, 30, 0.3);
+  padding: 0.5rem;
+  border-radius: 0.375rem;
+  margin-bottom: 0.75rem;
+}
+
+.reservations-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.reservation-item {
+  padding: 0.5rem;
+  background-color: rgb(38, 38, 38);
+  border-left: 3px solid rgb(59, 130, 246);
+  border-radius: 0.25rem;
+}
+
+.reservation-item .resident {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: rgb(229, 229, 229);
+  margin: 0;
+}
+
+.reservation-item .time {
+  font-size: 0.8125rem;
+  color: rgb(163, 163, 163);
+  margin: 0.25rem 0 0 0;
+}
+
+.reservation-item .notes {
+  font-size: 0.8125rem;
+  color: rgb(115, 115, 115);
+  margin: 0.25rem 0 0 0;
+  font-style: italic;
+}

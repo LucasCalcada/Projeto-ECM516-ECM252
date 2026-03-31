@@ -1,0 +1,126 @@
+{
+  "login": {
+    "fields": {
+      "username": {
+        "label": "Usuario",
+        "placeholder": "Ingrese su nombre de usuario"
+      },
+      "password": {
+        "label": "Contraseña",
+        "placeholder": "Ingrese su contraseña"
+      }
+    },
+    "login": "Iniciar sesión"
+  },
+  "sidebar": {
+    "routes": {
+      "home": "Inicio",
+      "residents": "Residentes",
+      "reservations": "Reservas",
+      "settings": "Configuración"
+    },
+    "options": {
+      "settings": "Configuración",
+      "logout": "Cerrar sesión"
+    }
+  },
+  "apps": {
+    "calendar": {
+      "title": "Calendario",
+      "months": {
+        "jan": "Ene",
+        "feb": "Feb",
+        "mar": "Mar",
+        "apr": "Abr",
+        "may": "May",
+        "jun": "Jun",
+        "jul": "Jul",
+        "aug": "Ago",
+        "sep": "Sep",
+        "oct": "Oct",
+        "nov": "Nov",
+        "dec": "Dic"
+      }
+    },
+    "announcements": {
+      "title": "Anuncios"
+    },
+    "reservations": {
+      "title": "Reservas",
+      "description": "Gestione reservas de parrilla, salón de fiestas y otras áreas comunes.",
+      "upcoming": "Próximas Reservas",
+      "status": {
+        "pending": "Pendiente",
+        "confirmed": "Confirmada",
+        "cancelled": "Cancelada"
+      },
+      "form": {
+        "resident": "Residente",
+        "resource": "Área Común",
+        "date": "Fecha",
+        "startDate": "Hora de Inicio",
+        "endDate": "Hora de Fin",
+        "comment": "Observaciones",
+        "confirm": "Solicitar reserva"
+      }
+    },
+    "settings": {
+      "title": "Configuración",
+      "subtitle": "Gestione sus preferencias y perfil",
+      "profile": {
+        "title": "Perfil",
+        "edit": "✏️ Editar Perfil",
+        "save": "💾 Guardar",
+        "cancel": "✕ Cancelar",
+        "email": "Correo electrónico",
+        "phone": "Teléfono",
+        "apartment": "Apartamento"
+      },
+      "theme": {
+        "title": "Tema y Accesibilidad",
+        "label": "Tema",
+        "darkMode": "🌙 Modo Oscuro",
+        "lightMode": "☀️ Modo Claro",
+        "fontSize": "Tamaño de Fuente",
+        "highContrast": "Alto Contraste",
+        "reducedAnimations": "Reducir Animaciones"
+      },
+      "notifications": {
+        "title": "Notificaciones",
+        "reservations": "📅 Notificaciones de Reservas",
+        "maintenance": "🔧 Alertas de Mantenimiento",
+        "condoNews": "📢 Noticias del Condominio",
+        "events": "🎉 Recordatorios de Eventos"
+      },
+      "language": {
+        "title": "Idioma"
+      },
+      "about": {
+        "title": "Acerca de y Soporte",
+        "version": "Versión de la Aplicación",
+        "faq": "❓ Preguntas Frecuentes",
+        "support": "📧 Contactar Soporte",
+        "terms": "📋 Términos de Uso",
+        "privacy": "🔐 Política de Privacidad"
+      },
+      "security": {
+        "title": "Seguridad",
+        "changePassword": "🔑 Cambiar Contraseña",
+        "twoFactor": "📱 Autenticación de Dos Factores",
+        "history": "📊 Historial de Actividad",
+        "logout": "🚨 Cerrar Sesión en Todos los Dispositivos"
+      },
+      "actions": {
+        "title": "Acciones",
+        "import": "📥 Importar Datos",
+        "export": "📤 Exportar Datos (PDF)",
+        "clearCache": "🗑️ Limpiar Caché",
+        "deleteAccount": "❌ Eliminar Cuenta"
+      },
+      "messages": {
+        "profileUpdated": "¡Perfil actualizado correctamente!",
+        "notificationsSaved": "¡Preferencias de notificación guardadas!"
+      }
+    }
+  }
+}

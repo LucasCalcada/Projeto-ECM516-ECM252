@@ -1,6 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router';
 import routes from './routes';
 import SidebarLayout from './layouts/sidebarLayout';
+import { ThemeProvider } from './contexts/ThemeProvider';
 import type { RouteConfig } from './routes/route';
 
 function CreateRouteEntry(r: RouteConfig) {
@@ -13,13 +14,15 @@ function App() {
   const defaultViews = routes.filter((r) => r.layout == 'none').map(CreateRouteEntry);
 
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Navigate to="/login" replace />} />
-        <Route>{defaultViews}</Route>
-        <Route element={<SidebarLayout />}>{sidebarViews}</Route>
-      </Routes>
-    </BrowserRouter>
+    <ThemeProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Navigate to="/login" replace />} />
+          <Route>{defaultViews}</Route>
+          <Route element={<SidebarLayout />}>{sidebarViews}</Route>
+        </Routes>
+      </BrowserRouter>
+    </ThemeProvider>
   );
 }
 export default App;

@@ -1,0 +1,170 @@
+.time-picker-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.time-picker-label {
+  font-size: 0.875rem;
+  color: rgb(163, 163, 163);
+  font-weight: 500;
+}
+
+.time-picker-container {
+  position: relative;
+  width: 100%;
+}
+
+.time-picker-display {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background-color: rgb(28, 28, 28);
+  border: 1px solid rgb(64, 64, 64);
+  border-radius: 0.5rem;
+  color: rgb(229, 229, 229);
+  font-size: 1.25rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.time-picker-display:hover {
+  background-color: rgb(38, 38, 38);
+  border-color: rgb(82, 82, 82);
+}
+
+.time-picker-display:focus {
+  outline: none;
+  border-color: rgb(59, 130, 246);
+  background-color: rgb(38, 38, 38);
+}
+
+.time-display {
+  flex: 1;
+  text-align: left;
+}
+
+.time-icon {
+  font-size: 1.25rem;
+}
+
+.time-picker-panel {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1.5rem 1rem;
+  background-color: rgb(23, 23, 23);
+  border: 1px solid rgb(64, 64, 64);
+  border-radius: 0.75rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  z-index: 10;
+}
+
+.time-picker-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.time-picker-label-section {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: rgb(115, 115, 115);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.time-input-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.spinner-btn {
+  background-color: rgb(38, 38, 38);
+  border: 1px solid rgb(64, 64, 64);
+  color: rgb(163, 163, 163);
+  width: 2.5rem;
+  height: 2rem;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.spinner-btn:hover {
+  background-color: rgb(59, 130, 246);
+  border-color: rgb(59, 130, 246);
+  color: white;
+}
+
+.spinner-btn:active {
+  background-color: rgb(37, 99, 235);
+}
+
+.spinner-btn.up::before {
+  content: '';
+}
+
+.spinner-btn.down::before {
+  content: '';
+}
+
+.time-input {
+  width: 3.5rem;
+  padding: 0.75rem 0.5rem;
+  background-color: rgb(28, 28, 28);
+  border: 2px solid rgb(64, 64, 64);
+  border-radius: 0.5rem;
+  color: rgb(229, 229, 229);
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-align: center;
+  transition: all 0.2s;
+}
+
+.time-input:hover {
+  border-color: rgb(82, 82, 82);
+}
+
+.time-input:focus {
+  outline: none;
+  border-color: rgb(59, 130, 246);
+  background-color: rgb(38, 38, 38);
+}
+
+/* Remove default number input spinners */
+.time-input::-webkit-outer-spin-button,
+.time-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.time-input[type='number'] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.time-picker-divider {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: rgb(115, 115, 115);
+  margin: 2rem 0;
+}
