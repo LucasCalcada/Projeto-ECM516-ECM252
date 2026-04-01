@@ -5,7 +5,7 @@ interface AppConfig {
 
 const config: AppConfig = {
   port: 8000,
-  dbConnectionString: "postgresql://admin:adminPasswd@localhost:5432",
+  dbConnectionString: "postgresql://admin:adminPasswd@localhost:5432/coreDb",
 };
 
 export default config;

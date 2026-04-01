@@ -9,6 +9,7 @@ services:
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: adminPasswd
+      POSTGRES_DB: coreDb
 
   db-dashboard:
     image: dpage/pgadmin4
