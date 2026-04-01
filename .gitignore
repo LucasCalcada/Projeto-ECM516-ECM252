@@ -3,3 +3,6 @@
 
 # Build Files
 **/dist
+
+# Database files
+**/drizzle
