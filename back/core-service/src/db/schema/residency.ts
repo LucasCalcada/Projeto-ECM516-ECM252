@@ -3,10 +3,10 @@ import { pgTable, text, unique, uuid } from "drizzle-orm/pg-core";
 import group from "@app/db/schema/group";
 
 const residency = pgTable(
-  "residency",
+  "residencies",
   {
-    id: uuid("id").primaryKey().defaultRandom(),
-    group: text("group").references(() => group.id),
+    id: uuid("id").primaryKey().notNull().defaultRandom(),
+    group: uuid("group").references(() => group.id),
     code: text("name"),
     name: text("name"),
   },

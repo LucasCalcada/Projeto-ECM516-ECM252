@@ -1,7 +1,7 @@
 import { InferInsertModel, InferSelectModel } from "drizzle-orm";
 import { pgTable, text, boolean } from "drizzle-orm/pg-core";
 
-const building = pgTable("building", {
+const building = pgTable("buildings", {
   id: text("id").primaryKey(),
   name: text("name"),
   active: boolean("active"),
