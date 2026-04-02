@@ -3,6 +3,8 @@ import commonAreas from '../mockedData/commonAreas';
 import initialReservations from '../mockedData/reservations';
 import type { Reservation } from '../types/Reservation';
 import { useTranslation } from 'react-i18next';
+import { ReservationCalendar } from '../components/home/widgets/reservationCalendar';
+import { BuildingRulesNotification } from '../components/home/widgets/buildingRulesNotification';
 
 interface NewReservationForm {
   residentName: string;
@@ -13,30 +15,6 @@ interface NewReservationForm {
   notes: string;
 }
 
-function asDateTime(date: string, time: string): Date {
-  return new Date(`${date}T${time}:00`);
-}
-
-function hasTimeConflict(candidate: Reservation, existing: Reservation[]): boolean {
-  const candidateStart = asDateTime(candidate.date, candidate.startTime).getTime();
-  const candidateEnd = asDateTime(candidate.date, candidate.endTime).getTime();
-
-  return existing.some((r) => {
-    if (r.status === 'cancelled') {
-      return false;
-    }
-
-    if (r.commonAreaId !== candidate.commonAreaId || r.date !== candidate.date) {
-      return false;
-    }
-
-    const existingStart = asDateTime(r.date, r.startTime).getTime();
-    const existingEnd = asDateTime(r.date, r.endTime).getTime();
-
-    return candidateStart < existingEnd && candidateEnd > existingStart;
-  });
-}
-
 function formatDate(date: string): string {
   return new Date(`${date}T00:00:00`).toLocaleDateString('pt-BR', {
     day: '2-digit',
@@ -45,11 +23,40 @@ function formatDate(date: string): string {
   });
 }
 
+function getTimeUntil(dateStr: string): string {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  const targetDate = new Date(dateStr);
+  targetDate.setHours(0, 0, 0, 0);
+  
+  const diffTime = targetDate.getTime() - today.getTime();
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  
+  if (diffDays < 0) return 'Passada';
+  if (diffDays === 0) return 'Hoje';
+  if (diffDays === 1) return 'Amanhã';
+  if (diffDays < 7) return `Em ${diffDays} dias`;
+  if (diffDays < 30) {
+    const weeks = Math.floor(diffDays / 7);
+    return `Em ${weeks} semana${weeks > 1 ? 's' : ''}`;
+  }
+  
+  const months = Math.floor(diffDays / 30);
+  return `Em ${months} mês${months > 1 ? 'es' : ''}`;
+}
+
 export default function Reservations() {
   const { t } = useTranslation();
 
   const [reservations, setReservations] = useState<Reservation[]>(initialReservations);
   const [feedback, setFeedback] = useState<string>('');
+  const [showRulesModal, setShowRulesModal] = useState(false);
+  const [lastReservation, setLastReservation] = useState<{
+    residentName: string;
+    commonAreaName: string;
+    reservationDate: string;
+  } | null>(null);
   const [form, setForm] = useState<NewReservationForm>({
     residentName: '',
     commonAreaId: commonAreas[0]?.id ?? '',
@@ -61,9 +68,7 @@ export default function Reservations() {
 
   const upcomingReservations = useMemo(() => {
     return [...reservations].sort((a, b) => {
-      const first = asDateTime(a.date, a.startTime).getTime();
-      const second = asDateTime(b.date, b.startTime).getTime();
-      return first - second;
+      return new Date(a.date).getTime() - new Date(b.date).getTime();
     });
   }, [reservations]);
 
@@ -76,17 +81,26 @@ export default function Reservations() {
   function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (!form.residentName || !form.date || !form.startTime || !form.endTime) {
+    if (!form.residentName || !form.date) {
       setFeedback('Preencha todos os campos obrigatorios.');
       return;
     }
 
-    const start = asDateTime(form.date, form.startTime).getTime();
-    const end = asDateTime(form.date, form.endTime).getTime();
+    // Verificar se o dia já foi reservado por outro morador
+    const dayReservations = reservations.filter(
+      (r) => r.commonAreaId === form.commonAreaId && r.date === form.date && r.status !== 'cancelled'
+    );
 
-    if (start >= end) {
-      setFeedback('O horario final precisa ser maior que o inicial.');
-      return;
+    if (dayReservations.length > 0) {
+      const existingReservation = dayReservations[0];
+      const isUserReservation = existingReservation.residentName.toLowerCase() === form.residentName.toLowerCase();
+
+      if (!isUserReservation) {
+        setFeedback(
+          `Este dia ja foi reservado por ${existingReservation.residentName}. Escolha outro dia.`
+        );
+        return;
+      }
     }
 
     const area = commonAreas.find((item) => item.id === form.commonAreaId);
@@ -101,19 +115,20 @@ export default function Reservations() {
       commonAreaId: area.id,
       commonAreaName: area.name,
       date: form.date,
-      startTime: form.startTime,
-      endTime: form.endTime,
+      startTime: '00:00',
+      endTime: '23:59',
       notes: form.notes.trim() || undefined,
-      status: 'pending',
+      status: 'confirmed',
     };
 
-    if (hasTimeConflict(newReservation, reservations)) {
-      setFeedback('Conflito de horario com uma reserva existente.');
-      return;
-    }
-
     setReservations((prev) => [...prev, newReservation]);
-    setFeedback('Reserva criada com sucesso e enviada para aprovacao.');
+    setLastReservation({
+      residentName: newReservation.residentName,
+      commonAreaName: newReservation.commonAreaName,
+      reservationDate: newReservation.date,
+    });
+    setShowRulesModal(true);
+    setFeedback('');
     setForm((prev) => ({
       ...prev,
       residentName: '',
@@ -147,9 +162,10 @@ export default function Reservations() {
                   </span>
                 </div>
                 <p className="text-sm text-neutral-300">
-                  {formatDate(reservation.date)} - {reservation.startTime} as {reservation.endTime}
+                  {formatDate(reservation.date)}
                 </p>
                 <p className="text-sm text-neutral-400">{reservation.residentName}</p>
+                <p className="text-xs text-neutral-500 mt-1">🔔 {getTimeUntil(reservation.date)}</p>
                 {reservation.notes ? (
                   <p className="mt-1 text-sm text-neutral-500">
                     {t('apps.reservations.form.comment')}: {reservation.notes}
@@ -198,42 +214,21 @@ export default function Reservations() {
               </p>
             ) : null}
 
-            <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-              <label className="block">
+            {selectedArea ? (
+              <div className="block">
                 <span className="mb-1 block text-sm text-neutral-300">
                   {t('apps.reservations.form.date')}
                 </span>
-                <input
-                  type="date"
-                  className="w-full rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm"
-                  value={form.date}
-                  onChange={(e) => onInputChange('date', e.target.value)}
+                <ReservationCalendar
+                  reservations={reservations}
+                  commonAreaId={form.commonAreaId}
+                  selectedDate={form.date}
+                  onDateSelect={(date) => onInputChange('date', date)}
+                  currentUserName={form.residentName}
                 />
-              </label>
-              <label className="block">
-                <span className="mb-1 block text-sm text-neutral-300">
-                  {t('apps.reservations.form.startDate')}
-                </span>
-                <input
-                  type="time"
-                  className="w-full rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm"
-                  value={form.startTime}
-                  onChange={(e) => onInputChange('startTime', e.target.value)}
-                />
-              </label>
-            </div>
+              </div>
+            ) : null}
 
-            <label className="block">
-              <span className="mb-1 block text-sm text-neutral-300">
-                {t('apps.reservations.form.endDate')}
-              </span>
-              <input
-                type="time"
-                className="w-full rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm"
-                value={form.endTime}
-                onChange={(e) => onInputChange('endTime', e.target.value)}
-              />
-            </label>
 
             <label className="block">
               <span className="mb-1 block text-sm text-neutral-300">
@@ -257,6 +252,16 @@ export default function Reservations() {
           {feedback ? <p className="mt-3 text-sm text-neutral-300">{feedback}</p> : null}
         </section>
       </div>
+
+      {lastReservation && (
+        <BuildingRulesNotification
+          isOpen={showRulesModal}
+          onClose={() => setShowRulesModal(false)}
+          residentName={lastReservation.residentName}
+          commonAreaName={lastReservation.commonAreaName}
+          reservationDate={lastReservation.reservationDate}
+        />
+      )}
     </div>
   );
 }

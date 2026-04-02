@@ -1,8 +1,9 @@
-import { CalendarCheck2, HomeIcon, UserRound } from 'lucide-react';
+import { CalendarCheck2, HomeIcon, UserRound, Settings as SettingsIcon } from 'lucide-react';
 import Home from '../views/Home';
 import Residents from '../views/Residents';
 import Login from '../views/Login';
 import Reservations from '../views/Reservations';
+import Settings from '../views/Settings';
 import type { RouteConfig } from './route';
 
 const routes: RouteConfig[] = [
@@ -34,6 +35,16 @@ const routes: RouteConfig[] = [
     display: {
       labelKey: 'sidebar.routes.reservations',
       icon: CalendarCheck2,
+    },
+  },
+  {
+    path: '/settings',
+    viewComponent: Settings,
+    layout: 'sidebar',
+    visible: false,
+    display: {
+      labelKey: 'sidebar.routes.settings',
+      icon: SettingsIcon,
     },
   },
   {

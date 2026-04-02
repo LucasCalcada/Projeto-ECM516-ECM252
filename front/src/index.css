@@ -4,4 +4,79 @@
   html {
     @apply text-neutral-300;
   }
+
+  /* Dark Mode (Default) */
+  html.dark-mode {
+    color-scheme: dark;
+    background-color: #0a0a0a;
+    color: #e5e5e5;
+  }
+
+  html.dark-mode body {
+    @apply bg-neutral-950 text-neutral-100;
+  }
+
+  /* Light Mode */
+  html.light-mode {
+    color-scheme: light;
+    background-color: #f5f5f5;
+    color: #1a1a1a;
+  }
+
+  html.light-mode body {
+    @apply bg-neutral-50 text-neutral-900;
+  }
+
+  /* Light Mode Colors */
+  html.light-mode .bg-neutral-900\/40 {
+    @apply bg-neutral-100/60;
+  }
+
+  html.light-mode .bg-neutral-900 {
+    @apply bg-neutral-50;
+  }
+
+  html.light-mode .bg-neutral-950 {
+    @apply bg-white;
+  }
+
+  html.light-mode .border-neutral-800 {
+    @apply border-neutral-200;
+  }
+
+  html.light-mode .border-neutral-700 {
+    @apply border-neutral-300;
+  }
+
+  html.light-mode .text-neutral-100 {
+    @apply text-neutral-900;
+  }
+
+  html.light-mode .text-neutral-300 {
+    @apply text-neutral-600;
+  }
+
+  html.light-mode .text-neutral-400 {
+    @apply text-neutral-500;
+  }
+
+  html.light-mode .text-neutral-500 {
+    @apply text-neutral-500;
+  }
+
+  html.light-mode .bg-neutral-800 {
+    @apply bg-neutral-100;
+  }
+
+  html.light-mode .bg-neutral-800\/50 {
+    @apply bg-neutral-100/50;
+  }
+
+  html.light-mode .hover\:bg-neutral-700:hover {
+    @apply hover:bg-neutral-200;
+  }
+
+  html.light-mode .hover\:bg-neutral-800:hover {
+    @apply hover:bg-neutral-200;
+  }
 }

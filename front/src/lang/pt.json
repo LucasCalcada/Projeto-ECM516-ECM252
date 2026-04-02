@@ -16,7 +16,8 @@
     "routes": {
       "home": "Início",
       "residents": "Moradores",
-      "reservations": "Reservas"
+      "reservations": "Reservas",
+      "settings": "Configurações"
     },
     "options": {
       "settings": "Configurações",
@@ -61,6 +62,64 @@
         "endDate": "Horário de Fim",
         "comment": "Observações",
         "confirm": "Solicitar reserva"
+      }
+    },
+    "settings": {
+      "title": "Configurações",
+      "subtitle": "Gerencie suas preferências e perfil",
+      "profile": {
+        "title": "Perfil",
+        "edit": "✏️ Editar Perfil",
+        "save": "💾 Salvar",
+        "cancel": "✕ Cancelar",
+        "email": "Email",
+        "phone": "Telefone",
+        "apartment": "Apartamento"
+      },
+      "theme": {
+        "title": "Tema & Acessibilidade",
+        "label": "Tema",
+        "darkMode": "🌙 Modo Escuro",
+        "lightMode": "☀️ Modo Claro",
+        "fontSize": "Tamanho da Fonte",
+        "highContrast": "Contraste Alto",
+        "reducedAnimations": "Reduzir Animações"
+      },
+      "notifications": {
+        "title": "Notificações",
+        "reservations": "📅 Notificações de Reservas",
+        "maintenance": "🔧 Avisos de Manutenção",
+        "condoNews": "📢 Informes do Condomínio",
+        "events": "🎉 Lembretes de Eventos"
+      },
+      "language": {
+        "title": "Idioma"
+      },
+      "about": {
+        "title": "Sobre & Suporte",
+        "version": "Versão do App",
+        "faq": "❓ FAQ - Perguntas Frequentes",
+        "support": "📧 Contatar Suporte",
+        "terms": "📋 Termos de Uso",
+        "privacy": "🔐 Política de Privacidade"
+      },
+      "security": {
+        "title": "Segurança",
+        "changePassword": "🔑 Alterar Senha",
+        "twoFactor": "📱 Autenticação de 2 Fatores",
+        "history": "📊 Histórico de Atividade",
+        "logout": "🚨 Sair de Todas as Sessões"
+      },
+      "actions": {
+        "title": "Ações",
+        "import": "📥 Importar Dados",
+        "export": "📤 Exportar Dados (PDF)",
+        "clearCache": "🗑️ Limpar Cache",
+        "deleteAccount": "❌ Deletar Conta"
+      },
+      "messages": {
+        "profileUpdated": "Perfil atualizado com sucesso!",
+        "notificationsSaved": "Preferências de notificação salvas!"
       }
     }
   }
