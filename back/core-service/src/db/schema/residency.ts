@@ -7,7 +7,7 @@ const residency = pgTable(
   {
     id: uuid('id').primaryKey().notNull().defaultRandom(),
     groupId: uuid('groupId').references(() => group.id),
-    code: text('name'),
+    code: text('code'),
     name: text('name'),
   },
   (r) => [unique().on(r.groupId, r.code)],
