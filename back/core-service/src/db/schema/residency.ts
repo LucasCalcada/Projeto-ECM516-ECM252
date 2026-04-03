@@ -1,14 +1,14 @@
-import { InferInsertModel, InferSelectModel } from "drizzle-orm";
-import { pgTable, text, unique, uuid } from "drizzle-orm/pg-core";
-import group from "@app/db/schema/group";
+import { InferInsertModel, InferSelectModel } from 'drizzle-orm';
+import { pgTable, text, unique, uuid } from 'drizzle-orm/pg-core';
+import group from '@app/db/schema/group';
 
 const residency = pgTable(
-  "residencies",
+  'residencies',
   {
-    id: uuid("id").primaryKey().notNull().defaultRandom(),
-    group: uuid("group").references(() => group.id),
-    code: text("name"),
-    name: text("name"),
+    id: uuid('id').primaryKey().notNull().defaultRandom(),
+    group: uuid('group').references(() => group.id),
+    code: text('name'),
+    name: text('name'),
   },
   (r) => [unique().on(r.group, r.code)],
 );
