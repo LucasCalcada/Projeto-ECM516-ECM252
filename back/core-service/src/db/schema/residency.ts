@@ -6,11 +6,11 @@ const residency = pgTable(
   'residencies',
   {
     id: uuid('id').primaryKey().notNull().defaultRandom(),
-    group: uuid('group').references(() => group.id),
+    groupId: uuid('groupId').references(() => group.id),
     code: text('name'),
     name: text('name'),
   },
-  (r) => [unique().on(r.group, r.code)],
+  (r) => [unique().on(r.groupId, r.code)],
 );
 
 export default residency;

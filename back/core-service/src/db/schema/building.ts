@@ -1,8 +1,8 @@
 import { InferInsertModel, InferSelectModel } from 'drizzle-orm';
-import { pgTable, text, boolean } from 'drizzle-orm/pg-core';
+import { pgTable, text, boolean, uuid } from 'drizzle-orm/pg-core';
 
 const building = pgTable('buildings', {
-  id: text('id').primaryKey(),
+  id: uuid('id').primaryKey().notNull().defaultRandom(),
   name: text('name'),
   active: boolean('active'),
 });
