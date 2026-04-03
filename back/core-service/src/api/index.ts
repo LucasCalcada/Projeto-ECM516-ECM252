@@ -11,6 +11,10 @@ import userDelete from './routes/user/delete';
 import addResident from './routes/residency/addResident';
 import removeResident from './routes/residency/removeResident';
 
+// Building Routes
+import buildingGet from './routes/building/get';
+import buildingGetDeatails from './routes/building/details';
+
 registerRoute(pingRoute);
 
 // User Routes
@@ -21,3 +25,7 @@ registerRoute(userUpdate);
 // Residency Routes
 registerRoute(addResident);
 registerRoute(removeResident);
+
+// Building Routes
+registerRoute(buildingGet);
+registerRoute(buildingGetDeatails);
