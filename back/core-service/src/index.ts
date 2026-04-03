@@ -1,7 +1,5 @@
-import express from "express";
-import config from "@app/config";
-import client from "./db/schema/client";
-import { building } from "./db/schema/building";
+import express from 'express';
+import config from '@app/config';
 
 const app = express();
 app.use(express.json());
