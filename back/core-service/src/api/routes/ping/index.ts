@@ -1,4 +1,4 @@
-import { Route } from '../routeRegistry';
+import { Route } from '@app/helpers/routeRegistry';
 import pingHandler from './handler';
 
 const route: Route = {
