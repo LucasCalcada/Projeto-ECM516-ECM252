@@ -6,4 +6,4 @@ app.use(express.json());
 
 app.listen(config.port, () => {
   console.log(`Core-service started on port ${config.port}`);
-});
+}); 
