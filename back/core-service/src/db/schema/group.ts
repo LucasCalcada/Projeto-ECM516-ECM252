@@ -1,13 +1,12 @@
 import { InferInsertModel, InferSelectModel } from 'drizzle-orm';
 import { pgTable, text, uuid } from 'drizzle-orm/pg-core';
-import building from './building';
+import { buildings } from './building';
 
-const group = pgTable('groups', {
+export const groups = pgTable('groups', {
   id: uuid('id').primaryKey().notNull().defaultRandom(),
-  building: uuid('building').references(() => building.id),
+  building: uuid('building').references(() => buildings.id),
   name: text('name'),
 });
 
-export default group;
-export type Group = InferSelectModel<typeof group>;
-export type GroupInsert = InferInsertModel<typeof group>;
+export type Group = InferSelectModel<typeof groups>;
+export type GroupInsert = InferInsertModel<typeof groups>;

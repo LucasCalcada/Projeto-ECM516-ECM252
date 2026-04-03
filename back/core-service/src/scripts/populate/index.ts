@@ -1,8 +1,5 @@
 import client from '@db/client';
-import building from '@schema/building';
-import group from '@schema/group';
-import user from '@schema/user';
-import residency from '@schema/residency';
+import { buildings, groups, residencies, users } from '@app/db/schema';
 
 import { PopulateBuilding, PopulateGroup, PopulateResidency, PopulateUser } from './populateTypes';
 import populateData from './populateData';
@@ -14,7 +11,7 @@ async function populateUsers(
 ) {
   const { name, permissions, active } = data;
 
-  await client.insert(user).values({
+  await client.insert(users).values({
     name,
     permissions,
     active,
@@ -27,7 +24,7 @@ async function populateResidencies(data: PopulateResidency, groupId: string) {
   const { code, name } = data;
 
   const [residencyRow] = await client
-    .insert(residency)
+    .insert(residencies)
     .values({
       groupId,
       name,
@@ -42,7 +39,7 @@ async function populateGroups(data: PopulateGroup, buildingId: any) {
   const { name } = data;
 
   const [groupRow] = await client
-    .insert(group)
+    .insert(groups)
     .values({
       building: buildingId,
       name,
@@ -56,7 +53,7 @@ async function populateBuilding(data: PopulateBuilding) {
   const { name, active } = data;
 
   const [buildingRow] = await client
-    .insert(building)
+    .insert(buildings)
     .values({
       name,
       active,
@@ -69,10 +66,10 @@ async function populateBuilding(data: PopulateBuilding) {
 
 async function populateDb() {
   console.log('Clearing old data...');
-  await client.delete(user);
-  await client.delete(residency);
-  await client.delete(group);
-  await client.delete(building);
+  await client.delete(users);
+  await client.delete(residencies);
+  await client.delete(groups);
+  await client.delete(buildings);
   console.log('Populating buildings...');
   await Promise.all(populateData.map(populateBuilding));
 }
