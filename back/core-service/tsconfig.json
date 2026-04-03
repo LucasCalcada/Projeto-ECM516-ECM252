@@ -19,7 +19,8 @@
     "paths": {
       "@app/*": ["src/*"],
       "@db/*": ["src/db/*"],
-      "@schema/*": ["src/db/schema/*"]
+      "@schema/*": ["src/db/schema/*"],
+      "@helpers/*": ["src/helpers/*"]
     }
   },
   "include": ["src/**/*.ts"]

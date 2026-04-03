@@ -1,4 +1,4 @@
-import { registerRoute } from './routeRegistry';
+import { registerRoute } from '@helpers/routeRegistry';
 
 import pingRoute from './ping';
 
