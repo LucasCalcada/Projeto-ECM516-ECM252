@@ -10,10 +10,12 @@ export default function LoginBox() {
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [credentialError, setCredentialError] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit =async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setCredentialError('');
     try{
       const response = await fetch('http://localhost:3000/login', {
         method: 'POST',
@@ -21,17 +23,20 @@ export default function LoginBox() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ username, password }),
-      });
+      }); 
       if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem('accessToken', data.accessToken);
         navigate('/home');  
       } else {
         const errorText = await response.text();
-        alert(errorText);
+        setCredentialError(errorText);
       }
     } catch (error) {
       alert('Erro ao conectar com o servidor');
     }
   };
+
 
   return (
     <div className="w-full min-h-screen flex flex-col items-center justify-center bg-neutral-800">
@@ -59,7 +64,11 @@ export default function LoginBox() {
             placeholder={t('login.fields.password.placeholder')}
           />
 
-          <Button text={t('login.login')} />
+          <div className="min-h-5 -mt-2 text-center text-sm text-red-400" role="alert" aria-live="polite">
+            {credentialError}
+          </div>
+          
+          <Button text={t('login.login')} type="submit" />
         </form>
       </div>
     </div>
