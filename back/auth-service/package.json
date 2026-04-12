@@ -4,6 +4,12 @@
   "type": "module",
   "main": "index.js",
   "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "start": "tsx src/index.ts",
+    "db:generate": "yarn drizzle-kit generate",
+    "db:migrate": "yarn drizzle-kit migrate"
+  },
   "dependencies": {
     "bcrypt": "^6.0.0",
     "cors": "^2.8.6",
