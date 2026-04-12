@@ -18,7 +18,9 @@
     "baseUrl": ".",
     "paths": {
       "@app/*": ["src/*"],
-      "@db/*": ["src/database/*"]
+      "@db/*": ["src/db/*"],
+      "@schema/*": ["src/db/schema/*"],
+      "@helpers/*": ["src/helpers/*"]
     }
   },
   "include": ["src/**/*.ts"]
