@@ -2,13 +2,8 @@ import express from 'express';
 import bcrypt from 'bcrypt';
 import cors from 'cors';
 import jwt from 'jsonwebtoken';
-import dotenv from 'dotenv';
-import path from 'path';
 import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-dotenv.config({ path: path.resolve(__dirname, '.env') });
+import config from '@app/config';
 
 const app = express();
 app.use(cors());
@@ -43,7 +38,7 @@ app.post('/login', async (req, res) => {
     if (await bcrypt.compare(req.body.password, user.password)) {
       const token = jwt.sign(
         { username: user.username },
-        process.env.JWT_ACCESS_TOKEN_SECRET as string,
+        config.jwtToken,
         { expiresIn: '1h' },
       );
       res.status(200).json({ accessToken: token });
