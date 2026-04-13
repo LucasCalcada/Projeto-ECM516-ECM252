@@ -3,7 +3,7 @@ import createUser from './handler';
 
 const route: Route = {
   method: 'post',
-  path: '/auth/create',
+  path: '/auth/account',
   handler: createUser,
 };
 
