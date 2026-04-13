@@ -3,10 +3,10 @@ import { pgTable, text, boolean, uuid } from 'drizzle-orm/pg-core';
 
 export const accounts = pgTable('accounts', {
   id: uuid('id').primaryKey().notNull().defaultRandom(),
-  name: text('name'),
-  email: text('email').unique(),
+  name: text('name').notNull(),
+  email: text('email').unique().notNull(),
   phone: text('phone').unique(),
-  hashedPassword: text('password'),
+  hashedPassword: text('password').notNull(),
   active: boolean('active'),
 });
 
