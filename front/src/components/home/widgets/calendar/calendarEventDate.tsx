@@ -23,7 +23,7 @@ export default function CalendarDate(props: { date: Date }) {
 
   const dateLabel = String(props.date.getDate()).padStart(2, '0');
   return (
-    <div className="flex flex-col justify-center font-bold text-center aspect-square">
+    <div className="flex aspect-square flex-col justify-center text-center font-bold">
       <p className="text-neutral-500">{monthLabel}</p>
       <p className="text-2xl">{dateLabel}</p>
     </div>

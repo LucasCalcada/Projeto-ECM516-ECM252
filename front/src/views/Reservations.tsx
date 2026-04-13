@@ -165,7 +165,7 @@ export default function Reservations() {
                 </div>
                 <p className="text-sm text-neutral-300">{formatDate(reservation.date)}</p>
                 <p className="text-sm text-neutral-400">{reservation.residentName}</p>
-                <p className="text-xs text-neutral-500 mt-1">🔔 {getTimeUntil(reservation.date)}</p>
+                <p className="mt-1 text-xs text-neutral-500">🔔 {getTimeUntil(reservation.date)}</p>
                 {reservation.notes ? (
                   <p className="mt-1 text-sm text-neutral-500">
                     {t('apps.reservations.form.comment')}: {reservation.notes}

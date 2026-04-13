@@ -27,7 +27,7 @@ export default function TextField({
         onChange={onChange}
         placeholder={placeholder}
         required
-        className="p-3 text-neutral-100 border border-neutral-100 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="rounded-md border border-neutral-100 p-3 text-neutral-100 focus:ring-2 focus:ring-blue-500 focus:outline-none"
       />
     </div>
   );

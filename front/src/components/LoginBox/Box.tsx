@@ -40,11 +40,11 @@ export default function LoginBox() {
   };
 
   return (
-    <div className="w-full min-h-screen flex flex-col items-center justify-center bg-neutral-800">
+    <div className="flex min-h-screen w-full flex-col items-center justify-center bg-neutral-800">
       <Logo />
 
-      <div className="bg-neutral-800 p-10 rounded-lg  w-full max-w-sm">
-        <h2 className="text-2xl font-bold text-center text-neutral-100 mb-8">Login</h2>
+      <div className="w-full max-w-sm rounded-lg bg-neutral-800 p-10">
+        <h2 className="mb-8 text-center text-2xl font-bold text-neutral-100">Login</h2>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <TextField
@@ -66,7 +66,7 @@ export default function LoginBox() {
           />
 
           <div
-            className="min-h-5 -mt-2 text-center text-sm text-red-400"
+            className="-mt-2 min-h-5 text-center text-sm text-red-400"
             role="alert"
             aria-live="polite"
           >

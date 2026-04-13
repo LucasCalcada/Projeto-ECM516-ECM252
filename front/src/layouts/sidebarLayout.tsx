@@ -5,7 +5,7 @@ export default function sidebarLayout() {
   return (
     <>
       <Sidebar />
-      <div className="p-2 w-full h-full">
+      <div className="h-full w-full p-2">
         <Outlet></Outlet>
       </div>
     </>

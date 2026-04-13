@@ -20,7 +20,7 @@ function NavEntry(props: NavEntryProps) {
 
   return (
     <NavLink to={route.path} className={highlight}>
-      <div className="p-1 px-3 flex gap-2 items-center">
+      <div className="flex items-center gap-2 p-1 px-3">
         <route.display.icon size="16"></route.display.icon>
         <p>{t(route.display.labelKey)}</p>
       </div>
@@ -31,7 +31,7 @@ function NavEntry(props: NavEntryProps) {
 export default function SideNav() {
   const visibleRoutes: VisibleRouteConfig[] = routes.filter((r) => r.visible);
   return (
-    <nav className="flex flex-col gap-2 flex-1">
+    <nav className="flex flex-1 flex-col gap-2">
       {visibleRoutes.map((r: RouteConfig) => (
         <NavEntry route={r as VisibleRouteConfig} />
       ))}

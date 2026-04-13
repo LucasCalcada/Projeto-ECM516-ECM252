@@ -44,7 +44,7 @@ export default function Settings() {
 
   return (
     <div
-      className={`h-full p-4 md:p-8 transition-colors ${theme === 'light' ? 'bg-neutral-100' : 'bg-gradient-to-br from-neutral-900/50 to-neutral-950'}`}
+      className={`h-full p-4 transition-colors md:p-8 ${theme === 'light' ? 'bg-neutral-100' : 'bg-gradient-to-br from-neutral-900/50 to-neutral-950'}`}
     >
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-neutral-100">{t('apps.settings.title')}</h1>
@@ -55,26 +55,26 @@ export default function Settings() {
 
       {/* Success Message */}
       {successMessage && (
-        <div className="mb-4 p-3 bg-green-500/20 border border-green-500 text-green-300 rounded-lg animate-pulse">
+        <div className="mb-4 animate-pulse rounded-lg border border-green-500 bg-green-500/20 p-3 text-green-300">
           ✓ {successMessage}
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Perfil */}
         <section
-          className={`lg:col-span-1 rounded-xl border transition-colors ${theme === 'light' ? 'border-neutral-300 bg-white' : 'border-neutral-800 bg-neutral-900/40'} p-6`}
+          className={`rounded-xl border transition-colors lg:col-span-1 ${theme === 'light' ? 'border-neutral-300 bg-white' : 'border-neutral-800 bg-neutral-900/40'} p-6`}
         >
-          <h2 className="text-xl font-bold text-neutral-100 mb-4">
+          <h2 className="mb-4 text-xl font-bold text-neutral-100">
             👤 {t('apps.settings.profile.title')}
           </h2>
 
-          <div className="flex flex-col items-center gap-4 mb-6">
-            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-2xl font-bold">
+          <div className="mb-6 flex flex-col items-center gap-4">
+            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-2xl font-bold text-white">
               {profile.avatar}
             </div>
             <div className="text-center">
-              <p className="text-neutral-100 font-semibold">{profile.name}</p>
+              <p className="font-semibold text-neutral-100">{profile.name}</p>
               <p
                 className={`text-sm ${theme === 'light' ? 'text-neutral-600' : 'text-neutral-400'}`}
               >
@@ -85,7 +85,7 @@ export default function Settings() {
 
           {!editingProfile ? (
             <>
-              <div className="space-y-3 mb-4">
+              <div className="mb-4 space-y-3">
                 <div>
                   <p
                     className={`text-xs font-semibold uppercase ${theme === 'light' ? 'text-neutral-600' : 'text-neutral-500'}`}
@@ -105,46 +105,46 @@ export default function Settings() {
               </div>
               <button
                 onClick={() => setEditingProfile(true)}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg transition"
+                className="w-full rounded-lg bg-blue-600 py-2 font-medium text-white transition hover:bg-blue-700"
               >
                 {t('apps.settings.profile.edit')}
               </button>
             </>
           ) : (
             <>
-              <div className="space-y-3 mb-4">
+              <div className="mb-4 space-y-3">
                 <input
                   type="text"
                   value={profile.name}
                   onChange={(e) => handleProfileChange('name', e.target.value)}
                   placeholder="Nome completo"
-                  className={`w-full px-3 py-2 rounded-lg transition ${theme === 'light' ? 'bg-neutral-100 border border-neutral-300 text-neutral-900' : 'bg-neutral-800 border border-neutral-700 text-neutral-100 placeholder-neutral-500 focus:border-blue-500'} focus:outline-none`}
+                  className={`w-full rounded-lg px-3 py-2 transition ${theme === 'light' ? 'border border-neutral-300 bg-neutral-100 text-neutral-900' : 'border border-neutral-700 bg-neutral-800 text-neutral-100 placeholder-neutral-500 focus:border-blue-500'} focus:outline-none`}
                 />
                 <input
                   type="email"
                   value={profile.email}
                   onChange={(e) => handleProfileChange('email', e.target.value)}
                   placeholder="Email"
-                  className={`w-full px-3 py-2 rounded-lg transition ${theme === 'light' ? 'bg-neutral-100 border border-neutral-300 text-neutral-900' : 'bg-neutral-800 border border-neutral-700 text-neutral-100 placeholder-neutral-500 focus:border-blue-500'} focus:outline-none`}
+                  className={`w-full rounded-lg px-3 py-2 transition ${theme === 'light' ? 'border border-neutral-300 bg-neutral-100 text-neutral-900' : 'border border-neutral-700 bg-neutral-800 text-neutral-100 placeholder-neutral-500 focus:border-blue-500'} focus:outline-none`}
                 />
                 <input
                   type="tel"
                   value={profile.phone}
                   onChange={(e) => handleProfileChange('phone', e.target.value)}
                   placeholder="Telefone"
-                  className={`w-full px-3 py-2 rounded-lg transition ${theme === 'light' ? 'bg-neutral-100 border border-neutral-300 text-neutral-900' : 'bg-neutral-800 border border-neutral-700 text-neutral-100 placeholder-neutral-500 focus:border-blue-500'} focus:outline-none`}
+                  className={`w-full rounded-lg px-3 py-2 transition ${theme === 'light' ? 'border border-neutral-300 bg-neutral-100 text-neutral-900' : 'border border-neutral-700 bg-neutral-800 text-neutral-100 placeholder-neutral-500 focus:border-blue-500'} focus:outline-none`}
                 />
               </div>
               <div className="flex gap-2">
                 <button
                   onClick={handleSaveProfile}
-                  className="flex-1 bg-green-600 hover:bg-green-700 text-white font-medium py-2 rounded-lg transition"
+                  className="flex-1 rounded-lg bg-green-600 py-2 font-medium text-white transition hover:bg-green-700"
                 >
                   {t('apps.settings.profile.save')}
                 </button>
                 <button
                   onClick={() => setEditingProfile(false)}
-                  className={`flex-1 font-medium py-2 rounded-lg transition ${theme === 'light' ? 'bg-neutral-200 text-neutral-900 hover:bg-neutral-300' : 'bg-neutral-700 text-white hover:bg-neutral-600'}`}
+                  className={`flex-1 rounded-lg py-2 font-medium transition ${theme === 'light' ? 'bg-neutral-200 text-neutral-900 hover:bg-neutral-300' : 'bg-neutral-700 text-white hover:bg-neutral-600'}`}
                 >
                   {t('apps.settings.profile.cancel')}
                 </button>
@@ -155,9 +155,9 @@ export default function Settings() {
 
         {/* Idioma */}
         <section
-          className={`lg:col-span-1 rounded-xl border transition-colors ${theme === 'light' ? 'border-neutral-300 bg-white' : 'border-neutral-800 bg-neutral-900/40'} p-6`}
+          className={`rounded-xl border transition-colors lg:col-span-1 ${theme === 'light' ? 'border-neutral-300 bg-white' : 'border-neutral-800 bg-neutral-900/40'} p-6`}
         >
-          <h2 className="text-xl font-bold text-neutral-100 mb-4">
+          <h2 className="mb-4 text-xl font-bold text-neutral-100">
             🌐 {t('apps.settings.language.title')}
           </h2>
 
@@ -170,12 +170,12 @@ export default function Settings() {
               <button
                 key={code}
                 onClick={() => i18n.changeLanguage(code)}
-                className={`w-full p-3 rounded-lg border transition flex items-center gap-3 ${
+                className={`flex w-full items-center gap-3 rounded-lg border p-3 transition ${
                   i18n.language === code
-                    ? 'bg-blue-600/20 border-blue-500 text-blue-300'
+                    ? 'border-blue-500 bg-blue-600/20 text-blue-300'
                     : theme === 'light'
-                      ? 'bg-neutral-100 border-neutral-300 text-neutral-900 hover:bg-neutral-200'
-                      : 'bg-neutral-800 border-neutral-700 text-neutral-300 hover:bg-neutral-700/50'
+                      ? 'border-neutral-300 bg-neutral-100 text-neutral-900 hover:bg-neutral-200'
+                      : 'border-neutral-700 bg-neutral-800 text-neutral-300 hover:bg-neutral-700/50'
                 }`}
               >
                 <span className="text-xl">{flag}</span>

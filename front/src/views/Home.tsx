@@ -5,7 +5,7 @@ import announcements from '../mockedData/announcements';
 
 function Home() {
   return (
-    <div className="flex items-center h-8/12 p-12 gap-4">
+    <div className="flex h-8/12 items-center gap-4 p-12">
       <AnnouncementWidget announcements={announcements} />
       <CalendarWidget events={calendarEvents} />
     </div>
