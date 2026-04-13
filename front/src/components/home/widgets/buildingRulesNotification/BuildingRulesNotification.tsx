@@ -33,17 +33,20 @@ export function BuildingRulesNotification({
     {
       icon: '🔇',
       title: 'Horário de Silêncio',
-      description: 'De segunda a sexta: turno noturno (22h às 8h). Finais de semana: todo dia até às 21h.',
+      description:
+        'De segunda a sexta: turno noturno (22h às 8h). Finais de semana: todo dia até às 21h.',
     },
     {
       icon: '🧹',
       title: 'Equipe de Limpeza',
-      description: 'Terças e quintas-feiras, das 8h às 11h. Permitido circulação normal nestes períodos.',
+      description:
+        'Terças e quintas-feiras, das 8h às 11h. Permitido circulação normal nestes períodos.',
     },
     {
       icon: '📢',
       title: 'Volume Máximo',
-      description: 'Respeite os vizinhos. Evite música alta, festas prolongadas e barulhos excessivos.',
+      description:
+        'Respeite os vizinhos. Evite música alta, festas prolongadas e barulhos excessivos.',
     },
     {
       icon: '🚫',
@@ -65,8 +68,14 @@ export function BuildingRulesNotification({
   if (!isOpen) return null;
 
   return (
-    <div className={`rules-notification-overlay ${isVisible ? 'visible' : ''}`} onClick={handleClose}>
-      <div className={`rules-notification-modal ${isVisible ? 'visible' : ''}`} onClick={(e) => e.stopPropagation()}>
+    <div
+      className={`rules-notification-overlay ${isVisible ? 'visible' : ''}`}
+      onClick={handleClose}
+    >
+      <div
+        className={`rules-notification-modal ${isVisible ? 'visible' : ''}`}
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="rules-notification-header">
           <h2>✅ Reserva Confirmada!</h2>
           <button type="button" className="close-btn" onClick={handleClose}>

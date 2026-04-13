@@ -54,7 +54,7 @@ export function ReservationCalendar({
     }
 
     const hasUserReservation = dayReservations.some(
-      (r) => r.residentName.toLowerCase() === currentUserName.toLowerCase()
+      (r) => r.residentName.toLowerCase() === currentUserName.toLowerCase(),
     );
 
     return hasUserReservation ? 'user-reserved' : 'reserved';
@@ -171,25 +171,27 @@ export function ReservationCalendar({
       </div>
 
       {/* Mostrar reservas do dia selecionado */}
-      {selectedDate && reservationsByDate.get(selectedDate) && reservationsByDate.get(selectedDate)!.length > 0 && (
-        <div className="day-reservations">
-          <h4 className="reservations-title">Reservas para {formatDisplayDate(selectedDate)}</h4>
-          <div className="alert-message">
-            ⚠️ Este dia já foi reservado. Não é possível fazer nova reserva.
+      {selectedDate &&
+        reservationsByDate.get(selectedDate) &&
+        reservationsByDate.get(selectedDate)!.length > 0 && (
+          <div className="day-reservations">
+            <h4 className="reservations-title">Reservas para {formatDisplayDate(selectedDate)}</h4>
+            <div className="alert-message">
+              ⚠️ Este dia já foi reservado. Não é possível fazer nova reserva.
+            </div>
+            <div className="reservations-list">
+              {reservationsByDate.get(selectedDate)!.map((r) => (
+                <div key={r.id} className="reservation-item">
+                  <p className="resident">{r.residentName}</p>
+                  <p className="time">
+                    {r.startTime} - {r.endTime}
+                  </p>
+                  {r.notes && <p className="notes">{r.notes}</p>}
+                </div>
+              ))}
+            </div>
           </div>
-          <div className="reservations-list">
-            {reservationsByDate.get(selectedDate)!.map((r) => (
-              <div key={r.id} className="reservation-item">
-                <p className="resident">{r.residentName}</p>
-                <p className="time">
-                  {r.startTime} - {r.endTime}
-                </p>
-                {r.notes && <p className="notes">{r.notes}</p>}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+        )}
     </div>
   );
 }

@@ -26,13 +26,13 @@ function formatDate(date: string): string {
 function getTimeUntil(dateStr: string): string {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  
+
   const targetDate = new Date(dateStr);
   targetDate.setHours(0, 0, 0, 0);
-  
+
   const diffTime = targetDate.getTime() - today.getTime();
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  
+
   if (diffDays < 0) return 'Passada';
   if (diffDays === 0) return 'Hoje';
   if (diffDays === 1) return 'Amanhã';
@@ -41,7 +41,7 @@ function getTimeUntil(dateStr: string): string {
     const weeks = Math.floor(diffDays / 7);
     return `Em ${weeks} semana${weeks > 1 ? 's' : ''}`;
   }
-  
+
   const months = Math.floor(diffDays / 30);
   return `Em ${months} mês${months > 1 ? 'es' : ''}`;
 }
@@ -88,16 +88,18 @@ export default function Reservations() {
 
     // Verificar se o dia já foi reservado por outro morador
     const dayReservations = reservations.filter(
-      (r) => r.commonAreaId === form.commonAreaId && r.date === form.date && r.status !== 'cancelled'
+      (r) =>
+        r.commonAreaId === form.commonAreaId && r.date === form.date && r.status !== 'cancelled',
     );
 
     if (dayReservations.length > 0) {
       const existingReservation = dayReservations[0];
-      const isUserReservation = existingReservation.residentName.toLowerCase() === form.residentName.toLowerCase();
+      const isUserReservation =
+        existingReservation.residentName.toLowerCase() === form.residentName.toLowerCase();
 
       if (!isUserReservation) {
         setFeedback(
-          `Este dia ja foi reservado por ${existingReservation.residentName}. Escolha outro dia.`
+          `Este dia ja foi reservado por ${existingReservation.residentName}. Escolha outro dia.`,
         );
         return;
       }
@@ -161,9 +163,7 @@ export default function Reservations() {
                     {t(`apps.reservations.status.${reservation.status}`)}
                   </span>
                 </div>
-                <p className="text-sm text-neutral-300">
-                  {formatDate(reservation.date)}
-                </p>
+                <p className="text-sm text-neutral-300">{formatDate(reservation.date)}</p>
                 <p className="text-sm text-neutral-400">{reservation.residentName}</p>
                 <p className="text-xs text-neutral-500 mt-1">🔔 {getTimeUntil(reservation.date)}</p>
                 {reservation.notes ? (
@@ -228,7 +228,6 @@ export default function Reservations() {
                 />
               </div>
             ) : null}
-
 
             <label className="block">
               <span className="mb-1 block text-sm text-neutral-300">

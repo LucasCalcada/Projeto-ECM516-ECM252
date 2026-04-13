@@ -43,7 +43,9 @@ export default function Settings() {
   }
 
   return (
-    <div className={`h-full p-4 md:p-8 transition-colors ${theme === 'light' ? 'bg-neutral-100' : 'bg-gradient-to-br from-neutral-900/50 to-neutral-950'}`}>
+    <div
+      className={`h-full p-4 md:p-8 transition-colors ${theme === 'light' ? 'bg-neutral-100' : 'bg-gradient-to-br from-neutral-900/50 to-neutral-950'}`}
+    >
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-neutral-100">{t('apps.settings.title')}</h1>
         <p className={`mt-2 ${theme === 'light' ? 'text-neutral-600' : 'text-neutral-400'}`}>
@@ -60,8 +62,12 @@ export default function Settings() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Perfil */}
-        <section className={`lg:col-span-1 rounded-xl border transition-colors ${theme === 'light' ? 'border-neutral-300 bg-white' : 'border-neutral-800 bg-neutral-900/40'} p-6`}>
-          <h2 className="text-xl font-bold text-neutral-100 mb-4">👤 {t('apps.settings.profile.title')}</h2>
+        <section
+          className={`lg:col-span-1 rounded-xl border transition-colors ${theme === 'light' ? 'border-neutral-300 bg-white' : 'border-neutral-800 bg-neutral-900/40'} p-6`}
+        >
+          <h2 className="text-xl font-bold text-neutral-100 mb-4">
+            👤 {t('apps.settings.profile.title')}
+          </h2>
 
           <div className="flex flex-col items-center gap-4 mb-6">
             <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-2xl font-bold">
@@ -69,7 +75,11 @@ export default function Settings() {
             </div>
             <div className="text-center">
               <p className="text-neutral-100 font-semibold">{profile.name}</p>
-              <p className={`text-sm ${theme === 'light' ? 'text-neutral-600' : 'text-neutral-400'}`}>{profile.apartment}</p>
+              <p
+                className={`text-sm ${theme === 'light' ? 'text-neutral-600' : 'text-neutral-400'}`}
+              >
+                {profile.apartment}
+              </p>
             </div>
           </div>
 
@@ -77,11 +87,19 @@ export default function Settings() {
             <>
               <div className="space-y-3 mb-4">
                 <div>
-                  <p className={`text-xs font-semibold uppercase ${theme === 'light' ? 'text-neutral-600' : 'text-neutral-500'}`}>{t('apps.settings.profile.email')}</p>
+                  <p
+                    className={`text-xs font-semibold uppercase ${theme === 'light' ? 'text-neutral-600' : 'text-neutral-500'}`}
+                  >
+                    {t('apps.settings.profile.email')}
+                  </p>
                   <p className="text-neutral-300">{profile.email}</p>
                 </div>
                 <div>
-                  <p className={`text-xs font-semibold uppercase ${theme === 'light' ? 'text-neutral-600' : 'text-neutral-500'}`}>{t('apps.settings.profile.phone')}</p>
+                  <p
+                    className={`text-xs font-semibold uppercase ${theme === 'light' ? 'text-neutral-600' : 'text-neutral-500'}`}
+                  >
+                    {t('apps.settings.profile.phone')}
+                  </p>
                   <p className="text-neutral-300">{profile.phone}</p>
                 </div>
               </div>
@@ -100,21 +118,21 @@ export default function Settings() {
                   value={profile.name}
                   onChange={(e) => handleProfileChange('name', e.target.value)}
                   placeholder="Nome completo"
-                  className={`w-full px-3 py-2 rounded-lg transition ${ theme === 'light' ? 'bg-neutral-100 border border-neutral-300 text-neutral-900' : 'bg-neutral-800 border border-neutral-700 text-neutral-100 placeholder-neutral-500 focus:border-blue-500'} focus:outline-none`}
+                  className={`w-full px-3 py-2 rounded-lg transition ${theme === 'light' ? 'bg-neutral-100 border border-neutral-300 text-neutral-900' : 'bg-neutral-800 border border-neutral-700 text-neutral-100 placeholder-neutral-500 focus:border-blue-500'} focus:outline-none`}
                 />
                 <input
                   type="email"
                   value={profile.email}
                   onChange={(e) => handleProfileChange('email', e.target.value)}
                   placeholder="Email"
-                  className={`w-full px-3 py-2 rounded-lg transition ${ theme === 'light' ? 'bg-neutral-100 border border-neutral-300 text-neutral-900' : 'bg-neutral-800 border border-neutral-700 text-neutral-100 placeholder-neutral-500 focus:border-blue-500'} focus:outline-none`}
+                  className={`w-full px-3 py-2 rounded-lg transition ${theme === 'light' ? 'bg-neutral-100 border border-neutral-300 text-neutral-900' : 'bg-neutral-800 border border-neutral-700 text-neutral-100 placeholder-neutral-500 focus:border-blue-500'} focus:outline-none`}
                 />
                 <input
                   type="tel"
                   value={profile.phone}
                   onChange={(e) => handleProfileChange('phone', e.target.value)}
                   placeholder="Telefone"
-                  className={`w-full px-3 py-2 rounded-lg transition ${ theme === 'light' ? 'bg-neutral-100 border border-neutral-300 text-neutral-900' : 'bg-neutral-800 border border-neutral-700 text-neutral-100 placeholder-neutral-500 focus:border-blue-500'} focus:outline-none`}
+                  className={`w-full px-3 py-2 rounded-lg transition ${theme === 'light' ? 'bg-neutral-100 border border-neutral-300 text-neutral-900' : 'bg-neutral-800 border border-neutral-700 text-neutral-100 placeholder-neutral-500 focus:border-blue-500'} focus:outline-none`}
                 />
               </div>
               <div className="flex gap-2">
@@ -126,7 +144,7 @@ export default function Settings() {
                 </button>
                 <button
                   onClick={() => setEditingProfile(false)}
-                  className={`flex-1 font-medium py-2 rounded-lg transition ${ theme === 'light' ? 'bg-neutral-200 text-neutral-900 hover:bg-neutral-300' : 'bg-neutral-700 text-white hover:bg-neutral-600'}`}
+                  className={`flex-1 font-medium py-2 rounded-lg transition ${theme === 'light' ? 'bg-neutral-200 text-neutral-900 hover:bg-neutral-300' : 'bg-neutral-700 text-white hover:bg-neutral-600'}`}
                 >
                   {t('apps.settings.profile.cancel')}
                 </button>
@@ -136,8 +154,12 @@ export default function Settings() {
         </section>
 
         {/* Idioma */}
-        <section className={`lg:col-span-1 rounded-xl border transition-colors ${theme === 'light' ? 'border-neutral-300 bg-white' : 'border-neutral-800 bg-neutral-900/40'} p-6`}>
-          <h2 className="text-xl font-bold text-neutral-100 mb-4">🌐 {t('apps.settings.language.title')}</h2>
+        <section
+          className={`lg:col-span-1 rounded-xl border transition-colors ${theme === 'light' ? 'border-neutral-300 bg-white' : 'border-neutral-800 bg-neutral-900/40'} p-6`}
+        >
+          <h2 className="text-xl font-bold text-neutral-100 mb-4">
+            🌐 {t('apps.settings.language.title')}
+          </h2>
 
           <div className="space-y-3">
             {[

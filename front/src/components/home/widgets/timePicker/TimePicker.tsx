@@ -24,22 +24,22 @@ export function TimePicker({ value, onChange, minTime, maxTime, label }: TimePic
 
   function handleHourChange(delta: number) {
     let newHour = parseInt(hours) + delta;
-    
+
     if (minTime) {
       const [minH] = minTime.split(':');
       const minHourNum = parseInt(minH);
       if (newHour < minHourNum) newHour = minHourNum;
     }
-    
+
     if (maxTime) {
       const [maxH] = maxTime.split(':');
       const maxHourNum = parseInt(maxH);
       if (newHour > maxHourNum) newHour = maxHourNum;
     }
-    
+
     if (newHour < 0) newHour = 23;
     if (newHour > 23) newHour = 0;
-    
+
     const newHourStr = String(newHour).padStart(2, '0');
     setHours(newHourStr);
     updateTime(newHourStr, minutes);
@@ -47,19 +47,19 @@ export function TimePicker({ value, onChange, minTime, maxTime, label }: TimePic
 
   function handleMinuteChange(delta: number) {
     let newMinute = parseInt(minutes) + delta;
-    
+
     if (newMinute < 0) {
       newMinute = 59;
       handleHourChange(-1);
       return;
     }
-    
+
     if (newMinute > 59) {
       newMinute = 0;
       handleHourChange(1);
       return;
     }
-    
+
     const newMinuteStr = String(newMinute).padStart(2, '0');
     setMinutes(newMinuteStr);
     updateTime(hours, newMinuteStr);
@@ -90,13 +90,9 @@ export function TimePicker({ value, onChange, minTime, maxTime, label }: TimePic
   return (
     <div className="time-picker-wrapper">
       {label && <label className="time-picker-label">{label}</label>}
-      
+
       <div className="time-picker-container">
-        <button
-          type="button"
-          className="time-picker-display"
-          onClick={() => setIsOpen(!isOpen)}
-        >
+        <button type="button" className="time-picker-display" onClick={() => setIsOpen(!isOpen)}>
           <span className="time-display">
             {hours}:{minutes}
           </span>
@@ -107,7 +103,7 @@ export function TimePicker({ value, onChange, minTime, maxTime, label }: TimePic
           <div className="time-picker-panel">
             <div className="time-picker-section">
               <div className="time-picker-label-section">Horas</div>
-              
+
               <div className="time-input-group">
                 <button
                   type="button"
@@ -140,7 +136,7 @@ export function TimePicker({ value, onChange, minTime, maxTime, label }: TimePic
 
             <div className="time-picker-section">
               <div className="time-picker-label-section">Minutos</div>
-              
+
               <div className="time-input-group">
                 <button
                   type="button"
