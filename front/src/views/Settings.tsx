@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../contexts/useThemeHook';
+import { Globe, User } from 'lucide-react';
 
 interface UserProfile {
   name: string;
@@ -43,9 +44,7 @@ export default function Settings() {
   }
 
   return (
-    <div
-      className={`h-full p-4 transition-colors md:p-8 ${theme === 'light' ? 'bg-neutral-100' : 'bg-gradient-to-br from-neutral-900/50 to-neutral-950'}`}
-    >
+    <div className="h-full p-4 transition-colors md:p-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-neutral-100">{t('settings.title')}</h1>
         <p className={`mt-2 ${theme === 'light' ? 'text-neutral-600' : 'text-neutral-400'}`}>
@@ -65,9 +64,10 @@ export default function Settings() {
         <section
           className={`rounded-xl border transition-colors lg:col-span-1 ${theme === 'light' ? 'border-neutral-300 bg-white' : 'border-neutral-800 bg-neutral-900/40'} p-6`}
         >
-          <h2 className="mb-4 text-xl font-bold text-neutral-100">
-            👤 {t('settings.profile.title')}
-          </h2>
+          <div className="mb-4 flex items-center gap-2 text-xl font-bold text-neutral-100">
+            <User />
+            <p>{t('settings.profile.title')}</p>
+          </div>
 
           <div className="mb-6 flex flex-col items-center gap-4">
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-2xl font-bold text-white">
@@ -157,9 +157,10 @@ export default function Settings() {
         <section
           className={`rounded-xl border transition-colors lg:col-span-1 ${theme === 'light' ? 'border-neutral-300 bg-white' : 'border-neutral-800 bg-neutral-900/40'} p-6`}
         >
-          <h2 className="mb-4 text-xl font-bold text-neutral-100">
-            🌐 {t('settings.language.title')}
-          </h2>
+          <div className="mb-4 flex items-center gap-2 text-xl font-bold text-neutral-100">
+            <Globe />
+            <p>{t('settings.language.title')}</p>
+          </div>
 
           <div className="space-y-3">
             {[
