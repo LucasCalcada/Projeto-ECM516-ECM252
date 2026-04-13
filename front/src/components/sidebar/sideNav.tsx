@@ -7,7 +7,7 @@ function highlight(link: NavLinkRenderProps): string {
   if (link.isActive) {
     return 'bg-neutral-800 rounded-md';
   }
-  return '';
+  return 'hover:bg-neutral-800/50 rounded-md';
 }
 
 interface NavEntryProps {
