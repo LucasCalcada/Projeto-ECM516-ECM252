@@ -58,8 +58,6 @@
         "resident": "Residente",
         "resource": "Área Común",
         "date": "Fecha",
-        "startDate": "Hora de Inicio",
-        "endDate": "Hora de Fin",
         "comment": "Observaciones",
         "confirm": "Solicitar reserva"
       }
@@ -73,53 +71,13 @@
         "save": "💾 Guardar",
         "cancel": "✕ Cancelar",
         "email": "Correo electrónico",
-        "phone": "Teléfono",
-        "apartment": "Apartamento"
-      },
-      "theme": {
-        "title": "Tema y Accesibilidad",
-        "label": "Tema",
-        "darkMode": "🌙 Modo Oscuro",
-        "lightMode": "☀️ Modo Claro",
-        "fontSize": "Tamaño de Fuente",
-        "highContrast": "Alto Contraste",
-        "reducedAnimations": "Reducir Animaciones"
-      },
-      "notifications": {
-        "title": "Notificaciones",
-        "reservations": "📅 Notificaciones de Reservas",
-        "maintenance": "🔧 Alertas de Mantenimiento",
-        "condoNews": "📢 Noticias del Condominio",
-        "events": "🎉 Recordatorios de Eventos"
+        "phone": "Teléfono"
       },
       "language": {
         "title": "Idioma"
       },
-      "about": {
-        "title": "Acerca de y Soporte",
-        "version": "Versión de la Aplicación",
-        "faq": "❓ Preguntas Frecuentes",
-        "support": "📧 Contactar Soporte",
-        "terms": "📋 Términos de Uso",
-        "privacy": "🔐 Política de Privacidad"
-      },
-      "security": {
-        "title": "Seguridad",
-        "changePassword": "🔑 Cambiar Contraseña",
-        "twoFactor": "📱 Autenticación de Dos Factores",
-        "history": "📊 Historial de Actividad",
-        "logout": "🚨 Cerrar Sesión en Todos los Dispositivos"
-      },
-      "actions": {
-        "title": "Acciones",
-        "import": "📥 Importar Datos",
-        "export": "📤 Exportar Datos (PDF)",
-        "clearCache": "🗑️ Limpiar Caché",
-        "deleteAccount": "❌ Eliminar Cuenta"
-      },
       "messages": {
-        "profileUpdated": "¡Perfil actualizado correctamente!",
-        "notificationsSaved": "¡Preferencias de notificación guardadas!"
+        "profileUpdated": "¡Perfil actualizado correctamente!"
       }
     }
   }

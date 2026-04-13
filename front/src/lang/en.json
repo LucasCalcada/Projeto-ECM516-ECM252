@@ -58,8 +58,6 @@
         "resident": "Resident",
         "resource": "Common Area",
         "date": "Date",
-        "startDate": "Start Time",
-        "endDate": "End Time",
         "comment": "Comments",
         "confirm": "Request reservation"
       }
@@ -73,53 +71,13 @@
         "save": "💾 Save",
         "cancel": "✕ Cancel",
         "email": "Email",
-        "phone": "Phone",
-        "apartment": "Apartment"
-      },
-      "theme": {
-        "title": "Theme & Accessibility",
-        "label": "Theme",
-        "darkMode": "🌙 Dark Mode",
-        "lightMode": "☀️ Light Mode",
-        "fontSize": "Font Size",
-        "highContrast": "High Contrast",
-        "reducedAnimations": "Reduce Animations"
-      },
-      "notifications": {
-        "title": "Notifications",
-        "reservations": "📅 Reservation Notifications",
-        "maintenance": "🔧 Maintenance Alerts",
-        "condoNews": "📢 Condo News",
-        "events": "🎉 Event Reminders"
+        "phone": "Phone"
       },
       "language": {
         "title": "Language"
       },
-      "about": {
-        "title": "About & Support",
-        "version": "App Version",
-        "faq": "❓ FAQ - Frequently Asked Questions",
-        "support": "📧 Contact Support",
-        "terms": "📋 Terms of Use",
-        "privacy": "🔐 Privacy Policy"
-      },
-      "security": {
-        "title": "Security",
-        "changePassword": "🔑 Change Password",
-        "twoFactor": "📱 Two-Factor Authentication",
-        "history": "📊 Activity History",
-        "logout": "🚨 Sign Out From All Sessions"
-      },
-      "actions": {
-        "title": "Actions",
-        "import": "📥 Import Data",
-        "export": "📤 Export Data (PDF)",
-        "clearCache": "🗑️ Clear Cache",
-        "deleteAccount": "❌ Delete Account"
-      },
       "messages": {
-        "profileUpdated": "Profile updated successfully!",
-        "notificationsSaved": "Notification preferences saved!"
+        "profileUpdated": "Profile updated successfully!"
       }
     }
   }
