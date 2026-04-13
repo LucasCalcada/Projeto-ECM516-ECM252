@@ -39,7 +39,7 @@ export default function Settings() {
   function handleSaveProfile() {
     localStorage.setItem('userProfile', JSON.stringify(profile));
     setEditingProfile(false);
-    setSuccessMessage(t('apps.settings.messages.profileUpdated'));
+    setSuccessMessage(t('settings.messages.profileUpdated'));
   }
 
   return (
@@ -47,9 +47,9 @@ export default function Settings() {
       className={`h-full p-4 transition-colors md:p-8 ${theme === 'light' ? 'bg-neutral-100' : 'bg-gradient-to-br from-neutral-900/50 to-neutral-950'}`}
     >
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-neutral-100">{t('apps.settings.title')}</h1>
+        <h1 className="text-3xl font-bold text-neutral-100">{t('settings.title')}</h1>
         <p className={`mt-2 ${theme === 'light' ? 'text-neutral-600' : 'text-neutral-400'}`}>
-          {t('apps.settings.subtitle')}
+          {t('settings.subtitle')}
         </p>
       </div>
 
@@ -66,7 +66,7 @@ export default function Settings() {
           className={`rounded-xl border transition-colors lg:col-span-1 ${theme === 'light' ? 'border-neutral-300 bg-white' : 'border-neutral-800 bg-neutral-900/40'} p-6`}
         >
           <h2 className="mb-4 text-xl font-bold text-neutral-100">
-            👤 {t('apps.settings.profile.title')}
+            👤 {t('settings.profile.title')}
           </h2>
 
           <div className="mb-6 flex flex-col items-center gap-4">
@@ -90,7 +90,7 @@ export default function Settings() {
                   <p
                     className={`text-xs font-semibold uppercase ${theme === 'light' ? 'text-neutral-600' : 'text-neutral-500'}`}
                   >
-                    {t('apps.settings.profile.email')}
+                    {t('settings.profile.email')}
                   </p>
                   <p className="text-neutral-300">{profile.email}</p>
                 </div>
@@ -98,7 +98,7 @@ export default function Settings() {
                   <p
                     className={`text-xs font-semibold uppercase ${theme === 'light' ? 'text-neutral-600' : 'text-neutral-500'}`}
                   >
-                    {t('apps.settings.profile.phone')}
+                    {t('settings.profile.phone')}
                   </p>
                   <p className="text-neutral-300">{profile.phone}</p>
                 </div>
@@ -107,7 +107,7 @@ export default function Settings() {
                 onClick={() => setEditingProfile(true)}
                 className="w-full rounded-lg bg-blue-600 py-2 font-medium text-white transition hover:bg-blue-700"
               >
-                {t('apps.settings.profile.edit')}
+                {t('settings.profile.edit')}
               </button>
             </>
           ) : (
@@ -140,13 +140,13 @@ export default function Settings() {
                   onClick={handleSaveProfile}
                   className="flex-1 rounded-lg bg-green-600 py-2 font-medium text-white transition hover:bg-green-700"
                 >
-                  {t('apps.settings.profile.save')}
+                  {t('settings.profile.save')}
                 </button>
                 <button
                   onClick={() => setEditingProfile(false)}
                   className={`flex-1 rounded-lg py-2 font-medium transition ${theme === 'light' ? 'bg-neutral-200 text-neutral-900 hover:bg-neutral-300' : 'bg-neutral-700 text-white hover:bg-neutral-600'}`}
                 >
-                  {t('apps.settings.profile.cancel')}
+                  {t('settings.profile.cancel')}
                 </button>
               </div>
             </>
@@ -158,7 +158,7 @@ export default function Settings() {
           className={`rounded-xl border transition-colors lg:col-span-1 ${theme === 'light' ? 'border-neutral-300 bg-white' : 'border-neutral-800 bg-neutral-900/40'} p-6`}
         >
           <h2 className="mb-4 text-xl font-bold text-neutral-100">
-            🌐 {t('apps.settings.language.title')}
+            🌐 {t('settings.language.title')}
           </h2>
 
           <div className="space-y-3">

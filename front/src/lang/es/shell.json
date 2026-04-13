@@ -1,0 +1,32 @@
+{
+  "sidebar": {
+    "routes": {
+      "home": "Inicio",
+      "residents": "Residentes",
+      "reservations": "Reservas",
+      "settings": "Configuración"
+    },
+    "options": {
+      "settings": "Configuración",
+      "logout": "Cerrar sesión"
+    }
+  },
+  "settings": {
+    "title": "Configuración",
+    "subtitle": "Gestione sus preferencias y perfil",
+    "profile": {
+      "title": "Perfil",
+      "edit": "✏️ Editar Perfil",
+      "save": "💾 Guardar",
+      "cancel": "✕ Cancelar",
+      "email": "Correo electrónico",
+      "phone": "Teléfono"
+    },
+    "language": {
+      "title": "Idioma"
+    },
+    "messages": {
+      "profileUpdated": "¡Perfil actualizado correctamente!"
+    }
+  }
+}

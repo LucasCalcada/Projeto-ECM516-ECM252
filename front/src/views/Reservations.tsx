@@ -144,13 +144,13 @@ export default function Reservations() {
   return (
     <div className="h-full p-4 md:p-8">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-neutral-100">{t('apps.reservations.title')}</h1>
-        <p className="text-neutral-400">{t('apps.reservations.description')}</p>
+        <h1 className="text-2xl font-bold text-neutral-100">{t('reservations:title')}</h1>
+        <p className="text-neutral-400">{t('reservations:description')}</p>
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-5">
         <section className="rounded-xl border border-neutral-800 bg-neutral-900/40 p-4 lg:col-span-3">
-          <h2 className="mb-3 text-lg font-semibold">{t('apps.reservations.upcoming')}</h2>
+          <h2 className="mb-3 text-lg font-semibold">{t('reservations:upcoming')}</h2>
           <div className="space-y-3">
             {upcomingReservations.map((reservation) => (
               <article
@@ -160,7 +160,7 @@ export default function Reservations() {
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <p className="font-medium text-neutral-100">{reservation.commonAreaName}</p>
                   <span className="rounded-full border border-neutral-700 px-2 py-0.5 text-xs text-neutral-300">
-                    {t(`apps.reservations.status.${reservation.status}`)}
+                    {t(`reservations:status.${reservation.status}`)}
                   </span>
                 </div>
                 <p className="text-sm text-neutral-300">{formatDate(reservation.date)}</p>
@@ -168,7 +168,7 @@ export default function Reservations() {
                 <p className="mt-1 text-xs text-neutral-500">🔔 {getTimeUntil(reservation.date)}</p>
                 {reservation.notes ? (
                   <p className="mt-1 text-sm text-neutral-500">
-                    {t('apps.reservations.form.comment')}: {reservation.notes}
+                    {t('reservations:form.comment')}: {reservation.notes}
                   </p>
                 ) : null}
               </article>
@@ -181,7 +181,7 @@ export default function Reservations() {
           <form className="space-y-3" onSubmit={onSubmit}>
             <label className="block">
               <span className="mb-1 block text-sm text-neutral-300">
-                {t('apps.reservations.form.resident')}
+                {t('reservations:form.resident')}
               </span>
               <input
                 className="w-full rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm"
@@ -193,7 +193,7 @@ export default function Reservations() {
 
             <label className="block">
               <span className="mb-1 block text-sm text-neutral-300">
-                {t('apps.reservations.form.resource')}
+                {t('reservations:form.resource')}
               </span>
               <select
                 className="w-full rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm"
@@ -217,7 +217,7 @@ export default function Reservations() {
             {selectedArea ? (
               <div className="block">
                 <span className="mb-1 block text-sm text-neutral-300">
-                  {t('apps.reservations.form.date')}
+                  {t('reservations:form.date')}
                 </span>
                 <ReservationCalendar
                   reservations={reservations}
@@ -231,7 +231,7 @@ export default function Reservations() {
 
             <label className="block">
               <span className="mb-1 block text-sm text-neutral-300">
-                {t('apps.reservations.form.comment')}
+                {t('reservations:form.comment')}
               </span>
               <textarea
                 className="min-h-20 w-full rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm"
@@ -244,7 +244,7 @@ export default function Reservations() {
               type="submit"
               className="w-full rounded-md bg-neutral-100 px-3 py-2 text-sm font-medium text-neutral-900 transition hover:bg-white"
             >
-              {t('apps.reservations.form.confirm')}
+              {t('reservations:form.confirm')}
             </button>
           </form>
 

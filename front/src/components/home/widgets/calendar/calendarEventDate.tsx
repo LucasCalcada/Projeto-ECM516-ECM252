@@ -19,7 +19,7 @@ export default function CalendarDate(props: { date: Date }) {
   const { t } = useTranslation();
 
   const monthKey = monthKeys[props.date.getMonth()];
-  const monthLabel = t(`apps.calendar.months.${monthKey}`).toUpperCase();
+  const monthLabel = t(`calendar:months.${monthKey}`).toUpperCase();
 
   const dateLabel = String(props.date.getDate()).padStart(2, '0');
   return (

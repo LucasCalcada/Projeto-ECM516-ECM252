@@ -49,20 +49,20 @@ export default function LoginBox() {
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <TextField
             id="username"
-            label={t('login.fields.email.label')}
+            label={t('login:fields.email.label')}
             type="text"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder={t('login.fields.email.placeholder')}
+            placeholder={t('login:fields.email.placeholder')}
           />
 
           <TextField
             id="password"
-            label={t('login.fields.password.label')}
+            label={t('login:fields.password.label')}
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder={t('login.fields.password.placeholder')}
+            placeholder={t('login:fields.password.placeholder')}
           />
 
           <div
@@ -73,7 +73,7 @@ export default function LoginBox() {
             {credentialError}
           </div>
 
-          <Button text={t('login.login')} type="submit" />
+          <Button text={t('login:login')} type="submit" />
         </form>
       </div>
     </div>

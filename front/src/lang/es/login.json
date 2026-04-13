@@ -1,0 +1,13 @@
+{
+  "fields": {
+    "email": {
+      "label": "Email",
+      "placeholder": "Ingrese su email"
+    },
+    "password": {
+      "label": "Contraseña",
+      "placeholder": "Ingrese su contraseña"
+    }
+  },
+  "login": "Iniciar sesión"
+}

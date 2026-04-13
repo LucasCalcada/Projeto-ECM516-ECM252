@@ -1,0 +1,32 @@
+{
+  "sidebar": {
+    "routes": {
+      "home": "Home",
+      "residents": "Residents",
+      "reservations": "Reservations",
+      "settings": "Settings"
+    },
+    "options": {
+      "settings": "Settings",
+      "logout": "Sign out"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Manage your preferences and profile",
+    "profile": {
+      "title": "Profile",
+      "edit": "✏️ Edit Profile",
+      "save": "💾 Save",
+      "cancel": "✕ Cancel",
+      "email": "Email",
+      "phone": "Phone"
+    },
+    "language": {
+      "title": "Language"
+    },
+    "messages": {
+      "profileUpdated": "Profile updated successfully!"
+    }
+  }
+}

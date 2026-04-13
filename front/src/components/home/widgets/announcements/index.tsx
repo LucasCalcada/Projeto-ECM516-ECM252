@@ -30,7 +30,7 @@ export default function AnnouncementWidget(props: { announcements: Announcement[
     <div className="flex-2 self-stretch rounded-xl border-1 border-neutral-800 p-4">
       <div className="flex items-center gap-2">
         <Megaphone />
-        <p className="text-2xl font-bold">{t('apps.announcements.title')}</p>
+        <p className="text-2xl font-bold">{t('announcements:title')}</p>
       </div>
       <div className="grid grid-cols-2 gap-4 overflow-y-scroll pt-2">
         {props.announcements.map((a) => (

@@ -22,7 +22,7 @@ export default function CalendarWidget(props: { events: CalendarEvent[] }) {
     <div className="flex-1 self-stretch rounded-xl border-1 border-neutral-800 p-4">
       <div className="flex items-center gap-2">
         <Calendar />
-        <p className="text-2xl font-bold">{t('apps.calendar.title')}</p>
+        <p className="text-2xl font-bold">{t('calendar:title')}</p>
       </div>
       <div className="flex flex-col overflow-y-scroll pt-2">
         {props.events.map((e) => (

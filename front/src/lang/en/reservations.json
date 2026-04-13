@@ -1,0 +1,17 @@
+{
+  "title": "Reservations",
+  "description": "Manage reservations for the barbecue, party room, and other facilities.",
+  "upcoming": "Upcoming Reservations",
+  "status": {
+    "pending": "Pending",
+    "confirmed": "Confirmed",
+    "cancelled": "Cancelled"
+  },
+  "form": {
+    "resident": "Resident",
+    "resource": "Common Area",
+    "date": "Date",
+    "comment": "Comments",
+    "confirm": "Request reservation"
+  }
+}
