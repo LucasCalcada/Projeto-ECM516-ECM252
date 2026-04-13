@@ -1,0 +1,40 @@
+name: 🌐 Check i18n
+
+on:
+  push:
+    paths:
+      - 'front/**'
+  pull_request:
+    paths:
+      - 'front/**'
+
+jobs:
+  i18n:
+    name: Run i18next lint and extract
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Check for hardcoded strings
+        id: lint
+        run: yarn workspace front i18n:lint
+        continue-on-error: true
+
+      - name: Check for unused keys
+        id: extract
+        run: yarn workspace front i18n:extract
+        continue-on-error: true
+
+      - name: Check results
+        if: steps.lint.outcome == 'failure' || steps.extract.outcome == 'failure'
+        run: exit 1

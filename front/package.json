@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "i18n:extract": "i18next-cli extract --ci",
+    "i18n:lint": "i18next-cli lint"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.2.2",
