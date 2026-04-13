@@ -1,9 +1,9 @@
 {
   "login": {
     "fields": {
-      "username": {
-        "label": "Usuario",
-        "placeholder": "Ingrese su nombre de usuario"
+      "email": {
+        "label": "Email",
+        "placeholder": "Ingrese su email"
       },
       "password": {
         "label": "Contraseña",

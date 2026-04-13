@@ -4,18 +4,39 @@ import TextField from './TextField';
 import Button from './Button';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
+import config from '../../config';
 
 export default function LoginBox() {
   const { t } = useTranslation();
 
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [credentialError, setCredentialError] = useState('');
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log('Tentativa de login:', { username, password });
-    navigate('/home', { replace: true });
+    setCredentialError('');
+    try {
+      const authUrl = `${config.authUrl}/auth/login`;
+      const response = await fetch(authUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+      if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem('accessToken', data.accessToken);
+        navigate('/home');
+      } else {
+        const errorText = await response.text();
+        setCredentialError(errorText);
+      }
+    } catch (error) {
+      alert('Erro ao conectar com o servidor');
+    }
   };
 
   return (
@@ -28,11 +49,11 @@ export default function LoginBox() {
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <TextField
             id="username"
-            label={t('login.fields.username.label')}
+            label={t('login.fields.email.label')}
             type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            placeholder={t('login.fields.username.placeholder')}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder={t('login.fields.email.placeholder')}
           />
 
           <TextField
@@ -44,7 +65,15 @@ export default function LoginBox() {
             placeholder={t('login.fields.password.placeholder')}
           />
 
-          <Button text={t('login.login')} />
+          <div
+            className="min-h-5 -mt-2 text-center text-sm text-red-400"
+            role="alert"
+            aria-live="polite"
+          >
+            {credentialError}
+          </div>
+
+          <Button text={t('login.login')} type="submit" />
         </form>
       </div>
     </div>
