@@ -33,7 +33,7 @@ export default function SideNav() {
   return (
     <nav className="flex flex-1 flex-col gap-2">
       {visibleRoutes.map((r: RouteConfig) => (
-        <NavEntry route={r as VisibleRouteConfig} />
+        <NavEntry key={r.path} route={r as VisibleRouteConfig} />
       ))}
     </nav>
   );
