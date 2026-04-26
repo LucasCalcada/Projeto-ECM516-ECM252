@@ -8,7 +8,7 @@ Content-Type: application/json
 ###
 GET http://localhost:3000/users
 ###
-POST  http://localhost:3000/login
+POST  http://localhost:3000/login 
 Content-Type: application/json
 
 {
@@ -19,3 +19,14 @@ Content-Type: application/json
 GET http://localhost:3000/protected
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3RlIiwiaWF0IjoxNzc1MzM0ODIxLCJleHAiOjE3NzUzMzQ4ODF9.RjhmmUHcZLieb6RjW2CuQqlOyRW5swpLd7Pdvzm8FjY
+
+###
+POST http://localhost:8001/auth/account
+Content-Type: application/json
+
+{
+  "name": "teste",
+  "email": "teste@condors.com",
+  "phone": "11999999999",
+  "password": "123"
+}
