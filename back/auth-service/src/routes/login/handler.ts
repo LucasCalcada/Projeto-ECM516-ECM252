@@ -1,15 +1,15 @@
 import client from '@app/db/client';
 import { accounts } from '@app/db/schema/account';
 import { eq } from 'drizzle-orm';
-import { Request } from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import BadRequest from '@app/middlewares/error/errors/BadRequest';
 import Unauthorized from '@app/middlewares/error/errors/Unauthorized';
 import config from '@app/config';
+import { Context } from '@app/middlewares/routeWrapper';
 
-export default async function authenticateUser(req: Request) {
-  const { email, password } = req.body;
+export default async function authenticateUser(ctx: Context) {
+  const { email, password } = ctx.req.body;
 
   if (!email || !password) {
     throw BadRequest;

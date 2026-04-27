@@ -1,11 +1,11 @@
 import client from '@app/db/client';
 import { accounts } from '@app/db/schema/account';
 import BadRequest from '@app/middlewares/error/errors/BadRequest';
+import { Context } from '@app/middlewares/routeWrapper';
 import { eq } from 'drizzle-orm';
-import { Request } from 'express';
 
-export default async function updateAccount(req: Request) {
-  const { id, name } = req.body;
+export default async function updateAccount(ctx: Context) {
+  const { id, name } = ctx.req.body;
 
   if (!id) {
     throw BadRequest;
