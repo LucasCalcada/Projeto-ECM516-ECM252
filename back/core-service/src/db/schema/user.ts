@@ -5,6 +5,7 @@ import { buildings } from './building';
 
 export const users = pgTable('users', {
   id: uuid('id').primaryKey().notNull().defaultRandom(),
+  accountId: uuid('accountId').notNull(),
   residencyId: uuid('residencyId').references(() => residencies.id),
   buildingId: uuid('buildingId').references(() => buildings.id),
   name: text('name'),

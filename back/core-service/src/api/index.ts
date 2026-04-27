@@ -15,6 +15,9 @@ import removeResident from './routes/residency/removeResident';
 import buildingGet from './routes/building/get';
 import buildingGetDeatails from './routes/building/details';
 
+// Account Routes
+import accountGet from './routes/account/get';
+
 registerRoute(pingRoute);
 
 // User Routes
@@ -29,3 +32,6 @@ registerRoute(removeResident);
 // Building Routes
 registerRoute(buildingGet);
 registerRoute(buildingGetDeatails);
+
+// Account Routes
+registerRoute(accountGet);
