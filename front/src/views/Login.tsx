@@ -34,7 +34,7 @@ export default function Login() {
         const errorText = await response.text();
         setCredentialError(errorText);
       }
-    } catch (error) {
+    } catch {
       alert('Erro ao conectar com o servidor');
     }
   };
