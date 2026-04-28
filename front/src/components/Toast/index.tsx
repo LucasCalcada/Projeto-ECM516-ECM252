@@ -11,7 +11,7 @@ type ToastContextType = {
 
 const ToastContext = createContext<ToastContextType | null>(null);
 
-export function useToast() {
+function useToast() {
   const ctx = useContext(ToastContext);
   if (!ctx) throw new Error('useToast must be used inside ToastProvider');
   return ctx;
