@@ -2,12 +2,12 @@ import { Request, type Express } from 'express';
 import wrapHandler from '../middlewares/routeWrapper';
 import log from './logger';
 
-export type RouteHandler = (req: Request) => Promise<any>;
+export type RouteHandler = (req: Request) => Promise<unknown>;
 
 export interface Route {
   method: 'get' | 'post' | 'put' | 'delete';
   path: string;
-  handler: (req: Request) => Promise<any>;
+  handler: RouteHandler;
 }
 
 const routes: Route[] = [];
