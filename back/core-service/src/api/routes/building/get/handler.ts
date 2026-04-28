@@ -4,8 +4,9 @@ import client from '@app/db/client';
 import { buildings } from '@app/db/schema';
 import { eq } from 'drizzle-orm';
 import { Request } from 'express';
+import { Context } from 'vm';
 
-export default async function getBuilding(req: Request) {
+export default async function getBuilding(req: Request, ctx: Context) {
   const { id } = req.params;
 
   if (Array.isArray(id)) {
