@@ -1,4 +1,4 @@
-import { Request, type Express } from 'express';
+import { type Express } from 'express';
 import wrapHandler, { Context } from '../middlewares/routeWrapper';
 import log from './logger';
 
