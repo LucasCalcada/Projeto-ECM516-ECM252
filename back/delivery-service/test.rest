@@ -1,7 +1,12 @@
 POST http://localhost:8002/packages
 Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU3MzYwNDEyLTBmNWEtNGQzNy04MTlkLTQ4NjExNzVmNzk2MyIsImVtYWlsIjoidGVzdGVAdGVzdGUuY29tIiwiaWF0IjoxNzc3NDIzNTE2LCJleHAiOjE3Nzc0MjcxMTZ9.g50g8OzKSOKRnvpnVCGaXmmiMMqDUhW63Mu1Oz6r1e8
 
 {
     "residencyId": "24f71499-38bc-45b2-bcc3-ddb8334198b2",
     "description": "Pacote Amazon - Livro de Node.js"
 }
+###
+GET http://localhost:8002/packages/view
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU3MzYwNDEyLTBmNWEtNGQzNy04MTlkLTQ4NjExNzVmNzk2MyIsImVtYWlsIjoidGVzdGVAdGVzdGUuY29tIiwiaWF0IjoxNzc3NDIzNTE2LCJleHAiOjE3Nzc0MjcxMTZ9.g50g8OzKSOKRnvpnVCGaXmmiMMqDUhW63Mu1Oz6r1e8
+###

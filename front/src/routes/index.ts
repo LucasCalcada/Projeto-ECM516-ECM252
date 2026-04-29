@@ -4,6 +4,7 @@ import {
   ShieldCheck,
   UserRound,
   Settings as SettingsIcon,
+  PackageIcon,
 } from 'lucide-react';
 import Home from '../views/Home';
 import Residents from '../views/Residents';
@@ -11,6 +12,7 @@ import Login from '../views/Login';
 import Reservations from '../views/Reservations';
 import Settings from '../views/Settings';
 import Portaria from '../views/Portaria';
+import Packages from '../views/Packages';
 import type { RouteConfig } from './route';
 
 const routes: RouteConfig[] = [
@@ -52,6 +54,16 @@ const routes: RouteConfig[] = [
     display: {
       labelKey: 'sidebar.routes.portaria',
       icon: ShieldCheck,
+    },
+  },
+  {
+    path: '/packages',
+    viewComponent: Packages,
+    layout: 'sidebar',
+    visible: true,
+    display: {
+      labelKey: 'sidebar.routes.packages',
+      icon: PackageIcon,
     },
   },
   {
