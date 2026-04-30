@@ -8,7 +8,7 @@ import { Request } from 'express';
 
 export default async function userUpdate(req: Request, ctx: Context) {
   const { id } = req.params;
-  const { name, residencyId, buildingId, permissions } = req.body;
+  const { name, residencyId, buildingId, permissions, accountId } = req.body;
 
   if (!id) {
     throw NotFoundError;
@@ -25,6 +25,7 @@ export default async function userUpdate(req: Request, ctx: Context) {
       residencyId,
       buildingId,
       permissions,
+      accountId,
     })
     .where(eq(users.id, id))
     .returning();

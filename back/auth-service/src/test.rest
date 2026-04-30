@@ -2,8 +2,8 @@ POST http://localhost:8001/auth/account
 Content-Type: application/json
 
 {
-  "name": "teste",
-  "email": "teste@teste.com",
+  "name": "João Teste",
+  "email": "teste@gmail.com",
   "phone": "11999999999",
   "password": "123"
 }

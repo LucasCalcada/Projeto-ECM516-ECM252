@@ -30,16 +30,10 @@ export default function PackagesTable({ packages, isLoading }: PackagesTableProp
             <tr key={pkg.id}>
               <td>{pkg.description}</td>
               <td>
-                <span className={`status-badge ${pkg.status.toLowerCase()}`}>
-                  {pkg.status}
-                </span>
+                <span className={`status-badge ${pkg.status.toLowerCase()}`}>{pkg.status}</span>
               </td>
               <td>{new Date(pkg.createdAt).toLocaleDateString('pt-BR')}</td>
-              <td>
-                {pkg.deliveryAt 
-                  ? new Date(pkg.deliveryAt).toLocaleDateString('pt-BR') 
-                  : '-'}
-              </td>
+              <td>{pkg.deliveryAt ? new Date(pkg.deliveryAt).toLocaleDateString('pt-BR') : '-'}</td>
             </tr>
           ))}
         </tbody>

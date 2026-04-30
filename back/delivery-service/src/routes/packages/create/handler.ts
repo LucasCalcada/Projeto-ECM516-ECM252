@@ -1,11 +1,10 @@
-import client from "@app/db/client";
-import { packages } from "@app/db/schema/package";
-import e, {Request} from "express";
-
+import client from '@app/db/client';
+import { packages } from '@app/db/schema/package';
+import e, { Request } from 'express';
 
 export async function createPackage(req: Request) {
-const { residencyId, description } = req.body;
-const [newPackage] = await client
+  const { residencyId, description } = req.body;
+  const [newPackage] = await client
     .insert(packages)
     .values({
       residencyId,
@@ -14,7 +13,7 @@ const [newPackage] = await client
     })
     .returning();
 
-try {
+  try {
     await fetch('http://localhost:8004/publish', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

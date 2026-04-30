@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import Table from '../components/PackageTable/Table';
-import type Package  from '../types/Packages';
+import type Package from '../types/Packages';
 import config from '../config';
 export default function PackagesView() {
   const [packages, setPackages] = useState<Package[]>([]);
@@ -14,7 +14,7 @@ export default function PackagesView() {
         setError(null);
         const response = await fetch(`${config.deliveryUrl}/packages/view`, {
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+            Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
           },
         });
         const data = await response.json();
@@ -22,9 +22,8 @@ export default function PackagesView() {
       } catch (err) {
         console.error('Erro ao buscar encomendas:', err);
         setError('Ocorreu um erro ao carregar as encomendas. Tente novamente mais tarde.');
-      }
-      finally {
-        setLoading(false); 
+      } finally {
+        setLoading(false);
       }
     }
 
