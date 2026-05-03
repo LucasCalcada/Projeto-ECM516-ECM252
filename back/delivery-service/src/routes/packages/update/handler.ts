@@ -8,7 +8,7 @@ import { eq } from 'drizzle-orm';
 export default async function updatePackageStatus(req: Request, ctx: Context) {
   const { packageId, status } = req.body;
   if (!packageId || !status) {
-    throw new Error('O ID da encomenda e o novo status são obrigatórios.'); 
+    throw new Error('O ID da encomenda e o novo status são obrigatórios.');
   }
 
   const validStatuses = ['PENDING', 'DELIVERED', 'RETURNED'];
@@ -16,8 +16,8 @@ export default async function updatePackageStatus(req: Request, ctx: Context) {
     throw new Error(`Status inválido. Use um dos seguintes: ${validStatuses.join(', ')}`);
   }
 
-  const updateData: Partial<typeof packages.$inferInsert> = { 
-    status: status 
+  const updateData: Partial<typeof packages.$inferInsert> = {
+    status: status,
   };
 
   if (status === 'DELIVERED') {
@@ -28,10 +28,11 @@ export default async function updatePackageStatus(req: Request, ctx: Context) {
     .update(packages)
     .set(updateData)
     .where(eq(packages.id, packageId))
-    .returning(); 
+    .returning();
 
   if (result.length === 0) {
     throw new Error('Encomenda não encontrada.');
   }
   return result[0];
 }
+//TODO: Testes kkkkk
