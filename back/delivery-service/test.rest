@@ -10,3 +10,6 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImMzOTgwZjVlLWQ4OTYt
 GET http://localhost:8002/packages/view
 Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImMzOTgwZjVlLWQ4OTYtNDM4Yy1hZThiLTkxNjFmNzM1NTMyMiIsImVtYWlsIjoidGVzdGVAZ21haWwuY29tIiwiaWF0IjoxNzc3NDkwNDU2LCJleHAiOjE3Nzc0OTQwNTZ9.Zurj_w9EZXvh924pGtuVlpftHhxk_doO4jCfpLwL450
 ###
+PUT http://localhost:8002/packages
+Content-Type: application/json
+Authorization 
