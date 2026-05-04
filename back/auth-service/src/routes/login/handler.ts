@@ -32,6 +32,5 @@ export default async function authenticateUser(ctx: Context) {
   };
 
   const token = jwt.sign(data, config.jwtToken, { expiresIn: '1h' });
-  console.log('Generated JWT token:', token);
   return { token };
 }

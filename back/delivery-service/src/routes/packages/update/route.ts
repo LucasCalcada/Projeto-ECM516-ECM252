@@ -1,4 +1,3 @@
-// back/delivery-service/src/routes/packages/update/route.ts
 import { Route } from '@app/helpers/routeRegistry';
 import updatePackageStatus from './handler';
 
