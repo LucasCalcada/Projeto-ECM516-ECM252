@@ -3,11 +3,10 @@ import NotFoundError from '@app/api/error/errors/NotFoundError';
 import client from '@app/db/client';
 import { buildings, groups, residencies, users } from '@app/db/schema';
 import aggregateDetails from '@app/helpers/building/aggregateDetails';
-import { Context } from '@app/middlewares/routeWrapper';
 import { and, eq, inArray, isNull } from 'drizzle-orm';
 import { Request } from 'express';
 
-export default async function getBuildingDetails(req: Request, ctx: Context) {
+export default async function getBuildingDetails(req: Request) {
   const { id } = req.params;
 
   if (Array.isArray(id)) {

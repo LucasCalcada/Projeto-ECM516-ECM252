@@ -7,9 +7,9 @@
     "back/*"
   ],
   "scripts": {
-    "lint:front": "eslint 'front/**/*.{ts,tsx}' 'back/**/*.{ts,js,json}'",
-    "format:check": "prettier --check 'front/**/*.{ts,tsx,js,json,css}' 'back/**/*.{ts,js,json}'",
-    "format": "prettier --write 'front/**/*.{ts,tsx,js,json,css}' 'back/**/*.{ts,js,json}'"
+    "lint:front": "eslint \"front/**/*.{ts,tsx}\" \"back/**/*.{ts,js,json}\"",
+    "format:check": "prettier --check \"front/**/*.{ts,tsx,js,json,css}\" \"back/**/*.{ts,js,json}\"",
+    "format": "prettier --write \"front/**/*.{ts,tsx,js,json,css}\" \"back/**/*.{ts,js,json}\""
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^8.57.2",
