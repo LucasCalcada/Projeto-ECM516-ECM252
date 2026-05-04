@@ -1,21 +1,9 @@
-POST http://localhost:3000/users
+POST http://localhost:8001/auth/account
 Content-Type: application/json
 
 {
-  "username": "teste",
-  "password": "1234"
+  "name": "João Teste",
+  "email": "teste@teste.com",
+  "phone": "11999999999",
+  "password": "123"
 }
-###
-GET http://localhost:3000/users
-###
-POST  http://localhost:3000/login
-Content-Type: application/json
-
-{
-  "username": "teste",
-  "password": "1234"
-}
-###
-GET http://localhost:3000/protected
-Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3RlIiwiaWF0IjoxNzc1MzM0ODIxLCJleHAiOjE3NzUzMzQ4ODF9.RjhmmUHcZLieb6RjW2CuQqlOyRW5swpLd7Pdvzm8FjY

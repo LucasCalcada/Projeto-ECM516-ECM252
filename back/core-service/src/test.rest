@@ -1,0 +1,16 @@
+GET http://localhost:8000/account
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImMzOTgwZjVlLWQ4OTYtNDM4Yy1hZThiLTkxNjFmNzM1NTMyMiIsImVtYWlsIjoidGVzdGVAZ21haWwuY29tIiwiaWF0IjoxNzc3NDkwNDU2LCJleHAiOjE3Nzc0OTQwNTZ9.Zurj_w9EZXvh924pGtuVlpftHhxk_doO4jCfpLwL450
+
+###
+PUT http://localhost:8000/user/ca3c68ec-c2c2-46f5-ae9a-46554ff52cbc
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImMzOTgwZjVlLWQ4OTYtNDM4Yy1hZThiLTkxNjFmNzM1NTMyMiIsImVtYWlsIjoidGVzdGVAZ21haWwuY29tIiwiaWF0IjoxNzc3NDkwNDU2LCJleHAiOjE3Nzc0OTQwNTZ9.Zurj_w9EZXvh924pGtuVlpftHhxk_doO4jCfpLwL450
+Content-Type: application/json
+
+{
+
+    "name": "Felipe Teste",
+    "residencyId": "f3d89360-bf96-45c7-af8c-bcc73f455d0c",
+    "buildingId":null,
+    "permissions":null,
+    "accountId": "c3980f5e-d896-438c-ae8b-9161f7355322"
+}
