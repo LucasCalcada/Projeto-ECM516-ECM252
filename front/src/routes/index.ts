@@ -13,6 +13,7 @@ import Reservations from '../views/Reservations';
 import Settings from '../views/Settings';
 import Portaria from '../views/Portaria';
 import Packages from '../views/Packages';
+import VisitorAccess from '../views/VisitorAccess';
 import type { RouteConfig } from './route';
 
 const routes: RouteConfig[] = [
@@ -64,6 +65,16 @@ const routes: RouteConfig[] = [
     display: {
       labelKey: 'sidebar.routes.packages',
       icon: PackageIcon,
+    },
+  },
+  {
+    path: '/visitor-access',
+    viewComponent: VisitorAccess,
+    layout: 'sidebar',
+    visible: true,
+    display: {
+      labelKey: 'sidebar.routes.visitorAccess',
+      icon: ShieldCheck,
     },
   },
   {
