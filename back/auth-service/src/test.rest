@@ -1,9 +1,0 @@
-POST http://localhost:8001/auth/account
-Content-Type: application/json
-
-{
-  "name": "João Teste",
-  "email": "teste@teste.com",
-  "phone": "11999999999",
-  "password": "123"
-}
