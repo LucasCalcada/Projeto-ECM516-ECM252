@@ -1,0 +1,12 @@
+{
+  "title": "Encomendas",
+  "description": "Acompanhe aqui os pacotes recebidos na portaria.",
+  "loading": "Carregando encomendas...",
+  "notFound": "Nenhuma encomenda encontrada para esta residência.",
+  "table": {
+    "description": "Descrição",
+    "status": "Status",
+    "receivedAt": "Data de Recebimento",
+    "deliveredAt": "Data de Entrega"
+  }
+}

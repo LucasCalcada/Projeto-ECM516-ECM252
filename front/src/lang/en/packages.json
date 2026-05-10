@@ -1,0 +1,12 @@
+{
+  "title": "Packages",
+  "description": "Track the packages received at the front desk here.",
+  "loading": "Loading packages...",
+  "notFound": "No packages found for this residence.",
+  "table": {
+    "description": "Description",
+    "status": "Status",
+    "receivedAt": "Received Date",
+    "deliveredAt": "Delivery Date"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "title": "Paquetes",
+  "description": "Sigue aquí los paquetes recibidos en la portería.",
+  "loading": "Cargando paquetes...",
+  "notFound": "No se encontraron paquetes para esta residencia.",
+  "table": {
+    "description": "Descripción",
+    "status": "Estado",
+    "receivedAt": "Fecha de Recepción",
+    "deliveredAt": "Fecha de Entrega"
+  }
+}

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import type Package from '../../types/Packages';
 
 interface PackagesTableProps {
@@ -6,12 +7,14 @@ interface PackagesTableProps {
 }
 
 export default function PackagesTable({ packages, isLoading }: PackagesTableProps) {
+  const { t } = useTranslation();
+
   if (isLoading) {
-    return <div className="loading-container">Carregando encomendas...</div>;
+    return <div className="loading-container">{t('packages:loading')}</div>;
   }
 
   if (packages.length === 0) {
-    return <div className="empty-state">Nenhuma encomenda encontrada para esta residência.</div>;
+    return <div className="empty-state">{t('packages:notFound')}</div>;
   }
 
   return (
@@ -19,10 +22,10 @@ export default function PackagesTable({ packages, isLoading }: PackagesTableProp
       <table className="packages-table">
         <thead>
           <tr>
-            <th>Descrição</th>
-            <th>Status</th>
-            <th>Data de Recebimento</th>
-            <th>Data de Entrega</th>
+            <th>{t('packages:table.description')}</th>
+            <th>{t('packages:table.status')}</th>
+            <th>{t('packages:table.receivedAt')}</th>
+            <th>{t('packages:table.deliveredAt')}</th>
           </tr>
         </thead>
         <tbody>

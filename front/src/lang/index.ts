@@ -7,7 +7,7 @@ import es from './es/';
 i18n.use(initReactI18next).init({
   lng: 'pt',
 
-  ns: ['shell', 'date', 'login', 'announcements', 'reservations', 'calendar'],
+  ns: ['shell', 'login', 'announcements', 'reservations', 'calendar', 'packages', 'common'],
   defaultNS: 'shell',
 
   resources: {
