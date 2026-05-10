@@ -15,6 +15,8 @@ export default function errorMiddleware(
   res: Response,
   next: NextFunction,
 ) {
+  void next;
+
   if (err instanceof ApiError) {
     res.status(err.code).send({ message: err.message });
   } else {

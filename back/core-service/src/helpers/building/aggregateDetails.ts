@@ -8,8 +8,26 @@ interface Row {
   userName: string | null;
 }
 
+interface UserDetails {
+  id: string;
+  name: string | null;
+}
+
+interface ResidencyDetails {
+  id: string;
+  name: string | null;
+  code: string | null;
+  users: Record<string, UserDetails>;
+}
+
+interface GroupDetails {
+  id: string;
+  name: string | null;
+  residencies: Record<string, ResidencyDetails>;
+}
+
 function groupData(data: Row[]) {
-  return data.reduce((acc: any, row: Row) => {
+  return data.reduce<Record<string, GroupDetails>>((acc, row) => {
     // Adds group to object
     let group = acc[row.groupId];
 
@@ -49,15 +67,15 @@ function groupData(data: Row[]) {
   }, {});
 }
 
-function intoArrays(data: any[]) {
+function intoArrays(data: Record<string, GroupDetails>) {
   return Object.values(data).map((group) => ({
     id: group.id,
     name: group.name,
-    residencies: Object.values(group.residencies).map((residency: any) => ({
+    residencies: Object.values(group.residencies).map((residency) => ({
       id: residency.id,
       name: residency.name,
       code: residency.code,
-      users: Object.values(residency.users).map((user: any) => ({
+      users: Object.values(residency.users).map((user) => ({
         id: user.id,
         name: user.name,
       })),

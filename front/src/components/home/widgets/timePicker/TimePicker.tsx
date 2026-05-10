@@ -9,17 +9,24 @@ interface TimePickerProps {
   label?: string;
 }
 
+function splitTime(value: string) {
+  const [h, m] = value.split(':');
+  return {
+    hours: h || '00',
+    minutes: m || '00',
+  };
+}
+
 export function TimePicker({ value, onChange, minTime, maxTime, label }: TimePickerProps) {
-  const [hours, setHours] = useState<string>('00');
-  const [minutes, setMinutes] = useState<string>('00');
+  const [{ hours, minutes }, setTimeParts] = useState(() => splitTime(value));
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    if (value) {
-      const [h, m] = value.split(':');
-      setHours(h || '00');
-      setMinutes(m || '00');
-    }
+    const frame = requestAnimationFrame(() => {
+      setTimeParts(splitTime(value));
+    });
+
+    return () => cancelAnimationFrame(frame);
   }, [value]);
 
   function handleHourChange(delta: number) {
@@ -41,7 +48,7 @@ export function TimePicker({ value, onChange, minTime, maxTime, label }: TimePic
     if (newHour > 23) newHour = 0;
 
     const newHourStr = String(newHour).padStart(2, '0');
-    setHours(newHourStr);
+    setTimeParts({ hours: newHourStr, minutes });
     updateTime(newHourStr, minutes);
   }
 
@@ -61,7 +68,7 @@ export function TimePicker({ value, onChange, minTime, maxTime, label }: TimePic
     }
 
     const newMinuteStr = String(newMinute).padStart(2, '0');
-    setMinutes(newMinuteStr);
+    setTimeParts({ hours, minutes: newMinuteStr });
     updateTime(hours, newMinuteStr);
   }
 
@@ -75,14 +82,14 @@ export function TimePicker({ value, onChange, minTime, maxTime, label }: TimePic
       if (num < 0) num = 0;
       if (num > 23) num = 23;
       const formatted = String(num).padStart(2, '0');
-      setHours(formatted);
+      setTimeParts({ hours: formatted, minutes });
       updateTime(formatted, minutes);
     } else {
       let num = parseInt(val) || 0;
       if (num < 0) num = 0;
       if (num > 59) num = 59;
       const formatted = String(num).padStart(2, '0');
-      setMinutes(formatted);
+      setTimeParts({ hours, minutes: formatted });
       updateTime(hours, formatted);
     }
   }

@@ -1,8 +1,8 @@
-import { Request, type Express } from 'express';
+import { type Express } from 'express';
 import wrapHandler, { Context } from '../middlewares/routeWrapper';
 import log from './logger';
 
-export type RouteHandler = (ctx: Context) => Promise<any>;
+export type RouteHandler = (ctx: Context) => Promise<unknown>;
 
 export interface Route {
   method: 'get' | 'post' | 'put' | 'delete';

@@ -19,9 +19,13 @@ export function BuildingRulesNotification({
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    if (isOpen) {
+    if (!isOpen) return;
+
+    const frame = requestAnimationFrame(() => {
       setIsVisible(true);
-    }
+    });
+
+    return () => cancelAnimationFrame(frame);
   }, [isOpen]);
 
   function handleClose() {

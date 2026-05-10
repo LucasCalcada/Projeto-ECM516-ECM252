@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import authMiddleware from './auth';
 
-export type WrappedRouteHandler = (req: Request, res: Response) => Promise<any>;
+export type WrappedRouteHandler = (req: Request, res: Response) => Promise<void>;
 
 export interface Context {
   req: Request;
@@ -11,7 +11,7 @@ export interface Context {
   };
 }
 
-export type RouteHandler = (req: Request, ctx: Context) => Promise<any>;
+export type RouteHandler = (req: Request, ctx: Context) => Promise<unknown>;
 
 export default function wrapHandler(handler: RouteHandler): WrappedRouteHandler {
   return async (req: Request, res: Response) => {

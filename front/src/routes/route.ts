@@ -1,4 +1,5 @@
 import type { LucideIcon } from 'lucide-react';
+import type { ComponentType } from 'react';
 
 export interface RouteDisplay {
   labelKey: string;
@@ -9,7 +10,7 @@ export type RouteLayout = 'sidebar' | 'none';
 
 interface RouteConfigBase {
   path: string;
-  viewComponent: any;
+  viewComponent: ComponentType;
   layout: RouteLayout;
 }
 

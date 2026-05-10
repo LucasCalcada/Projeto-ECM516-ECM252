@@ -6,7 +6,7 @@ export interface Context {
   setCookie: (name: string, value: string, options: CookieOptions) => void;
 }
 
-export type WrappedRouteHandler = (req: Request, res: Response) => Promise<any>;
+export type WrappedRouteHandler = (req: Request, res: Response) => Promise<void>;
 
 export default function wrapHandler(handler: RouteHandler): WrappedRouteHandler {
   return async (req: Request, res: Response) => {

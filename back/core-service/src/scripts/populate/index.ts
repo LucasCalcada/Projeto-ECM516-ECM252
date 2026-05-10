@@ -35,7 +35,7 @@ async function populateResidencies(data: PopulateResidency, groupId: string) {
   await Promise.all(data.users.map((u) => populateUsers(u, residencyRow.id, null)));
 }
 
-async function populateGroups(data: PopulateGroup, buildingId: any) {
+async function populateGroups(data: PopulateGroup, buildingId: string) {
   const { name } = data;
 
   const [groupRow] = await client
