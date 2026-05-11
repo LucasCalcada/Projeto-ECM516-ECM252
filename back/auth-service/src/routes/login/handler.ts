@@ -28,7 +28,7 @@ export default async function authenticateUser(ctx: Context) {
 
   const data = {
     tokenKind: 'account',
-    id: account.id,
+    accountId: account.id,
     email: account.email,
   };
 
