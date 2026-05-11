@@ -18,6 +18,9 @@ import buildingGetDeatails from './routes/building/details';
 // Account Routes
 import accountGet from './routes/account/get';
 
+// Auth Routes
+import authGet from './routes/authToken/get';
+
 registerRoute(pingRoute);
 
 // User Routes
@@ -35,3 +38,6 @@ registerRoute(buildingGetDeatails);
 
 // Account Routes
 registerRoute(accountGet);
+
+// Auth Routes
+registerRoute(authGet);
