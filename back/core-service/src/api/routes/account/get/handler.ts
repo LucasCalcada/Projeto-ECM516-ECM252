@@ -12,13 +12,8 @@ export default async function getAccountData(req: Request, ctx: Context) {
       userId: users.id,
       userName: users.name,
 
-      buildingId: buildings.id,
       buildingName: buildings.name,
-
-      groupId: groups.id,
       groupName: groups.name,
-
-      residencyId: residencies.id,
       residencyName: residencies.name,
       residencyCode: residencies.code,
     })
