@@ -6,6 +6,10 @@ const TOAST_DURATION = 2000;
 
 type ToastContextType = {
   notify: (title: string, message: string, mood: ToastMood) => void;
+  notifySuccess: (title: string, message: string) => void;
+  notifyWarning: (title: string, message: string) => void;
+  notifyInfo: (title: string, message: string) => void;
+  notifyError: (title: string, message: string) => void;
   stack: ToastData[];
 };
 
@@ -36,8 +40,17 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     }, TOAST_DURATION);
   }, []);
 
+  const context: ToastContextType = {
+    notify,
+    notifySuccess: (title: string, message: string) => notify(title, message, 'success'),
+    notifyInfo: (title: string, message: string) => notify(title, message, 'info'),
+    notifyWarning: (title: string, message: string) => notify(title, message, 'warning'),
+    notifyError: (title: string, message: string) => notify(title, message, 'error'),
+    stack,
+  };
+
   return (
-    <ToastContext.Provider value={{ notify, stack }}>
+    <ToastContext.Provider value={context}>
       {children}
       <ToastFrame />
     </ToastContext.Provider>
