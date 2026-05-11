@@ -3,10 +3,10 @@ import { buildings, groups, residencies, users } from '@app/db/schema';
 import { Context } from '@app/middlewares/routeWrapper';
 import { Request } from 'express';
 import { eq } from 'drizzle-orm';
-import { validateTokenKind } from '@app/helpers/validateTokenKind';
+import { assertAccountToken } from '@app/helpers/validateTokenKind';
 
 export default async function getAccountData(req: Request, ctx: Context) {
-  validateTokenKind(ctx.token, 'account');
+  assertAccountToken(ctx.token);
 
   const accountId = ctx.token.accountId;
 

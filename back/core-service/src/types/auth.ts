@@ -2,7 +2,7 @@ import { type JwtPayload } from 'jsonwebtoken';
 
 export type TokenKind = 'account' | 'user';
 
-interface UserToken {
+export interface UserToken {
   tokenKind: 'user';
   userId: string;
   buildingId: string;
@@ -10,7 +10,7 @@ interface UserToken {
   permissions: string[];
 }
 
-interface AccountToken {
+export interface AccountToken {
   tokenKind: 'account';
   accountId: string;
   email: string;
