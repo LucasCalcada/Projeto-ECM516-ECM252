@@ -3,9 +3,12 @@ import { buildings, groups, residencies, users } from '@app/db/schema';
 import { Context } from '@app/middlewares/routeWrapper';
 import { Request } from 'express';
 import { eq } from 'drizzle-orm';
+import { validateTokenKind } from '@app/helpers/validateTokenKind';
 
 export default async function getAccountData(req: Request, ctx: Context) {
-  const accountId = ctx.auth.accountId;
+  validateTokenKind(ctx.token, 'account');
+
+  const accountId = ctx.token.accountId;
 
   const result = await client
     .select({
