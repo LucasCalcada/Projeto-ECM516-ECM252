@@ -14,6 +14,7 @@ import Settings from '../views/Settings';
 import Portaria from '../views/Portaria';
 import Packages from '../views/Packages';
 import VisitorAccess from '../views/VisitorAccess';
+import BuildingSelector from '../views/BuildingSelector.tsx';
 import type { RouteConfig } from './route';
 
 const routes: RouteConfig[] = [
@@ -90,6 +91,12 @@ const routes: RouteConfig[] = [
   {
     path: '/login',
     viewComponent: Login,
+    layout: 'none',
+    visible: false,
+  },
+  {
+    path: '/buildingSelector',
+    viewComponent: BuildingSelector,
     layout: 'none',
     visible: false,
   },

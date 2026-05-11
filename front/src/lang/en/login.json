@@ -9,5 +9,18 @@
       "placeholder": "Enter your password"
     }
   },
-  "login": "Login"
+  "login": "Login",
+  "selector": {
+    "title": "Select Residence",
+    "error": {
+      "fetchError": {
+        "title": "Error",
+        "message": "Error fetching residences"
+      },
+      "selectionError": {
+        "title": "Error",
+        "message": "Error selecting residence"
+      }
+    }
+  }
 }

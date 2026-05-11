@@ -9,5 +9,18 @@
       "placeholder": "Digite sua senha"
     }
   },
-  "login": "Entrar"
+  "login": "Entrar",
+  "selector": {
+    "title": "Selecione a Residência",
+    "error": {
+      "fetchError": {
+        "title": "Erro",
+        "message": "Erro ao buscar residências"
+      },
+      "selectionError": {
+        "title": "Erro",
+        "message": "Erro ao selecionar residência"
+      }
+    }
+  }
 }

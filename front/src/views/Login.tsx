@@ -28,8 +28,8 @@ export default function Login() {
       });
       if (response.ok) {
         const data = await response.json();
-        localStorage.setItem('accessToken', data.accessToken);
-        navigate('/home');
+        localStorage.setItem('accountToken', data.token);
+        navigate('/buildingSelector');
       } else {
         const errorText = await response.text();
         setCredentialError(errorText);
