@@ -1,0 +1,19 @@
+POST http://localhost:8005/reservations
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+  "commonAreaId": "bbq",
+  "commonAreaName": "Churrasqueira",
+  "reservationDate": "2026-05-20"
+}
+
+###
+
+GET http://localhost:8005/reservations?commonAreaId=bbq
+Authorization: {{token}}
+
+###
+
+GET http://localhost:8005/reservations/my-apartment
+Authorization: {{token}}

@@ -10,6 +10,8 @@ services:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: adminPasswd
       POSTGRES_DB: coreDb
+    volumes:
+      - ./init-dbs.sql:/docker-entrypoint-initdb.d/init-dbs.sql
 
   db-dashboard:
     image: dpage/pgadmin4

@@ -1,0 +1,11 @@
+POST http://localhost:8003/access/register
+Content-Type: application/json 
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImE1ZjQ5ZWNjLWIzZTEtNGQ1ZC04N2RiLTU3NDI0ZWJkNzlmYiIsImVtYWlsIjoiam9hb0B0ZXN0ZS5jb20iLCJpYXQiOjE3NzgwMzAzNTMsImV4cCI6MTc3ODAzMzk1M30.RBaHmkTLNMWqXy_znsTc32Zc4BJnJRbQQBFzu_PuIJM 
+
+{
+    "residencyId": "30bc41f6-42a7-4aae-8788-5c6942c11406",
+    "rg": "123456789",
+    "cpf": "12345678900",
+    "name": "João Teste",
+    "entryAt": "2024-06-01T10:00:00Z"
+}

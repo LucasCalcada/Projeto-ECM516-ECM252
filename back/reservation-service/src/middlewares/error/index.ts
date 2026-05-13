@@ -19,6 +19,6 @@ export default function errorMiddleware(
     res.status(err.code).send({ message: err.message });
   } else {
     res.status(500).send({ message: 'Internal server error' });
-    console.log(err);
+    console.error('Unexpected error:', err);
   }
 }

@@ -1,0 +1,15 @@
+POST http://localhost:8002/packages
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImYzZTQ5NTA2LTFkODUtNGNkMC05OWNiLTE0MWNiMDljNjJmZiIsImVtYWlsIjoidGVzdGVAdGVzdGUuY29tIiwiaWF0IjoxNzc3OTI4MjU0LCJleHAiOjE3Nzc5MzE4NTR9.YeY9taVFEuwHPI9hICBuP8f4piOB4-HtsNL8w4Oo85c
+
+{
+    "residencyId": "f3d89360-bf96-45c7-af8c-bcc73f455d0c",
+    "description": "Pacote Amazon - Livro de Node.js - Teste"
+}
+###
+GET http://localhost:8002/packages/view
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImMzOTgwZjVlLWQ4OTYtNDM4Yy1hZThiLTkxNjFmNzM1NTMyMiIsImVtYWlsIjoidGVzdGVAZ21haWwuY29tIiwiaWF0IjoxNzc3NDkwNDU2LCJleHAiOjE3Nzc0OTQwNTZ9.Zurj_w9EZXvh924pGtuVlpftHhxk_doO4jCfpLwL450
+###
+PUT http://localhost:8002/packages
+Content-Type: application/json
+Authorization 
