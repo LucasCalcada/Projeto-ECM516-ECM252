@@ -35,6 +35,7 @@ export default function SelectUserPage() {
         t('login:selector.error.fetchError.title'),
         t('login:selector.error.fetchError.message'),
       );
+      console.error('Error fetching users:', error);
     }
   }
 

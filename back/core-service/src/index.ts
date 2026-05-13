@@ -5,8 +5,10 @@ import errorMiddleware from './middlewares/error';
 import './api';
 import log from './helpers/logger';
 import loggerMiddleware from './middlewares/logger';
+import cors from 'cors';
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 app.use(loggerMiddleware);
 setupRouter(app);
