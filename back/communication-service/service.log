@@ -1,0 +1,26 @@
+yarn workspace v1.22.22
+yarn run v1.22.22
+$ tsx src/index.ts
+[SETUP] Registered route post /posts
+[SETUP] Registered route get /posts/admin
+[SETUP] Registered route get /posts
+[SETUP] Registered route delete /posts/:id
+[SETUP] Communication-service started on port 8005
+[REQUEST] POST /posts
+[REQUEST] POST /posts
+[REQUEST] GET /posts
+[REQUEST] GET /posts/admin
+[REQUEST] GET /posts/admin
+[REQUEST] GET /posts
+[REQUEST] GET /posts
+[REQUEST] GET /posts
+[REQUEST] GET /posts
+[REQUEST] GET /posts
+[REQUEST] GET /posts
+[REQUEST] GET /posts
+[REQUEST] GET /posts
+[REQUEST] GET /posts
+[REQUEST] GET /posts
+[REQUEST] POST /posts
+[REQUEST] GET /posts
+[REQUEST] GET /posts

@@ -3,6 +3,7 @@ interface AppConfig {
   authUrl: string;
   deliveryUrl: string;
   visitorAccessUrl: string;
+  communicationUrl: string;
 }
 
 const config: AppConfig = {
@@ -10,6 +11,7 @@ const config: AppConfig = {
   authUrl: 'http://localhost:8001',
   deliveryUrl: 'http://localhost:8002',
   visitorAccessUrl: 'http://localhost:8003',
+  communicationUrl: 'http://localhost:8005',
 };
 
 export default config;
