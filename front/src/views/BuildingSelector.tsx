@@ -50,6 +50,14 @@ export default function SelectUserPage() {
       const token = response.data.token;
 
       localStorage.setItem('userToken', token);
+      localStorage.setItem('permissions', JSON.stringify(user.permissions ?? []));
+      if (user.residencyId) {
+        localStorage.setItem('residencyId', user.residencyId);
+      }
+
+      if (user.buildingId) {
+        localStorage.setItem('buildingId', user.buildingId);
+      }
       navigate('/home');
     } catch (error) {
       notifyError(

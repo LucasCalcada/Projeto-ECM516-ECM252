@@ -1,43 +1,11 @@
 import VisitorAccessForm from '../components/visitorAccess/VisitorAccessForm';
 import VisitorAccessResidencyList from '../components/visitorAccess/VisitorAccessResidencyList';
 
-interface VisitorAccessTokenPayload {
-  permissions?: string | string[];
-}
 
-function decodeTokenPayload(token: string) {
-  const payload = token.split('.')[1];
-
-  if (!payload) return null;
-
-  try {
-    const base64 = payload.replace(/-/g, '+').replace(/_/g, '/');
-    const json = decodeURIComponent(
-      atob(base64)
-        .split('')
-        .map((char) => `%${char.charCodeAt(0).toString(16).padStart(2, '0')}`)
-        .join(''),
-    );
-
-    return JSON.parse(json) as VisitorAccessTokenPayload;
-  } catch (error) {
-    console.error('Error ao decodificar token:', error);
-    return null;
-  }
-}
 
 function hasPermission(permission: string) {
-  const token = localStorage.getItem('userToken');
-  if (!token) return false;
-
-  const decoded = decodeTokenPayload(token);
-  const permissions = decoded?.permissions;
-
-  if (Array.isArray(permissions)) {
-    return permissions.includes(permission);
-  }
-
-  return permissions === permission;
+  const permissions = JSON.parse(localStorage.getItem('permissions') || '[]');
+  return permissions.includes(permission);
 }
 
 function VisitorAccessCreate() {
