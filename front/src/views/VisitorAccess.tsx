@@ -1,8 +1,6 @@
 import VisitorAccessForm from '../components/visitorAccess/VisitorAccessForm';
 import VisitorAccessResidencyList from '../components/visitorAccess/VisitorAccessResidencyList';
 
-
-
 function hasPermission(permission: string) {
   const permissions = JSON.parse(localStorage.getItem('permissions') || '[]');
   return permissions.includes(permission);
