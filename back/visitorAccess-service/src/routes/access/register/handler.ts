@@ -3,13 +3,12 @@ import { visitorAccesses } from '@app/db/schema/access';
 import BadRequest from '@app/middlewares/error/errors/BadRequest';
 import { Context } from '@app/middlewares/routeWrapper';
 import { Request } from 'express';
+import { getAccountData } from '../helpers';
 
 export default async function registerAccess(req: Request, ctx: Context) {
-  const { residencyId, rg, cpf, name, entryAt } = req.body;
+  const { rg, cpf, name, entryAt } = req.body;
 
-  const isMissing = [residencyId, rg, cpf, name].some(
-    (v) => v === undefined || v === null || v === '',
-  );
+  const isMissing = [rg, cpf, name].some((v) => v === undefined || v === null || v === '');
 
   if (isMissing) {
     throw BadRequest;
@@ -21,10 +20,14 @@ export default async function registerAccess(req: Request, ctx: Context) {
     throw BadRequest;
   }
 
+  const account = await getAccountData(ctx);
+
   const [created] = await client
     .insert(visitorAccesses)
     .values({
-      residencyId,
+      buildingId: account.buildingId,
+      residencyId: account.residencyId,
+      residencyName: account.residencyName,
       rg,
       cpf,
       name,

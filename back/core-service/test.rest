@@ -4,31 +4,31 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbktpbmQiOiJhY2NvdW50
 
 
 ###
-PUT http://localhost:8000/user/ecaf088d-f0ab-4256-abcf-e3765b2a62f7
+PUT http://localhost:8000/user/818d2c1f-8931-4d6c-9ddc-21a74418ed03
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbktpbmQiOiJhY2NvdW50IiwiYWNjb3VudElkIjoiYjJmYzJjMDgtYjQ5Zi00NzY0LWExNGMtYzIxZTUzYjQzZTg0IiwiZW1haWwiOiJqb2FvQHRlc3RlLmNvbSIsImlhdCI6MTc3ODgwNTY0NywiZXhwIjoxNzc4ODA5MjQ3fQ.9JIAJUf4p8YmKoxdhqfiVluoRG39nHvfQcYc5EuWitM
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbktpbmQiOiJhY2NvdW50IiwiYWNjb3VudElkIjoiOGNjMmY1NGItN2FkZS00ZDE4LTllMGYtNzc0ODQxODgxNmNiIiwiZW1haWwiOiJqb2FvQHRlc3RlLmNvbSIsImlhdCI6MTc3OTI0NzkxMiwiZXhwIjoxNzc5MjUxNTEyfQ.Mo-HLiBG2rhMakO5vfRFdW5Bzf0z75mGQPADNm3EBxE
 
 {
     "name": "João Teste",
-  "residencyId": "91d66671-1b6f-4db4-991e-e600302d2b1d",
-  "buildingId": "89c3d15f-6be4-4ff3-9604-5f1b9ffa5b92",
-  "permissions": [
-    "@Visitor:View"
-  ],
-  "accountId": "b2fc2c08-b49f-4764-a14c-c21e53b43e84"
+    "residencyId": "6fbff105-1fbb-4949-966e-8c53a1ab935e",
+    "buildingId": "985ca5a5-2159-43d9-9418-8e3a734ea622",
+    "permissions": [
+      "@Visitor:View"
+    ],
+    "accountId": "8cc2f54b-7ade-4d18-9e0f-7748418816cb"
 }
 
 ###
 POST http://localhost:8000/user
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbktpbmQiOiJhY2NvdW50IiwiYWNjb3VudElkIjoiYjJmYzJjMDgtYjQ5Zi00NzY0LWExNGMtYzIxZTUzYjQzZTg0IiwiZW1haWwiOiJqb2FvQHRlc3RlLmNvbSIsImlhdCI6MTc3ODgwNTY0NywiZXhwIjoxNzc4ODA5MjQ3fQ.9JIAJUf4p8YmKoxdhqfiVluoRG39nHvfQcYc5EuWitM
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbktpbmQiOiJhY2NvdW50IiwiYWNjb3VudElkIjoiOGNjMmY1NGItN2FkZS00ZDE4LTllMGYtNzc0ODQxODgxNmNiIiwiZW1haWwiOiJqb2FvQHRlc3RlLmNvbSIsImlhdCI6MTc3OTIzOTQzNCwiZXhwIjoxNzc5MjQzMDM0fQ.mmfFjQ_esKu5vyjL29EG6muKsV4eQ6PuJ0XCL66X_TU
 
 {
   "name": "João Teste",
-  "residencyId": "91d66671-1b6f-4db4-991e-e600302d2b1d",
-  "buildingId": "89c3d15f-6be4-4ff3-9604-5f1b9ffa5b92",
+  "residencyId": "6fbff105-1fbb-4949-966e-8c53a1ab935e",
+  "buildingId": "985ca5a5-2159-43d9-9418-8e3a734ea622",
   "permissions": [
     "@Visitor:Create"
   ],
-  "accountId": "b2fc2c08-b49f-4764-a14c-c21e53b43e84"
+  "accountId": "8cc2f54b-7ade-4d18-9e0f-7748418816cb"
 }

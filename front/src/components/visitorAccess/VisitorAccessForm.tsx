@@ -5,7 +5,6 @@ import { useToast } from '../Toast';
 import VisitorAccessHeader from './VisitorAccessHeader';
 
 interface AccessFormState {
-  residencyId: string;
   rg: string;
   cpf: string;
   name: string;
@@ -13,7 +12,6 @@ interface AccessFormState {
 }
 
 const initialForm: AccessFormState = {
-  residencyId: '',
   rg: '',
   cpf: '',
   name: '',
@@ -32,8 +30,8 @@ export default function VisitorAccessForm() {
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (!form.residencyId || !form.name || !form.cpf || !form.rg) {
-      notify('Campos obrigatorios', 'Preencha residencyId, nome, CPF e RG.', 'warning');
+    if (!form.name || !form.cpf || !form.rg) {
+      notify('Campos obrigatorios', 'Preencha nome, CPF e RG.', 'warning');
       return;
     }
 
@@ -43,10 +41,10 @@ export default function VisitorAccessForm() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+          Authorization: localStorage.getItem('accountToken') ?? '',
+          'X-User-Token': localStorage.getItem('userToken') ?? '',
         },
         body: JSON.stringify({
-          residencyId: form.residencyId,
           rg: form.rg,
           cpf: form.cpf,
           name: form.name,
@@ -80,15 +78,6 @@ export default function VisitorAccessForm() {
         </div>
 
         <form className="grid grid-cols-1 gap-3 md:grid-cols-2" onSubmit={handleSubmit}>
-          <label className="block md:col-span-2">
-            <span className="mb-1 block text-sm text-neutral-300">ResidencyId</span>
-            <input
-              className="w-full rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm"
-              value={form.residencyId}
-              onChange={(e) => updateForm('residencyId', e.target.value)}
-              placeholder="UUID da residencia"
-            />
-          </label>
           <label className="block">
             <span className="mb-1 block text-sm text-neutral-300">Nome</span>
             <input

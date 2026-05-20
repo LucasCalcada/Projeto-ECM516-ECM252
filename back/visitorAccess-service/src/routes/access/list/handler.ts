@@ -1,21 +1,16 @@
 import client from '@app/db/client';
 import { visitorAccesses } from '@app/db/schema/access';
-import BadRequest from '@app/middlewares/error/errors/BadRequest';
 import { Context } from '@app/middlewares/routeWrapper';
-import { eq } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 import { Request } from 'express';
+import { getAccountData } from '../helpers';
 
 export default async function listAccess(req: Request, ctx: Context) {
-  const residencyId = req.query.residencyId;
+  const account = await getAccountData(ctx);
 
-  if (!residencyId || Array.isArray(residencyId)) {
-    throw BadRequest;
-  }
-
-  const results = await client
+  return client
     .select()
     .from(visitorAccesses)
-    .where(eq(visitorAccesses.residencyId, residencyId));
-
-  return results;
+    .where(eq(visitorAccesses.buildingId, account.buildingId))
+    .orderBy(desc(visitorAccesses.entryAt));
 }

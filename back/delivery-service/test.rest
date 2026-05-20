@@ -1,14 +1,15 @@
 POST http://localhost:8002/packages
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImYzZTQ5NTA2LTFkODUtNGNkMC05OWNiLTE0MWNiMDljNjJmZiIsImVtYWlsIjoidGVzdGVAdGVzdGUuY29tIiwiaWF0IjoxNzc3OTI4MjU0LCJleHAiOjE3Nzc5MzE4NTR9.YeY9taVFEuwHPI9hICBuP8f4piOB4-HtsNL8w4Oo85c
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbktpbmQiOiJhY2NvdW50IiwiYWNjb3VudElkIjoiOGNjMmY1NGItN2FkZS00ZDE4LTllMGYtNzc0ODQxODgxNmNiIiwiZW1haWwiOiJqb2FvQHRlc3RlLmNvbSIsImlhdCI6MTc3OTIzOTQzNCwiZXhwIjoxNzc5MjQzMDM0fQ.mmfFjQ_esKu5vyjL29EG6muKsV4eQ6PuJ0XCL66X_TU
 
 {
-    "residencyId": "f3d89360-bf96-45c7-af8c-bcc73f455d0c",
+    "residencyId": "6fbff105-1fbb-4949-966e-8c53a1ab935e",
     "description": "Pacote Amazon - Livro de Node.js - Teste"
 }
+
 ###
 GET http://localhost:8002/packages/view
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImMzOTgwZjVlLWQ4OTYtNDM4Yy1hZThiLTkxNjFmNzM1NTMyMiIsImVtYWlsIjoidGVzdGVAZ21haWwuY29tIiwiaWF0IjoxNzc3NDkwNDU2LCJleHAiOjE3Nzc0OTQwNTZ9.Zurj_w9EZXvh924pGtuVlpftHhxk_doO4jCfpLwL450
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbktpbmQiOiJhY2NvdW50IiwiYWNjb3VudElkIjoiOGNjMmY1NGItN2FkZS00ZDE4LTllMGYtNzc0ODQxODgxNmNiIiwiZW1haWwiOiJqb2FvQHRlc3RlLmNvbSIsImlhdCI6MTc3OTI0NTQ2NiwiZXhwIjoxNzc5MjQ5MDY2fQ.KjfdwfT8y_Df1FH3ITXo3kSQFFvM6sOFlpF2Y8RYKAI
 ###
 PUT http://localhost:8002/packages
 Content-Type: application/json

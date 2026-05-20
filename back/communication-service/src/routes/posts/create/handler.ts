@@ -3,10 +3,7 @@ import { postRecipients, posts } from '@app/db/schema/post';
 import BadRequest from '@app/middlewares/error/errors/BadRequest';
 import { Context } from '@app/middlewares/routeWrapper';
 import { Request } from 'express';
-import {
-  MANAGE_COMMUNICATION_POSTS_PERMISSION,
-  requirePermission,
-} from '@app/helpers/permissions';
+import { MANAGE_COMMUNICATION_POSTS_PERMISSION, requirePermission } from '@app/helpers/permissions';
 import { mapPostsWithRecipients, parsePostPayload } from '@app/helpers/posts';
 
 export default async function createPost(req: Request, ctx: Context) {
