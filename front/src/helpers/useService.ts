@@ -1,7 +1,7 @@
 import axios, { type AxiosInstance } from 'axios';
 import config from '../config';
 
-type Service = 'auth' | 'core' | 'delivery' | 'visitor';
+type Service = 'auth' | 'core' | 'delivery' | 'visitor' | 'communication';
 
 const createAxios = (url: string) => {
   const instance = axios.create({
@@ -26,6 +26,7 @@ const serviceAxios: Record<Service, AxiosInstance> = {
   core: createAxios(config.coreUrl),
   delivery: createAxios(config.deliveryUrl),
   visitor: createAxios(config.visitorAccessUrl),
+  communication: createAxios(config.communicationUrl),
 };
 
 export default function useService(service: Service): AxiosInstance {
