@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
 import { ListChecks, RefreshCw } from 'lucide-react';
-import config from '../../config';
 import type { VisitorAccess } from '../../types/VisitorAccess';
 import { useToast } from '../Toast';
 import VisitorAccessHeader from './VisitorAccessHeader';
+import useService from '../../helpers/useService';
 
 function getResidencyLabel(access: VisitorAccess) {
   return access.residencyCode ?? access.residencyName ?? access.residencyId;
@@ -13,30 +13,20 @@ export default function VisitorAccessResidencyList() {
   const [accesses, setAccesses] = useState<VisitorAccess[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const { notify } = useToast();
+  const visitorService = useService('visitor');
 
   const fetchAccesses = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await fetch(`${config.visitorAccessUrl}/access`, {
-        headers: {
-          Authorization: localStorage.getItem('accountToken') ?? '',
-          'X-User-Token': localStorage.getItem('userToken') ?? '',
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error('Falha ao carregar acessos.');
-      }
-
-      const data = (await response.json()) as VisitorAccess[];
-      setAccesses(data);
+      const response = await visitorService.get<VisitorAccess[]>('/access');
+      setAccesses(response.data);
     } catch (error) {
       console.error(error);
       notify('Erro', 'Nao foi possivel listar os acessos.', 'error');
     } finally {
       setIsLoading(false);
     }
-  }, [notify]);
+  }, [notify, visitorService]);
 
   useEffect(() => {
     fetchAccesses();

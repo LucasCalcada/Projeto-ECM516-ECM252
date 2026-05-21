@@ -1,25 +1,23 @@
 import { Request, Response } from 'express';
-import authMiddleware from './auth';
+import { validateAuthToken } from './auth';
+import { AuthToken } from '@app/types/auth';
 
 export type WrappedRouteHandler = (req: Request, res: Response) => Promise<any>;
 
 export interface Context {
   req: Request;
-  auth: {
-    token: string;
-    accountId: string;
-  };
+  token: AuthToken;
 }
 
 export type RouteHandler = (req: Request, ctx: Context) => Promise<any>;
 
 export default function wrapHandler(handler: RouteHandler): WrappedRouteHandler {
   return async (req: Request, res: Response) => {
-    const auth = authMiddleware(req);
+    const authToken = validateAuthToken(req);
 
     const ctx: Context = {
       req,
-      auth,
+      token: authToken.token,
     };
 
     const response = await handler(req, ctx);
