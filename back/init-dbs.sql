@@ -1,0 +1,3 @@
+CREATE DATABASE "authDb";
+CREATE DATABASE "deliveryDb";
+CREATE DATABASE "reservationDb";

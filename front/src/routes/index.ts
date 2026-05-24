@@ -11,7 +11,6 @@ import Residents from '../views/Residents';
 import Login from '../views/Login';
 import Reservations from '../views/Reservations';
 import Settings from '../views/Settings';
-import Portaria from '../views/Portaria';
 import Packages from '../views/Packages';
 import VisitorAccess from '../views/VisitorAccess';
 import BuildingSelector from '../views/BuildingSelector.tsx';
@@ -46,16 +45,6 @@ const routes: RouteConfig[] = [
     display: {
       labelKey: 'sidebar.routes.reservations',
       icon: CalendarCheck2,
-    },
-  },
-  {
-    path: '/portaria',
-    viewComponent: Portaria,
-    layout: 'sidebar',
-    visible: true,
-    display: {
-      labelKey: 'sidebar.routes.portaria',
-      icon: ShieldCheck,
     },
   },
   {

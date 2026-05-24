@@ -4,6 +4,7 @@ import { Context } from '@app/middlewares/routeWrapper';
 import { Request } from 'express';
 import { eq } from 'drizzle-orm';
 import { assertAccountToken } from '@app/helpers/validateTokenKind';
+import { permission } from 'node:process';
 
 export default async function getAccountData(req: Request, ctx: Context) {
   assertAccountToken(ctx.token);
@@ -14,9 +15,11 @@ export default async function getAccountData(req: Request, ctx: Context) {
     .select({
       userId: users.id,
       userName: users.name,
-
+      permissions: users.permissions,
+      buildingId: users.buildingId,
       buildingName: buildings.name,
       groupName: groups.name,
+      residencyId: users.residencyId,
       residencyName: residencies.name,
       residencyCode: residencies.code,
     })

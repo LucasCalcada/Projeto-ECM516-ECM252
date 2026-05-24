@@ -11,7 +11,7 @@ export default function authMiddleware(req: Request): Context['auth'] {
 
   //TODO: use symmetric key for jwt validation
   const result = jwt.verify(token, config.jwtSecret) as JwtPayload;
-  const accountId = result['id'];
+  const accountId = result['accountId'];
 
   if (!accountId) throw Unauthorized;
 

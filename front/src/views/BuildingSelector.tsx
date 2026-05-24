@@ -35,6 +35,7 @@ export default function SelectUserPage() {
         t('login:selector.error.fetchError.title'),
         t('login:selector.error.fetchError.message'),
       );
+      console.error('Error fetching users:', error);
     }
   }
 
@@ -49,6 +50,7 @@ export default function SelectUserPage() {
       const token = response.data.token;
 
       localStorage.setItem('userToken', token);
+      localStorage.setItem('permissions', JSON.stringify(user.permissions ?? []));
       navigate('/home');
     } catch (error) {
       notifyError(

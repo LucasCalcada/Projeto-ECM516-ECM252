@@ -5,16 +5,16 @@ import config from '@app/config';
 import Unauthorized from './error/errors/Unauthorized';
 
 export default function authMiddleware(req: Request): Context['auth'] {
-  const header = req.headers['authorization'];
+  const token = req.headers['authorization'];
 
-  if (!header) throw Unauthorized;
-
-  const token = header.startsWith('Bearer ') ? header.slice(7) : header;
+  if (!token) throw Unauthorized;
 
   const result = jwt.verify(token, config.jwtSecret) as JwtPayload;
-  const accountId = result['id'];
+  const accountId = result['accountId'];
 
-  if (!accountId) throw Unauthorized;
+  if (result['tokenKind'] !== 'account' || typeof accountId !== 'string') {
+    throw Unauthorized;
+  }
 
   return {
     token,

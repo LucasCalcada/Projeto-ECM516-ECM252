@@ -1,0 +1,19 @@
+POST http://localhost:8005/reservations
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbktpbmQiOiJhY2NvdW50IiwiYWNjb3VudElkIjoiOTNjNjY5MTEtZmRhMi00MDRhLWEwYzUtNjJiNDBhOGJkNDgzIiwiZW1haWwiOiJqb2FvQHRlc3RlLmNvbSIsImlhdCI6MTc3ODY0MDc0NiwiZXhwIjoxNzc4NjQ0MzQ2fQ.Ijm1WiseBW0oFlMjovELooDf0wc__0XiKp3VApF-eTU
+Content-Type: application/json
+
+{
+  "commonAreaId": "bbq",
+  "commonAreaName": "Churrasqueira",
+  "reservationDate": "2026-05-20"
+}
+
+###
+
+GET http://localhost:8005/reservations?commonAreaId=bbq
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbktpbmQiOiJhY2NvdW50IiwiYWNjb3VudElkIjoiOTNjNjY5MTEtZmRhMi00MDRhLWEwYzUtNjJiNDBhOGJkNDgzIiwiZW1haWwiOiJqb2FvQHRlc3RlLmNvbSIsImlhdCI6MTc3ODY0MDc0NiwiZXhwIjoxNzc4NjQ0MzQ2fQ.Ijm1WiseBW0oFlMjovELooDf0wc__0XiKp3VApF-eTU
+
+###
+
+GET http://localhost:8005/reservations/my-apartment
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbktpbmQiOiJhY2NvdW50IiwiYWNjb3VudElkIjoiOTNjNjY5MTEtZmRhMi00MDRhLWEwYzUtNjJiNDBhOGJkNDgzIiwiZW1haWwiOiJqb2FvQHRlc3RlLmNvbSIsImlhdCI6MTc3ODY0MDc0NiwiZXhwIjoxNzc4NjQ0MzQ2fQ.Ijm1WiseBW0oFlMjovELooDf0wc__0XiKp3VApF-eTU

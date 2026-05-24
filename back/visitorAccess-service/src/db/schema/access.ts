@@ -3,7 +3,9 @@ import { pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 
 export const visitorAccesses = pgTable('visitor_accesses', {
   id: uuid('id').primaryKey().notNull().defaultRandom(),
+  buildingId: uuid('building_id').notNull(),
   residencyId: uuid('residency_id').notNull(),
+  residencyName: text('residency_name'),
   rg: text('rg').notNull(),
   cpf: text('cpf').notNull(),
   name: text('name').notNull(),

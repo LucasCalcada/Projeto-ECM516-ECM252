@@ -1,0 +1,34 @@
+GET http://localhost:8000/auth
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbktpbmQiOiJhY2NvdW50IiwiYWNjb3VudElkIjoiOTNjNjY5MTEtZmRhMi00MDRhLWEwYzUtNjJiNDBhOGJkNDgzIiwiZW1haWwiOiJqb2FvQHRlc3RlLmNvbSIsImlhdCI6MTc3ODY0MTMxNSwiZXhwIjoxNzc4NjQ0OTE1fQ.p8RWRHtOC9cfMuRrZgcoeZN0arJBSyxSeqXZrUAz1tY
+
+
+###
+PUT http://localhost:8000/user/818d2c1f-8931-4d6c-9ddc-21a74418ed03
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbktpbmQiOiJhY2NvdW50IiwiYWNjb3VudElkIjoiOGNjMmY1NGItN2FkZS00ZDE4LTllMGYtNzc0ODQxODgxNmNiIiwiZW1haWwiOiJqb2FvQHRlc3RlLmNvbSIsImlhdCI6MTc3OTI0NzkxMiwiZXhwIjoxNzc5MjUxNTEyfQ.Mo-HLiBG2rhMakO5vfRFdW5Bzf0z75mGQPADNm3EBxE
+
+{
+    "name": "João Teste",
+    "residencyId": "6fbff105-1fbb-4949-966e-8c53a1ab935e",
+    "buildingId": "985ca5a5-2159-43d9-9418-8e3a734ea622",
+    "permissions": [
+      "@Visitor:View"
+    ],
+    "accountId": "8cc2f54b-7ade-4d18-9e0f-7748418816cb"
+}
+
+###
+POST http://localhost:8000/user
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbktpbmQiOiJhY2NvdW50IiwiYWNjb3VudElkIjoiOGNjMmY1NGItN2FkZS00ZDE4LTllMGYtNzc0ODQxODgxNmNiIiwiZW1haWwiOiJqb2FvQHRlc3RlLmNvbSIsImlhdCI6MTc3OTIzOTQzNCwiZXhwIjoxNzc5MjQzMDM0fQ.mmfFjQ_esKu5vyjL29EG6muKsV4eQ6PuJ0XCL66X_TU
+
+{
+  "name": "João Teste",
+  "residencyId": "6fbff105-1fbb-4949-966e-8c53a1ab935e",
+  "buildingId": "985ca5a5-2159-43d9-9418-8e3a734ea622",
+  "permissions": [
+    "@Visitor:Create"
+  ],
+  "accountId": "8cc2f54b-7ade-4d18-9e0f-7748418816cb"
+}
