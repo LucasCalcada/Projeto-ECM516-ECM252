@@ -6,7 +6,6 @@ import { Request } from 'express';
 import { CREATE_VISITOR_PERMISSION, requirePermission } from '@app/helpers/permissions';
 
 export default async function registerAccess(req: Request, ctx: Context) {
-
   requirePermission(ctx, CREATE_VISITOR_PERMISSION);
 
   const { rg, cpf, name, entryAt } = req.body;
