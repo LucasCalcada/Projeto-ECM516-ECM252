@@ -3,10 +3,11 @@ import { visitorAccesses } from '@app/db/schema/access';
 import BadRequest from '@app/middlewares/error/errors/BadRequest';
 import { Context } from '@app/middlewares/routeWrapper';
 import { Request } from 'express';
-import { assertUserToken } from '@app/helpers/validateTokenKind';
+import { CREATE_VISITOR_PERMISSION, requirePermission } from '@app/helpers/permissions';
 
 export default async function registerAccess(req: Request, ctx: Context) {
-  assertUserToken(ctx.token);
+
+  requirePermission(ctx, CREATE_VISITOR_PERMISSION);
 
   const { rg, cpf, name, entryAt } = req.body;
 
@@ -25,9 +26,9 @@ export default async function registerAccess(req: Request, ctx: Context) {
   const [created] = await client
     .insert(visitorAccesses)
     .values({
-      buildingId: ctx.token.buildingId,
-      residencyId: ctx.token.residencyId,
-      residencyName: ctx.token.residencyName,
+      buildingId: ctx.auth.buildingId,
+      residencyId: ctx.auth.residencyId,
+      residencyName: ctx.auth.residencyName,
       rg,
       cpf,
       name,

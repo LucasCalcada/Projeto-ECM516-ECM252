@@ -1,21 +1,34 @@
 import { Request } from 'express';
-import jwt from 'jsonwebtoken';
+import { Context } from './routeWrapper';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import config from '@app/config';
 import Unauthorized from './error/errors/Unauthorized';
-import { AuthToken } from '@app/types/auth';
 
-export function validateAuthToken(req: Request) {
-  const header = req.headers['authorization'];
+interface UserToken extends JwtPayload {
+  tokenKind: 'user';
+  userId: string;
+  buildingId: string;
+  residencyId: string;
+  residencyName?: string;
+  permissions?: string[];
+}
 
-  if (!header) throw Unauthorized;
+export default function authMiddleware(req: Request): Context['auth'] {
+  const authorization = req.headers['authorization'];
 
-  const token = header.startsWith('Bearer ') ? header.slice(7) : header;
-  const result = jwt.verify(token, config.jwtSecret) as AuthToken;
+  if (!authorization) throw Unauthorized;
 
-  if (!result.tokenKind) throw Unauthorized;
+  const token = authorization.replace(/^Bearer\s+/i, '');
+  const result = jwt.verify(token, config.jwtSecret) as UserToken;
+
+  if (result.tokenKind !== 'user' || !result.userId || !result.buildingId) throw Unauthorized;
 
   return {
-    tokenKind: result.tokenKind,
-    token: result,
+    token,
+    userId: result.userId,
+    buildingId: result.buildingId,
+    residencyId: result.residencyId,
+    residencyName: result.residencyName ?? null,
+    permissions: result.permissions ?? [],
   };
 }

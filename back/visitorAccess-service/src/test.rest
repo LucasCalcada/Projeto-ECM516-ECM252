@@ -1,12 +1,15 @@
 POST http://localhost:8003/access/register
 Content-Type: application/json 
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImE1ZjQ5ZWNjLWIzZTEtNGQ1ZC04N2RiLTU3NDI0ZWJkNzlmYiIsImVtYWlsIjoiam9hb0B0ZXN0ZS5jb20iLCJpYXQiOjE3NzgwMzAzNTMsImV4cCI6MTc3ODAzMzk1M30.RBaHmkTLNMWqXy_znsTc32Zc4BJnJRbQQBFzu_PuIJM 
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbktpbmQiOiJ1c2VyIiwidXNlcklkIjoiODE4ZDJjMWYtODkzMS00ZDZjLTlkZGMtMjFhNzQ0MThlZDAzIiwiYnVpbGRpbmdJZCI6Ijk4NWNhNWE1LTIxNTktNDNkOS05NDE4LThlM2E3MzRlYTYyMiIsInJlc2lkZW5jeUlkIjoiNmZiZmYxMDUtMWZiYi00OTQ5LTk2NmUtOGM1M2ExYWI5MzVlIiwicmVzaWRlbmN5TmFtZSI6IkFwdCAwMkEiLCJwZXJtaXNzaW9ucyI6WyJAVmlzaXRvcjpWaWV3Il0sImlhdCI6MTc3OTc2MTIwOCwiZXhwIjoxNzc5NzY0ODA4fQ.kovYkkUtHL0N0X57ZuIJLCIi-0YOcQrBJCEv_AYM6oE 
 
 {
-    "buildingId": "30bc41f6-42a7-4aae-8788-5c6942c11406",
-    "residencyId": "30bc41f6-42a7-4aae-8788-5c6942c11406",
     "rg": "123456789",
     "cpf": "12345678900",
     "name": "João Teste",
     "entryAt": "2024-06-01T10:00:00Z"
 }
+###
+GET http://localhost:8003/access
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbktpbmQiOiJ1c2VyIiwidXNlcklkIjoiODE4ZDJjMWYtODkzMS00ZDZjLTlkZGMtMjFhNzQ0MThlZDAzIiwiYnVpbGRpbmdJZCI6Ijk4NWNhNWE1LTIxNTktNDNkOS05NDE4LThlM2E3MzRlYTYyMiIsInJlc2lkZW5jeUlkIjoiNmZiZmYxMDUtMWZiYi00OTQ5LTk2NmUtOGM1M2ExYWI5MzVlIiwicmVzaWRlbmN5TmFtZSI6IkFwdCAwMkEiLCJwZXJtaXNzaW9ucyI6WyJAVmlzaXRvcjpWaWV3Il0sImlhdCI6MTc3OTc2MTIwOCwiZXhwIjoxNzc5NzY0ODA4fQ.kovYkkUtHL0N0X57ZuIJLCIi-0YOcQrBJCEv_AYM6oE
+
