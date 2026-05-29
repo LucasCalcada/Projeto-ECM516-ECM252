@@ -1,28 +1,65 @@
-import axios from 'axios';
 import deliveryDb from '../../../db/client';
 import { packages } from '../../../db/schema/package';
+import {
+  VIEW_BUILDING_PERMISSION,
+  VIEW_RESIDENCY_PERMISSION,
+  hasPermission,
+  requirePermission,
+} from '@app/helpers/permissions';
+import Unauthorized from '@app/middlewares/error/errors/Unauthorized';
 import { Context } from '@app/middlewares/routeWrapper';
 import { Request } from 'express';
-import { eq } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 
-export default async function getPackages(req: Request, ctx: Context) {
-  const coreResponse = await axios.get('http://localhost:8000/account', {
-    headers: {
-      Authorization: req.headers.authorization,
-    },
-  });
-
-  const userData = coreResponse.data[0];
-  const residencyId = userData?.residencyId;
-
-  if (!residencyId) {
-    return [];
+function requireResidencyId(ctx: Context) {
+  if (!ctx.auth.residencyId) {
+    throw Unauthorized;
   }
 
-  const result = await deliveryDb
+  return ctx.auth.residencyId;
+}
+
+export default async function getPackages(req: Request, ctx: Context) {
+  const scope = req.query.scope;
+
+  if (scope === 'building') {
+    requirePermission(ctx, VIEW_BUILDING_PERMISSION);
+    return deliveryDb
+      .select()
+      .from(packages)
+      .where(eq(packages.buildingId, ctx.auth.buildingId))
+      .orderBy(desc(packages.createdAt));
+  }
+
+  if (scope === 'residency') {
+    requirePermission(ctx, VIEW_RESIDENCY_PERMISSION);
+    const residencyId = requireResidencyId(ctx);
+
+    return deliveryDb
+      .select()
+      .from(packages)
+      .where(eq(packages.residencyId, residencyId))
+      .orderBy(desc(packages.createdAt));
+  }
+
+  if (scope !== undefined) {
+    throw Unauthorized;
+  }
+
+  if (hasPermission(ctx, VIEW_BUILDING_PERMISSION)) {
+    return deliveryDb
+      .select()
+      .from(packages)
+      .where(eq(packages.buildingId, ctx.auth.buildingId))
+      .orderBy(desc(packages.createdAt));
+  }
+
+  requirePermission(ctx, VIEW_RESIDENCY_PERMISSION);
+  const residencyId = requireResidencyId(ctx);
+
+  return deliveryDb
     .select()
     .from(packages)
-    .where(eq(packages.residencyId, residencyId));
-
-  return result;
+    .where(eq(packages.residencyId, residencyId))
+    .orderBy(desc(packages.createdAt));
 }

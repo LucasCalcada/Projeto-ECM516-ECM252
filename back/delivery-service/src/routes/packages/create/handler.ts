@@ -1,13 +1,32 @@
 import client from '@app/db/client';
 import { packages } from '@app/db/schema/package';
-import e, { Request } from 'express';
+import { CREATE_DELIVERY_PERMISSION, requirePermission } from '@app/helpers/permissions';
+import { resolveResidencyByName } from '@app/helpers/residencies';
+import BadRequest from '@app/middlewares/error/errors/BadRequest';
+import { Context } from '@app/middlewares/routeWrapper';
+import { Request } from 'express';
 
-export async function createPackage(req: Request) {
-  const { residencyId, description } = req.body;
+export async function createPackage(req: Request, ctx: Context) {
+  requirePermission(ctx, CREATE_DELIVERY_PERMISSION);
+
+  const { residencyName, description } = req.body;
+
+  if (!residencyName || !description) {
+    throw BadRequest;
+  }
+
+  const residency = await resolveResidencyByName(
+    ctx.auth.buildingId,
+    residencyName,
+    ctx.auth.token,
+  );
+
   const [newPackage] = await client
     .insert(packages)
     .values({
-      residencyId,
+      buildingId: ctx.auth.buildingId,
+      residencyId: residency.residencyId,
+      residencyName: residency.residencyName,
       description,
       status: 'PENDING',
     })
@@ -22,6 +41,7 @@ export async function createPackage(req: Request) {
         data: {
           packageId: newPackage.id,
           residencyId: newPackage.residencyId,
+          residencyName: newPackage.residencyName,
           description: newPackage.description,
         },
       }),
