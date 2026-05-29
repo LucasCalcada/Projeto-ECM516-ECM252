@@ -40,7 +40,7 @@ export async function resolveResidencyByName(
     `${config.coreServiceUrl}/building/${buildingId}/details`,
     {
       headers: {
-        Authorization: token,
+        Authorization: `Bearer ${token}`,
       },
     },
   );

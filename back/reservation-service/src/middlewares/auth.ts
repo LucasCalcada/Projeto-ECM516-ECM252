@@ -6,7 +6,8 @@ import Unauthorized from './error/errors/Unauthorized';
 
 function normalizeAuthorizationHeader(header: string | undefined): string {
   if (!header) throw Unauthorized;
-  return header.startsWith('Bearer ') ? header.slice('Bearer '.length) : header;
+  if (!header.startsWith('Bearer ')) throw Unauthorized;
+  return header.slice('Bearer '.length);
 }
 
 export default function authMiddleware(req: Request): Context['auth'] {

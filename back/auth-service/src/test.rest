@@ -2,9 +2,9 @@ POST http://localhost:8001/auth/account
 Content-Type: application/json
 
 {
-  "name": "João Teste",
-  "email": "joao@teste.com",
-  "phone": "11987654321",
+  "name": "Teste",
+  "email": "teste@teste.com",
+  "phone": "119876543",
   "password": "123"
 }
 
@@ -14,5 +14,14 @@ Content-Type: application/json
 
 {
   "email": "joao@teste.com",
+  "password": "123"
+}
+
+###
+POST http://localhost:8001/auth/login
+Content-Type: application/json
+
+{
+  "email": "teste@teste.com",
   "password": "123"
 }

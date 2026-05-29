@@ -12,6 +12,7 @@ export default function Options() {
     localStorage.removeItem('permissions');
     localStorage.removeItem('buildingId');
     localStorage.removeItem('residencyId');
+    localStorage.removeItem('residencyName');
     localStorage.removeItem('accessToken');
     localStorage.removeItem('userProfile');
 
