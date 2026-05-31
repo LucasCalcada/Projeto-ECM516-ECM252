@@ -2,25 +2,34 @@ export interface EventSubscriber {
   eventName: string;
   subscriberUrl: string;
 }
-const registry: Set<EventSubscriber> = new Set();
+
+const registry = new Map<string, Set<string>>();
 
 export function subscribe(subscriber: EventSubscriber) {
-  registry.add(subscriber);
+  const subscribers = registry.get(subscriber.eventName) ?? new Set<string>();
+  subscribers.add(subscriber.subscriberUrl);
+  registry.set(subscriber.eventName, subscribers);
 }
 
 export function unsubscribe(subscriber: EventSubscriber) {
-  registry.delete(subscriber);
+  const subscribers = registry.get(subscriber.eventName);
+
+  if (!subscribers) {
+    return;
+  }
+
+  subscribers.delete(subscriber.subscriberUrl);
+
+  if (subscribers.size === 0) {
+    registry.delete(subscriber.eventName);
+  }
 }
 
 export function getEventTargets(event: string) {
-  const targets: EventSubscriber[] = [];
-  for (const s of registry) {
-    if (s.eventName != event) {
-      continue;
-    }
+  const subscribers = registry.get(event) ?? new Set<string>();
 
-    targets.push(s);
-  }
-
-  return targets;
+  return [...subscribers].map((subscriberUrl) => ({
+    eventName: event,
+    subscriberUrl,
+  }));
 }

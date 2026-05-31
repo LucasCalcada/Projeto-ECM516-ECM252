@@ -6,11 +6,13 @@ import './api';
 import log from './helpers/logger';
 import loggerMiddleware from './middlewares/logger';
 import cors from 'cors';
+import setupInternalResidencyRoutes from './internal/residencies';
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(loggerMiddleware);
+setupInternalResidencyRoutes(app);
 setupRouter(app);
 app.use(errorMiddleware);
 

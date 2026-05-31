@@ -4,6 +4,8 @@ import { CREATE_DELIVERY_PERMISSION, requirePermission } from '@app/helpers/perm
 import { resolveResidencyByName } from '@app/helpers/residencies';
 import BadRequest from '@app/middlewares/error/errors/BadRequest';
 import { Context } from '@app/middlewares/routeWrapper';
+import config from '@app/config';
+import { randomUUID } from 'crypto';
 import { Request } from 'express';
 
 export async function createPackage(req: Request, ctx: Context) {
@@ -33,19 +35,26 @@ export async function createPackage(req: Request, ctx: Context) {
     .returning();
 
   try {
-    await fetch('http://localhost:8004/publish', {
+    const eventBusResponse = await fetch(`${config.eventBusUrl}/events/PACKAGE_ARRIVED/publish`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        event: 'PACKAGE_ARRIVED',
+        eventId: randomUUID(),
+        occurredAt: new Date().toISOString(),
         data: {
           packageId: newPackage.id,
+          buildingId: newPackage.buildingId,
           residencyId: newPackage.residencyId,
           residencyName: newPackage.residencyName,
           description: newPackage.description,
+          authorUserId: ctx.auth.userId,
         },
       }),
     });
+
+    if (!eventBusResponse.ok) {
+      throw new Error(`Event Bus returned ${eventBusResponse.status}`);
+    }
   } catch (error) {
     console.error('Falha ao comunicar com o Event Bus', error);
   }
