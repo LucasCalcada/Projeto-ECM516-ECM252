@@ -14,7 +14,7 @@
     "db:init:core": "yarn workspace core-service db:init",
     "db:init:delivery": "yarn workspace delivery-service db:init",
     "db:init:reservation": "yarn workspace reservation-service db:init",
-    "db:init:visitor": "yarn workspace visitorAccess-service db:init",
+    "db:init:visitor": "yarn workspace visitor-service db:init",
     "db:init": "yarn db:init:auth && yarn db:init:core && yarn db:init:delivery && yarn db:init:reservation && yarn db:init:visitor"
   },
   "devDependencies": {
