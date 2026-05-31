@@ -8,7 +8,9 @@
     "build": "tsc",
     "start": "tsx src/index.ts",
     "db:generate": "yarn drizzle-kit generate",
-    "db:migrate": "yarn drizzle-kit migrate"
+    "db:migrate": "yarn drizzle-kit migrate",
+    "db:populate": "tsx src/scripts/populate/index.ts",
+    "db:init": "yarn db:generate && yarn db:migrate && yarn db:populate"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",

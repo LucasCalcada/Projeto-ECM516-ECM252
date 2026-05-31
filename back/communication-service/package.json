@@ -8,7 +8,8 @@
     "build": "tsc",
     "start": "tsx src/index.ts",
     "db:generate": "yarn drizzle-kit generate",
-    "db:migrate": "yarn drizzle-kit migrate"
+    "db:migrate": "yarn drizzle-kit migrate",
+    "db:init": "yarn db:generate && yarn db:migrate"
   },
   "dependencies": {
     "cors": "^2.8.6",
