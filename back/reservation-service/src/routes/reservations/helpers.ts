@@ -16,7 +16,7 @@ export interface AccountData {
 export async function getAccountData(ctx: Context): Promise<AccountData> {
   const coreResponse = await axios.get(`${config.coreUrl}/account`, {
     headers: {
-      Authorization: ctx.auth.token,
+      Authorization: `Bearer ${ctx.auth.token}`,
     },
   });
 

@@ -7,7 +7,11 @@ export interface Context {
   req: Request;
   auth: {
     token: string;
-    accountId: string;
+    userId: string;
+    buildingId: string;
+    residencyId: string;
+    residencyName: string | null;
+    permissions: string[];
   };
 }
 
@@ -25,7 +29,7 @@ export default function wrapHandler(handler: RouteHandler): WrappedRouteHandler 
     const response = await handler(req, ctx);
 
     res.status(200);
-    if (response !== undefined) {
+    if (response != undefined) {
       res.send(response);
     }
   };

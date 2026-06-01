@@ -58,5 +58,6 @@ export function mapApiReservation(reservation: ApiReservation): Reservation {
 }
 
 export function getAccessToken(): string {
-  return localStorage.getItem('accessToken') ?? '';
+  const token = localStorage.getItem('accessToken') ?? localStorage.getItem('accountToken');
+  return token ? `Bearer ${token}` : '';
 }

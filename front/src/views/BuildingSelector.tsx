@@ -19,7 +19,7 @@ export default function SelectUserPage() {
   const axiosInstance = axios.create({
     baseURL: config.coreUrl,
     headers: {
-      Authorization: token,
+      Authorization: token ? `Bearer ${token}` : undefined,
     },
   });
 
@@ -51,6 +51,25 @@ export default function SelectUserPage() {
 
       localStorage.setItem('userToken', token);
       localStorage.setItem('permissions', JSON.stringify(user.permissions ?? []));
+
+      if (user.buildingId) {
+        localStorage.setItem('buildingId', user.buildingId);
+      } else {
+        localStorage.removeItem('buildingId');
+      }
+
+      if (user.residencyId) {
+        localStorage.setItem('residencyId', user.residencyId);
+      } else {
+        localStorage.removeItem('residencyId');
+      }
+
+      if (user.residencyName) {
+        localStorage.setItem('residencyName', user.residencyName);
+      } else {
+        localStorage.removeItem('residencyName');
+      }
+
       navigate('/home');
     } catch (error) {
       notifyError(

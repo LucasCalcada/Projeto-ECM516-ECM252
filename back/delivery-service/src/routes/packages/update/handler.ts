@@ -1,38 +1,47 @@
-// back/delivery-service/src/routes/packages/update/handler.ts
 import deliveryDb from '../../../db/client';
 import { packages } from '../../../db/schema/package';
+import { VIEW_RESIDENCY_PERMISSION, requirePermission } from '@app/helpers/permissions';
+import BadRequest from '@app/middlewares/error/errors/BadRequest';
+import NotFoundError from '@app/middlewares/error/errors/NotFoundError';
 import { Context } from '@app/middlewares/routeWrapper';
+import { and, eq } from 'drizzle-orm';
 import { Request } from 'express';
-import { eq } from 'drizzle-orm';
+
+function requireResidencyId(ctx: Context) {
+  if (!ctx.auth.residencyId) {
+    throw BadRequest;
+  }
+
+  return ctx.auth.residencyId;
+}
 
 export default async function updatePackageStatus(req: Request, ctx: Context) {
-  const { packageId, status } = req.body;
-  if (!packageId || !status) {
-    throw new Error('O ID da encomenda e o novo status são obrigatórios.');
-  }
+  requirePermission(ctx, VIEW_RESIDENCY_PERMISSION);
+  const residencyId = requireResidencyId(ctx);
 
-  const validStatuses = ['PENDING', 'DELIVERED', 'RETURNED'];
-  if (!validStatuses.includes(status)) {
-    throw new Error(`Status inválido. Use um dos seguintes: ${validStatuses.join(', ')}`);
-  }
-
-  const updateData: Partial<typeof packages.$inferInsert> = {
-    status: status,
-  };
-
-  if (status === 'DELIVERED') {
-    updateData.deliveredAt = new Date();
+  const { packageId } = req.body;
+  if (!packageId) {
+    throw BadRequest;
   }
 
   const result = await deliveryDb
     .update(packages)
-    .set(updateData)
-    .where(eq(packages.id, packageId))
+    .set({
+      status: 'DELIVERED',
+      deliveredAt: new Date(),
+    })
+    .where(
+      and(
+        eq(packages.id, packageId),
+        eq(packages.buildingId, ctx.auth.buildingId),
+        eq(packages.residencyId, residencyId),
+      ),
+    )
     .returning();
 
   if (result.length === 0) {
-    throw new Error('Encomenda não encontrada.');
+    throw NotFoundError;
   }
+
   return result[0];
 }
-//TODO: Testes kkkkk

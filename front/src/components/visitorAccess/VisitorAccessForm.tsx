@@ -1,8 +1,8 @@
 import { type FormEvent, useState } from 'react';
 import { UserPlus } from 'lucide-react';
-import config from '../../config';
 import { useToast } from '../Toast';
 import VisitorAccessHeader from './VisitorAccessHeader';
+import useService from '../../helpers/useService';
 
 interface AccessFormState {
   rg: string;
@@ -22,6 +22,7 @@ export default function VisitorAccessForm() {
   const [form, setForm] = useState<AccessFormState>(initialForm);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { notify } = useToast();
+  const visitorService = useService('visitor');
 
   function updateForm<K extends keyof AccessFormState>(key: K, value: AccessFormState[K]) {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -37,25 +38,12 @@ export default function VisitorAccessForm() {
 
     setIsSubmitting(true);
     try {
-      const response = await fetch(`${config.visitorAccessUrl}/access/register`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: localStorage.getItem('accountToken') ?? '',
-          'X-User-Token': localStorage.getItem('userToken') ?? '',
-        },
-        body: JSON.stringify({
-          rg: form.rg,
-          cpf: form.cpf,
-          name: form.name,
-          entryAt: form.entryAt || undefined,
-        }),
+      await visitorService.post('/access/register', {
+        rg: form.rg,
+        cpf: form.cpf,
+        name: form.name,
+        entryAt: form.entryAt || undefined,
       });
-
-      if (!response.ok) {
-        const message = await response.text();
-        throw new Error(message || 'Falha ao registrar acesso.');
-      }
 
       notify('Acesso registrado', 'Entrada registrada com sucesso.', 'success');
       setForm(initialForm);
