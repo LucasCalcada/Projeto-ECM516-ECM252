@@ -5,6 +5,7 @@
   "scripts": {
     "build": "tsc",
     "start": "tsx src/index.ts",
+    "start:watch": "tsx watch src/index.ts",
     "db:generate": "yarn drizzle-kit generate",
     "db:migrate": "yarn drizzle-kit migrate",
     "db:populate": "tsx src/scripts/populate/index.ts",
