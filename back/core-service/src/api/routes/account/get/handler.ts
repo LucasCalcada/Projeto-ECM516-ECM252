@@ -1,10 +1,9 @@
 import client from '@app/db/client';
-import { buildings, groups, residencies, users } from '@app/db/schema';
+import { buildings, users } from '@app/db/schema';
 import { Context } from '@app/middlewares/routeWrapper';
 import { Request } from 'express';
 import { eq } from 'drizzle-orm';
 import { assertAccountToken } from '@app/helpers/validateTokenKind';
-import { permission } from 'node:process';
 
 export default async function getAccountData(req: Request, ctx: Context) {
   assertAccountToken(ctx.token);
@@ -15,18 +14,11 @@ export default async function getAccountData(req: Request, ctx: Context) {
     .select({
       userId: users.id,
       userName: users.name,
-      permissions: users.permissions,
       buildingId: users.buildingId,
       buildingName: buildings.name,
-      groupName: groups.name,
-      residencyId: users.residencyId,
-      residencyName: residencies.name,
-      residencyCode: residencies.code,
     })
     .from(users)
-    .leftJoin(residencies, eq(users.residencyId, residencies.id))
-    .leftJoin(groups, eq(residencies.groupId, groups.id))
-    .leftJoin(buildings, eq(groups.building, buildings.id))
+    .leftJoin(buildings, eq(users.buildingId, buildings.id))
     .where(eq(users.accountId, accountId));
 
   return result;
