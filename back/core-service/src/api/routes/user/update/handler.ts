@@ -1,9 +1,11 @@
 import BadRequest from '@app/api/error/errors/BadRequest';
 import NotFoundError from '@app/api/error/errors/NotFoundError';
 import client from '@app/db/client';
-import { users } from '@app/db/schema';
+import { buildings, users } from '@app/db/schema';
+import { requirePermission } from '@app/helpers/requirePermission';
 import { Context } from '@app/middlewares/routeWrapper';
-import { eq } from 'drizzle-orm';
+import { UserManagePermission } from '@app/permissions';
+import { and, eq } from 'drizzle-orm';
 import { Request } from 'express';
 import _ from 'lodash';
 
@@ -19,6 +21,13 @@ export default async function userUpdate(req: Request, ctx: Context) {
     throw NotFoundError;
   }
 
+  const isSelf: boolean = ctx.token.userId;
+
+  // Require UserManager permission if user is trying to update another
+  if (!isSelf) {
+    requirePermission(ctx, UserManagePermission);
+  }
+
   const fields = ctx.token.userId === id ? AllowedUpdateFields.self : AllowedUpdateFields.other;
   const updatedFields = _.pick(req.body, fields);
 
@@ -26,7 +35,8 @@ export default async function userUpdate(req: Request, ctx: Context) {
     throw BadRequest;
   }
 
-  const [user] = await client.update(users).set(updatedFields).where(eq(users.id, id)).returning();
+  const filter = and(eq(buildings.id, ctx.token.buildingId), eq(users.id, id));
+  const [user] = await client.update(users).set(updatedFields).where(filter).returning();
 
   return { user };
 }
