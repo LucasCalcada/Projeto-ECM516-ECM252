@@ -6,18 +6,12 @@ import {
   type Reservation,
   type ReservationApiResponse,
 } from '../../types/Reservation';
-import { BuildingRulesNotification } from '../home/widgets/buildingRulesNotification';
 import { ReservationCalendar } from '../home/widgets/reservationCalendar';
 import useService from '../../helpers/useService';
 
 interface NewReservationForm {
   commonAreaId: string;
   date: string;
-}
-
-interface ReservationCalendarPanelProps {
-  canCreate?: boolean;
-  onReservationCreated?: (reservation: Reservation) => void;
 }
 
 function getHttpStatus(error: unknown) {
@@ -37,10 +31,7 @@ function formatReservationDate(date: string): string {
   });
 }
 
-export default function ReservationCalendarPanel({
-  canCreate = true,
-  onReservationCreated,
-}: ReservationCalendarPanelProps) {
+export default function ReservationCalendarPanel() {
   const { t } = useTranslation();
   const reservationService = useService('reservation');
 
@@ -48,12 +39,6 @@ export default function ReservationCalendarPanel({
   const [isCalendarLoading, setIsCalendarLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedback, setFeedback] = useState<string>('');
-  const [showRulesModal, setShowRulesModal] = useState(false);
-  const [lastReservation, setLastReservation] = useState<{
-    residentName: string;
-    commonAreaName: string;
-    reservationDate: string;
-  } | null>(null);
   const [form, setForm] = useState<NewReservationForm>({
     commonAreaId: commonAreas[0]?.id ?? '',
     date: '',
@@ -110,13 +95,7 @@ export default function ReservationCalendarPanel({
 
       const reservation = mapReservationApiResponse(response.data);
       setCalendarReservations((prev) => [...prev, reservation]);
-      onReservationCreated?.(reservation);
-      setLastReservation({
-        residentName: reservation.residentName,
-        commonAreaName: reservation.commonAreaName,
-        reservationDate: reservation.date,
-      });
-      setShowRulesModal(true);
+      setFeedback('Reserva registrada com sucesso.');
       setForm((prev) => ({ ...prev, date: '' }));
     } catch (error) {
       if (getHttpStatus(error) === 409) {
@@ -134,9 +113,7 @@ export default function ReservationCalendarPanel({
   return (
     <section className="flex min-h-0 flex-col overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900/40 p-3">
       <div className="mb-3 shrink-0">
-        <h2 className="mb-2 text-base font-semibold">
-          {canCreate ? 'Nova reserva' : 'Calendario da area'}
-        </h2>
+        <h2 className="mb-2 text-base font-semibold">Nova reserva</h2>
         <form
           className="grid gap-2 md:grid-cols-[minmax(0,1fr)_minmax(170px,auto)_auto]"
           onSubmit={onSubmit}
@@ -158,7 +135,7 @@ export default function ReservationCalendarPanel({
             </select>
           </label>
 
-          {canCreate && selectedArea ? (
+          {selectedArea ? (
             <div className="rounded-md border border-neutral-800 bg-neutral-950 px-3 py-2 text-sm text-neutral-300">
               <span className="mb-1 block text-xs text-neutral-400">
                 {t('reservations:form.date')}
@@ -169,15 +146,13 @@ export default function ReservationCalendarPanel({
             </div>
           ) : null}
 
-          {canCreate ? (
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="h-10 self-end rounded-md bg-neutral-100 px-4 text-sm font-medium text-neutral-900 transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {isSubmitting ? 'Aguarde...' : t('reservations:form.confirm')}
-            </button>
-          ) : null}
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="h-10 self-end rounded-md bg-neutral-100 px-4 text-sm font-medium text-neutral-900 transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {isSubmitting ? 'Aguarde...' : t('reservations:form.confirm')}
+          </button>
         </form>
 
         {feedback ? <p className="mt-3 text-sm text-neutral-300">{feedback}</p> : null}
@@ -202,23 +177,9 @@ export default function ReservationCalendarPanel({
           reservations={calendarReservations}
           commonAreaId={form.commonAreaId}
           selectedDate={form.date}
-          onDateSelect={(date) => {
-            if (canCreate) {
-              setForm((prev) => ({ ...prev, date }));
-            }
-          }}
+          onDateSelect={(date) => setForm((prev) => ({ ...prev, date }))}
         />
       </div>
-
-      {lastReservation && (
-        <BuildingRulesNotification
-          isOpen={showRulesModal}
-          onClose={() => setShowRulesModal(false)}
-          residentName={lastReservation.residentName}
-          commonAreaName={lastReservation.commonAreaName}
-          reservationDate={lastReservation.reservationDate}
-        />
-      )}
     </section>
   );
 }

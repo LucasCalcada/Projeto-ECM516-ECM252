@@ -6,10 +6,6 @@ import {
 } from '../../types/Reservation';
 import useService from '../../helpers/useService';
 
-interface FutureReservationsListProps {
-  createdReservation: Reservation | null;
-}
-
 function formatReservationDate(date: string): string {
   return new Date(`${date}T00:00:00`).toLocaleDateString('pt-BR', {
     day: '2-digit',
@@ -41,9 +37,7 @@ function getTimeUntilReservation(dateStr: string): string {
   return `Em ${months} mes${months > 1 ? 'es' : ''}`;
 }
 
-export default function FutureReservationsList({
-  createdReservation,
-}: FutureReservationsListProps) {
+export default function FutureReservationsList() {
   const reservationService = useService('reservation');
   const [myReservations, setMyReservations] = useState<Reservation[]>([]);
   const [isMyReservationsLoading, setIsMyReservationsLoading] = useState(false);
@@ -75,15 +69,6 @@ export default function FutureReservationsList({
 
     fetchMyReservations();
   }, [reservationService]);
-
-  useEffect(() => {
-    if (!createdReservation) return;
-
-    setMyReservations((prev) => {
-      const alreadyAdded = prev.some((reservation) => reservation.id === createdReservation.id);
-      return alreadyAdded ? prev : [...prev, createdReservation];
-    });
-  }, [createdReservation]);
 
   return (
     <section className="flex min-h-0 flex-col overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900/40 p-3">

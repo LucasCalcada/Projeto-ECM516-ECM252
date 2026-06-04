@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Building2, CalendarCheck2, Home } from 'lucide-react';
+import BuildingReservationsList from '../components/reservations/BuildingReservationsList';
 import FutureReservationsList from '../components/reservations/FutureReservationsList';
 import ReservationCalendarPanel from '../components/reservations/ReservationCalendarPanel';
-import type { Reservation } from '../types/Reservation';
 
 type ReservationViewMode = 'create' | 'building' | 'residency';
 
@@ -46,7 +46,7 @@ const titleByMode: Record<ReservationViewMode, string> = {
 
 const descriptionByMode: Record<ReservationViewMode, string> = {
   create: 'Escolha uma area comum e uma data disponivel.',
-  building: 'Consulte as datas ocupadas por area comum.',
+  building: 'Veja as reservas por area comum.',
   residency: 'Acompanhe as proximas reservas da sua unidade.',
 };
 
@@ -106,19 +106,9 @@ function ReservationsHeader({
 }
 
 function ReservationsCreate() {
-  const [createdReservation, setCreatedReservation] = useState<Reservation | null>(null);
-  const canViewResidencyReservations = hasPermission(VIEW_RESIDENCY_RESERVATION_PERMISSION);
-
   return (
-    <div
-      className={`grid min-h-0 flex-1 grid-cols-1 gap-3 ${
-        canViewResidencyReservations ? 'lg:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)]' : ''
-      }`}
-    >
-      <ReservationCalendarPanel canCreate onReservationCreated={setCreatedReservation} />
-      {canViewResidencyReservations ? (
-        <FutureReservationsList createdReservation={createdReservation} />
-      ) : null}
+    <div className="min-h-0 flex-1">
+      <ReservationCalendarPanel />
     </div>
   );
 }
@@ -126,7 +116,7 @@ function ReservationsCreate() {
 function ReservationsBuildingView() {
   return (
     <div className="min-h-0 flex-1">
-      <ReservationCalendarPanel canCreate={false} />
+      <BuildingReservationsList />
     </div>
   );
 }
@@ -134,7 +124,7 @@ function ReservationsBuildingView() {
 function ReservationsResidencyView() {
   return (
     <div className="min-h-0 flex-1">
-      <FutureReservationsList createdReservation={null} />
+      <FutureReservationsList />
     </div>
   );
 }
