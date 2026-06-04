@@ -1,21 +1,50 @@
 import { useEffect, useMemo, useState } from 'react';
-import config from '../../config';
-import type { Reservation } from '../../types/Reservation';
 import {
-  type ApiReservation,
-  formatReservationDate,
-  getAccessToken,
-  getTimeUntilReservation,
-  mapApiReservation,
-} from './reservationHelpers';
+  mapReservationApiResponse,
+  type Reservation,
+  type ReservationApiResponse,
+} from '../../types/Reservation';
+import useService from '../../helpers/useService';
 
 interface FutureReservationsListProps {
   createdReservation: Reservation | null;
 }
 
+function formatReservationDate(date: string): string {
+  return new Date(`${date}T00:00:00`).toLocaleDateString('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  });
+}
+
+function getTimeUntilReservation(dateStr: string): string {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const targetDate = new Date(`${dateStr}T00:00:00`);
+  targetDate.setHours(0, 0, 0, 0);
+
+  const diffTime = targetDate.getTime() - today.getTime();
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+  if (diffDays < 0) return 'Passada';
+  if (diffDays === 0) return 'Hoje';
+  if (diffDays === 1) return 'Amanha';
+  if (diffDays < 7) return `Em ${diffDays} dias`;
+  if (diffDays < 30) {
+    const weeks = Math.floor(diffDays / 7);
+    return `Em ${weeks} semana${weeks > 1 ? 's' : ''}`;
+  }
+
+  const months = Math.floor(diffDays / 30);
+  return `Em ${months} mes${months > 1 ? 'es' : ''}`;
+}
+
 export default function FutureReservationsList({
   createdReservation,
 }: FutureReservationsListProps) {
+  const reservationService = useService('reservation');
   const [myReservations, setMyReservations] = useState<Reservation[]>([]);
   const [isMyReservationsLoading, setIsMyReservationsLoading] = useState(false);
   const [myReservationsFeedback, setMyReservationsFeedback] = useState<string>('');
@@ -32,18 +61,10 @@ export default function FutureReservationsList({
         setIsMyReservationsLoading(true);
         setMyReservationsFeedback('');
 
-        const response = await fetch(`${config.reservationUrl}/reservations/my-apartment`, {
-          headers: {
-            Authorization: getAccessToken(),
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error('Erro ao carregar reservas do apartamento.');
-        }
-
-        const data = (await response.json()) as ApiReservation[];
-        setMyReservations(data.map(mapApiReservation));
+        const response = await reservationService.get<ReservationApiResponse[]>(
+          '/reservations/my-apartment',
+        );
+        setMyReservations(response.data.map(mapReservationApiResponse));
       } catch (error) {
         console.error('Erro ao buscar reservas do apartamento:', error);
         setMyReservationsFeedback('Não foi possível carregar suas futuras reservas.');
@@ -53,7 +74,7 @@ export default function FutureReservationsList({
     }
 
     fetchMyReservations();
-  }, []);
+  }, [reservationService]);
 
   useEffect(() => {
     if (!createdReservation) return;

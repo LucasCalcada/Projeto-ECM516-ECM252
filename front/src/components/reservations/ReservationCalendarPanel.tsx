@@ -1,16 +1,14 @@
 import { type FormEvent, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import config from '../../config';
 import commonAreas from '../../mockedData/commonAreas';
-import type { Reservation } from '../../types/Reservation';
+import {
+  mapReservationApiResponse,
+  type Reservation,
+  type ReservationApiResponse,
+} from '../../types/Reservation';
 import { BuildingRulesNotification } from '../home/widgets/buildingRulesNotification';
 import { ReservationCalendar } from '../home/widgets/reservationCalendar';
-import {
-  type ApiReservation,
-  formatReservationDate,
-  getAccessToken,
-  mapApiReservation,
-} from './reservationHelpers';
+import useService from '../../helpers/useService';
 
 interface NewReservationForm {
   commonAreaId: string;
@@ -18,13 +16,33 @@ interface NewReservationForm {
 }
 
 interface ReservationCalendarPanelProps {
-  onReservationCreated: (reservation: Reservation) => void;
+  canCreate?: boolean;
+  onReservationCreated?: (reservation: Reservation) => void;
+}
+
+function getHttpStatus(error: unknown) {
+  if (typeof error !== 'object' || error === null || !('response' in error)) {
+    return undefined;
+  }
+
+  const response = (error as { response?: { status?: number } }).response;
+  return response?.status;
+}
+
+function formatReservationDate(date: string): string {
+  return new Date(`${date}T00:00:00`).toLocaleDateString('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  });
 }
 
 export default function ReservationCalendarPanel({
+  canCreate = true,
   onReservationCreated,
 }: ReservationCalendarPanelProps) {
   const { t } = useTranslation();
+  const reservationService = useService('reservation');
 
   const [calendarReservations, setCalendarReservations] = useState<Reservation[]>([]);
   const [isCalendarLoading, setIsCalendarLoading] = useState(false);
@@ -51,21 +69,13 @@ export default function ReservationCalendarPanel({
         setIsCalendarLoading(true);
         setFeedback('');
 
-        const response = await fetch(
-          `${config.reservationUrl}/reservations?commonAreaId=${encodeURIComponent(form.commonAreaId)}`,
-          {
-            headers: {
-              Authorization: getAccessToken(),
-            },
+        const response = await reservationService.get<ReservationApiResponse[]>('/reservations', {
+          params: {
+            commonAreaId: form.commonAreaId,
           },
-        );
+        });
 
-        if (!response.ok) {
-          throw new Error('Erro ao carregar reservas.');
-        }
-
-        const data = (await response.json()) as ApiReservation[];
-        setCalendarReservations(data.map(mapApiReservation));
+        setCalendarReservations(response.data.map(mapReservationApiResponse));
       } catch (error) {
         console.error('Erro ao buscar reservas:', error);
       } finally {
@@ -74,7 +84,7 @@ export default function ReservationCalendarPanel({
     }
 
     fetchReservations();
-  }, [form.commonAreaId]);
+  }, [form.commonAreaId, reservationService]);
 
   function onCommonAreaChange(commonAreaId: string) {
     setForm({ commonAreaId, date: '' });
@@ -92,31 +102,15 @@ export default function ReservationCalendarPanel({
       setIsSubmitting(true);
       setFeedback('');
 
-      const response = await fetch(`${config.reservationUrl}/reservations`, {
-        method: 'POST',
-        headers: {
-          Authorization: getAccessToken(),
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          commonAreaId: selectedArea.id,
-          commonAreaName: selectedArea.name,
-          reservationDate: form.date,
-        }),
+      const response = await reservationService.post<ReservationApiResponse>('/reservations', {
+        commonAreaId: selectedArea.id,
+        commonAreaName: selectedArea.name,
+        reservationDate: form.date,
       });
 
-      if (response.status === 409) {
-        setFeedback('Este dia ja foi reservado. Escolha outra data.');
-        return;
-      }
-
-      if (!response.ok) {
-        throw new Error('Erro ao criar reserva.');
-      }
-
-      const reservation = mapApiReservation((await response.json()) as ApiReservation);
+      const reservation = mapReservationApiResponse(response.data);
       setCalendarReservations((prev) => [...prev, reservation]);
-      onReservationCreated(reservation);
+      onReservationCreated?.(reservation);
       setLastReservation({
         residentName: reservation.residentName,
         commonAreaName: reservation.commonAreaName,
@@ -125,6 +119,11 @@ export default function ReservationCalendarPanel({
       setShowRulesModal(true);
       setForm((prev) => ({ ...prev, date: '' }));
     } catch (error) {
+      if (getHttpStatus(error) === 409) {
+        setFeedback('Este dia ja foi reservado. Escolha outra data.');
+        return;
+      }
+
       console.error('Erro ao criar reserva:', error);
       setFeedback('Nao foi possivel criar a reserva. Tente novamente mais tarde.');
     } finally {
@@ -135,7 +134,9 @@ export default function ReservationCalendarPanel({
   return (
     <section className="flex min-h-0 flex-col overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900/40 p-3">
       <div className="mb-3 shrink-0">
-        <h2 className="mb-2 text-base font-semibold">Nova reserva</h2>
+        <h2 className="mb-2 text-base font-semibold">
+          {canCreate ? 'Nova reserva' : 'Calendario da area'}
+        </h2>
         <form
           className="grid gap-2 md:grid-cols-[minmax(0,1fr)_minmax(170px,auto)_auto]"
           onSubmit={onSubmit}
@@ -157,7 +158,7 @@ export default function ReservationCalendarPanel({
             </select>
           </label>
 
-          {selectedArea ? (
+          {canCreate && selectedArea ? (
             <div className="rounded-md border border-neutral-800 bg-neutral-950 px-3 py-2 text-sm text-neutral-300">
               <span className="mb-1 block text-xs text-neutral-400">
                 {t('reservations:form.date')}
@@ -168,13 +169,15 @@ export default function ReservationCalendarPanel({
             </div>
           ) : null}
 
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="h-10 self-end rounded-md bg-neutral-100 px-4 text-sm font-medium text-neutral-900 transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {isSubmitting ? 'Aguarde...' : t('reservations:form.confirm')}
-          </button>
+          {canCreate ? (
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="h-10 self-end rounded-md bg-neutral-100 px-4 text-sm font-medium text-neutral-900 transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {isSubmitting ? 'Aguarde...' : t('reservations:form.confirm')}
+            </button>
+          ) : null}
         </form>
 
         {feedback ? <p className="mt-3 text-sm text-neutral-300">{feedback}</p> : null}
@@ -199,7 +202,11 @@ export default function ReservationCalendarPanel({
           reservations={calendarReservations}
           commonAreaId={form.commonAreaId}
           selectedDate={form.date}
-          onDateSelect={(date) => setForm((prev) => ({ ...prev, date }))}
+          onDateSelect={(date) => {
+            if (canCreate) {
+              setForm((prev) => ({ ...prev, date }));
+            }
+          }}
         />
       </div>
 
