@@ -10,6 +10,11 @@ import userDelete from './routes/user/delete';
 // Residency Routes
 import addResident from './routes/residency/addResident';
 import removeResident from './routes/residency/removeResident';
+import listResidencyByGroup from './routes/residency/list';
+
+// Group Routes
+import groupList from './routes/groups/list';
+import groupGet from './routes/groups/get';
 
 // Building Routes
 import buildingGet from './routes/building/get';
@@ -31,6 +36,11 @@ registerRoute(userUpdate);
 // Residency Routes
 registerRoute(addResident);
 registerRoute(removeResident);
+registerRoute(listResidencyByGroup);
+
+// Group Routes
+registerRoute(groupGet);
+registerRoute(groupList);
 
 // Building Routes
 registerRoute(buildingGet);
