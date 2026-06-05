@@ -17,7 +17,7 @@ export default async function getGroups(req: Request, ctx: Context) {
     .where(eq(groups.id, groupId as string));
 
   // Check if group is on users' building
-  if (group.building === ctx.token.buildingId) {
+  if (group.building !== ctx.token.buildingId) {
     throw NotFoundError;
   }
 
