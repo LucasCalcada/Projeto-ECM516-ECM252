@@ -92,7 +92,7 @@ export default function FutureReservationsList() {
         !isMyReservationsLoading &&
         upcomingMyReservations.length === 0 ? (
           <p className="text-sm text-neutral-400">
-            Seu apartamento ainda nao possui reservas futuras.
+            Seu apartamento ainda não possui reservas futuras.
           </p>
         ) : null}
 

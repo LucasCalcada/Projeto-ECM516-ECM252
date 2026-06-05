@@ -6,10 +6,6 @@ export interface Reservation {
   commonAreaId: string;
   commonAreaName: string;
   date: string; // yyyy-mm-dd
-  startTime: string; // HH:mm
-  endTime: string; // HH:mm
-  notes?: string;
-  status: ReservationStatus;
 }
 
 export interface ReservationApiResponse {
@@ -27,8 +23,5 @@ export function mapReservationApiResponse(reservation: ReservationApiResponse): 
     commonAreaId: reservation.commonAreaId,
     commonAreaName: reservation.commonAreaName,
     date: reservation.reservationDate,
-    startTime: '00:00',
-    endTime: '23:59',
-    status: 'confirmed',
   };
 }

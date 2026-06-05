@@ -8,6 +8,7 @@ import {
 } from '../../types/Reservation';
 import { ReservationCalendar } from '../home/widgets/reservationCalendar';
 import useService from '../../helpers/useService';
+import { useToast } from '../Toast';
 
 interface NewReservationForm {
   commonAreaId: string;
@@ -39,6 +40,7 @@ export default function ReservationCalendarPanel() {
   const [isCalendarLoading, setIsCalendarLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedback, setFeedback] = useState<string>('');
+  const { notifySuccess } = useToast();
   const [form, setForm] = useState<NewReservationForm>({
     commonAreaId: commonAreas[0]?.id ?? '',
     date: '',
@@ -95,16 +97,16 @@ export default function ReservationCalendarPanel() {
 
       const reservation = mapReservationApiResponse(response.data);
       setCalendarReservations((prev) => [...prev, reservation]);
-      setFeedback('Reserva registrada com sucesso.');
+      notifySuccess('Reserva', 'Reserva registrada com sucesso.');
       setForm((prev) => ({ ...prev, date: '' }));
     } catch (error) {
       if (getHttpStatus(error) === 409) {
-        setFeedback('Este dia ja foi reservado. Escolha outra data.');
+        setFeedback('Este dia já foi reservado. Escolha outra data.');
         return;
       }
 
       console.error('Erro ao criar reserva:', error);
-      setFeedback('Nao foi possivel criar a reserva. Tente novamente mais tarde.');
+      setFeedback('Não foi possível criar a reserva. Tente novamente mais tarde.');
     } finally {
       setIsSubmitting(false);
     }
@@ -141,7 +143,7 @@ export default function ReservationCalendarPanel() {
                 {t('reservations:form.date')}
               </span>
               <p className={form.date ? 'text-neutral-100' : 'text-neutral-500'}>
-                {form.date ? formatReservationDate(form.date) : 'Selecione no calendario'}
+                {form.date ? formatReservationDate(form.date) : 'Selecione no calendário'}
               </p>
             </div>
           ) : null}
@@ -160,9 +162,9 @@ export default function ReservationCalendarPanel() {
 
       <div className="mb-2 flex shrink-0 flex-wrap items-start justify-between gap-2">
         <div>
-          <h2 className="text-base font-semibold">Calendario da area</h2>
+          <h2 className="text-base font-semibold">Calendário da área</h2>
           <p className="text-xs text-neutral-400">
-            Dias marcados em vermelho ja estao reservados para {selectedArea?.name}.
+            Dias marcados em vermelho já estão reservados para {selectedArea?.name}.
           </p>
         </div>
         {isCalendarLoading ? (

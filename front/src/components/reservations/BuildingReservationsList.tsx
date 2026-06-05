@@ -39,8 +39,8 @@ export default function BuildingReservationsList() {
 
         setReservations(response.data);
       } catch (error) {
-        console.error('Erro ao buscar reservas do predio:', error);
-        setFeedback('Nao foi possivel carregar as reservas desta area comum.');
+        console.error('Erro ao buscar reservas do prédio:', error);
+        setFeedback('Não foi possível carregar as reservas desta área comum.');
       } finally {
         setIsLoading(false);
       }
@@ -53,7 +53,7 @@ export default function BuildingReservationsList() {
     <section className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900/40 p-3">
       <div className="mb-4 flex shrink-0 flex-wrap items-end justify-between gap-3">
         <label className="block w-full max-w-sm">
-          <span className="mb-1 block text-sm text-neutral-300">Area comum</span>
+          <span className="mb-1 block text-sm text-neutral-300">Área comum</span>
           <select
             className="h-10 w-full rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm"
             value={commonAreaId}

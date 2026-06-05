@@ -28,7 +28,7 @@ function getAvailableViews() {
   }
 
   if (hasPermission(VIEW_BUILDING_RESERVATION_PERMISSION)) {
-    options.push({ mode: 'building', label: 'Predio' });
+    options.push({ mode: 'building', label: 'Prédio' });
   }
 
   if (hasPermission(VIEW_RESIDENCY_RESERVATION_PERMISSION)) {
@@ -40,14 +40,14 @@ function getAvailableViews() {
 
 const titleByMode: Record<ReservationViewMode, string> = {
   create: 'Registrar reserva',
-  building: 'Reservas do predio',
+  building: 'Reservas do prédio',
   residency: 'Minhas reservas',
 };
 
 const descriptionByMode: Record<ReservationViewMode, string> = {
-  create: 'Escolha uma area comum e uma data disponivel.',
-  building: 'Veja as reservas por area comum.',
-  residency: 'Acompanhe as proximas reservas da sua unidade.',
+  create: 'Escolha uma área comum e uma data disponível.',
+  building: 'Veja as reservas por área comum.',
+  residency: 'Acompanhe as próximas reservas da sua unidade.',
 };
 
 const iconByMode = {
