@@ -16,6 +16,7 @@ export default async function getAccountData(req: Request, ctx: Context) {
       userName: users.name,
       buildingId: users.buildingId,
       buildingName: buildings.name,
+      permissions: users.permissions,
     })
     .from(users)
     .leftJoin(buildings, eq(users.buildingId, buildings.id))
