@@ -1,7 +1,6 @@
 import { type FormEvent, useState } from 'react';
 import { UserPlus } from 'lucide-react';
 import { useToast } from '../Toast';
-import VisitorAccessHeader from './VisitorAccessHeader';
 import useService from '../../helpers/useService';
 
 interface AccessFormState {
@@ -56,61 +55,57 @@ export default function VisitorAccessForm() {
   }
 
   return (
-    <div className="h-full overflow-auto p-4 md:p-8">
-      <VisitorAccessHeader outletName="Registrar visita" />
+    <section className="rounded-lg border border-neutral-800 bg-neutral-900/40 p-4">
+      <div className="mb-4 flex items-center gap-2 text-neutral-100">
+        <UserPlus size={18} />
+        <h2 className="text-lg font-semibold">Registrar entrada</h2>
+      </div>
 
-      <section className="rounded-lg border border-neutral-800 bg-neutral-900/40 p-4">
-        <div className="mb-4 flex items-center gap-2 text-neutral-100">
-          <UserPlus size={18} />
-          <h2 className="text-lg font-semibold">Registrar entrada</h2>
-        </div>
-
-        <form className="grid grid-cols-1 gap-3 md:grid-cols-2" onSubmit={handleSubmit}>
-          <label className="block">
-            <span className="mb-1 block text-sm text-neutral-300">Nome</span>
-            <input
-              className="w-full rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm"
-              value={form.name}
-              onChange={(e) => updateForm('name', e.target.value)}
-              placeholder="Ex.: Joao da Silva"
-            />
-          </label>
-          <label className="block">
-            <span className="mb-1 block text-sm text-neutral-300">CPF</span>
-            <input
-              className="w-full rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm"
-              value={form.cpf}
-              onChange={(e) => updateForm('cpf', e.target.value)}
-              placeholder="000.000.000-00"
-            />
-          </label>
-          <label className="block">
-            <span className="mb-1 block text-sm text-neutral-300">RG</span>
-            <input
-              className="w-full rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm"
-              value={form.rg}
-              onChange={(e) => updateForm('rg', e.target.value)}
-              placeholder="00.000.000-0"
-            />
-          </label>
-          <label className="block">
-            <span className="mb-1 block text-sm text-neutral-300">Data e hora</span>
-            <input
-              type="datetime-local"
-              className="w-full rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm"
-              value={form.entryAt}
-              onChange={(e) => updateForm('entryAt', e.target.value)}
-            />
-          </label>
-          <button
-            type="submit"
-            className="rounded-md bg-cyan-300 px-3 py-2 text-sm font-semibold text-neutral-950 transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-60 md:col-span-2"
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? 'Registrando...' : 'Registrar acesso'}
-          </button>
-        </form>
-      </section>
-    </div>
+      <form className="grid grid-cols-1 gap-3 md:grid-cols-2" onSubmit={handleSubmit}>
+        <label className="block">
+          <span className="mb-1 block text-sm text-neutral-300">Nome</span>
+          <input
+            className="w-full rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm"
+            value={form.name}
+            onChange={(e) => updateForm('name', e.target.value)}
+            placeholder="Ex.: Joao da Silva"
+          />
+        </label>
+        <label className="block">
+          <span className="mb-1 block text-sm text-neutral-300">CPF</span>
+          <input
+            className="w-full rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm"
+            value={form.cpf}
+            onChange={(e) => updateForm('cpf', e.target.value)}
+            placeholder="000.000.000-00"
+          />
+        </label>
+        <label className="block">
+          <span className="mb-1 block text-sm text-neutral-300">RG</span>
+          <input
+            className="w-full rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm"
+            value={form.rg}
+            onChange={(e) => updateForm('rg', e.target.value)}
+            placeholder="00.000.000-0"
+          />
+        </label>
+        <label className="block">
+          <span className="mb-1 block text-sm text-neutral-300">Data e hora</span>
+          <input
+            type="datetime-local"
+            className="w-full rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm"
+            value={form.entryAt}
+            onChange={(e) => updateForm('entryAt', e.target.value)}
+          />
+        </label>
+        <button
+          type="submit"
+          className="rounded-md bg-cyan-300 px-3 py-2 text-sm font-semibold text-neutral-950 transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-60 md:col-span-2"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? 'Registrando...' : 'Registrar acesso'}
+        </button>
+      </form>
+    </section>
   );
 }
