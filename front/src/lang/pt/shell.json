@@ -14,6 +14,9 @@
       "logout": "Desconectar"
     }
   },
+  "residents": {
+    "title": "{{buildingName}} - Moradores"
+  },
   "settings": {
     "title": "Configurações",
     "subtitle": "Gerencie suas preferências e perfil",

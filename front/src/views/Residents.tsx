@@ -1,67 +1,38 @@
 import { useTranslation } from 'react-i18next';
-import { ChevronRight } from 'lucide-react';
 import useService from '../helpers/useService';
 import { useEffect, useState } from 'react';
-
-interface RowEntry {
-  id: string;
-  name: string;
-  groupName: string;
-  residencyName: string;
-}
-
-function Row(props: RowEntry) {
-  const { t } = useTranslation();
-
-  return (
-    <div className="flex flex-1">
-      <p className="flex-4">{props.name}</p>
-      <p className="flex-1">{props.groupName}</p>
-      <p className="flex-1">{props.residencyName}</p>
-      <ChevronRight />
-    </div>
-  );
-}
-
-function TableData(props: { data: RowEntry[] }) {
-  if (props.data.length) {
-    return (
-      <div>
-        <p>No data</p>
-      </div>
-    );
-  }
-
-  return <div></div>;
-}
+import GroupRow from '../components/residents/GroupRow';
+import type { Group } from '../types/Core';
+import { LucideUsers } from 'lucide-react';
 
 function Residents() {
   const { t } = useTranslation();
-  const [loading, setLoading] = useState(true);
-  const [tableData, setTableData] = useState([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [groups, setGroups] = useState<Group[]>([]);
 
-  async function fetchData() {
+  async function fetchGroups() {
     setLoading(true);
     const coreService = useService('core');
-    const buildingId = localStorage.getItem('buildingId');
-    const { data } = await coreService.get(`/building/${buildingId}/details`);
+    const { data } = await coreService.get(`/groups`);
     setLoading(false);
-    const concatData = [...data.residentData, ...data.remainingData] as RowEntry[];
-    setTableData(concatData);
+    setGroups(data.groups);
   }
+
   useEffect(() => {
-    fetchData();
+    fetchGroups();
   }, []);
 
+  const content = loading ? <></> : groups.map((g) => <GroupRow group={g} />);
+
+  const buildingName = localStorage.getItem('buildingName');
+
   return (
-    <main className="">
-      <div className="flex flex-1">
-        <p className="flex-4">{t('common:name')}</p>
-        <p className="flex-1">{t('common:group')}</p>
-        <p className="flex-1">{t('common:residency')}</p>
-        <div></div>
+    <main className="h-full w-full p-4">
+      <div className="mb-4 flex items-center gap-4 text-2xl font-bold">
+        <LucideUsers size={24} />
+        <h1>{t('shell:residents.title', { buildingName })}</h1>
       </div>
-      {loading ? <></> : <TableData data={tableData} />}
+      <div className="flex flex-col gap-2">{content}</div>
     </main>
   );
 }
