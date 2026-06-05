@@ -58,6 +58,12 @@ export default function SelectUserPage() {
         localStorage.removeItem('buildingId');
       }
 
+      if (user.buildingName) {
+        localStorage.setItem('buildingName', user.buildingName);
+      } else {
+        localStorage.removeItem('buildingName');
+      }
+
       if (user.residencyId) {
         localStorage.setItem('residencyId', user.residencyId);
       } else {
