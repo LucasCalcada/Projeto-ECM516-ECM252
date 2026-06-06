@@ -6,7 +6,7 @@ import { Request } from 'express';
 import { VIEW_VISITOR_PERMISSION, requirePermission } from '@app/helpers/permissions';
 
 export default async function listAccess(req: Request, ctx: Context) {
-  requirePermission(ctx, VIEW_VISITOR_PERMISSION);
+  requirePermission(ctx, [VIEW_VISITOR_PERMISSION]);
 
   return client
     .select()
