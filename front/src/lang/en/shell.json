@@ -31,5 +31,20 @@
     "messages": {
       "profileUpdated": "Profile updated successfully!"
     }
+  },
+  "residents": {
+    "title": "",
+    "userEditor": {
+      "title": "",
+      "name": "",
+      "namePlaceholder": "",
+      "permissions": "",
+      "permissionPlaceholder": "",
+      "add": "",
+      "cancel": "",
+      "save": "",
+      "saving": "",
+      "loading": ""
+    }
   }
 }
