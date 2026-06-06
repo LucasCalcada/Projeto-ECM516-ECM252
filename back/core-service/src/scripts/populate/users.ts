@@ -20,6 +20,7 @@ const commonUserPermissions = [
 
 export const userData: UserInsert[] = [
   {
+    id: ids.users.joao,
     accountId: ids.accounts.joao,
     residencyId: ids.residencies.ap101,
     buildingId: ids.buildings.jardim,
@@ -29,6 +30,7 @@ export const userData: UserInsert[] = [
   },
 
   {
+    id: ids.users.maria,
     accountId: ids.accounts.maria,
     residencyId: ids.residencies.ap102,
     buildingId: ids.buildings.jardim,
@@ -40,6 +42,7 @@ export const userData: UserInsert[] = [
   // mesma conta em dois condomínios
 
   {
+    id: ids.users.carlos,
     accountId: ids.accounts.carlos,
     residencyId: ids.residencies.ap201,
     buildingId: ids.buildings.jardim,
@@ -49,6 +52,7 @@ export const userData: UserInsert[] = [
   },
 
   {
+    id: ids.users.carlos2,
     accountId: ids.accounts.carlos,
     residencyId: ids.residencies.casa01,
     buildingId: ids.buildings.bosque,
@@ -60,6 +64,7 @@ export const userData: UserInsert[] = [
   // funcionários
 
   {
+    id: ids.users.ana,
     accountId: ids.accounts.ana,
     residencyId: null,
     buildingId: ids.buildings.jardim,
@@ -69,6 +74,7 @@ export const userData: UserInsert[] = [
   },
 
   {
+    id: ids.users.pedro,
     accountId: ids.accounts.pedro,
     residencyId: null,
     buildingId: ids.buildings.jardim,
@@ -78,6 +84,7 @@ export const userData: UserInsert[] = [
   },
 
   {
+    id: ids.users.fernanda,
     accountId: ids.accounts.fernanda,
     residencyId: null,
     buildingId: ids.buildings.jardim,
@@ -87,6 +94,7 @@ export const userData: UserInsert[] = [
   },
 
   {
+    id: ids.users.fernanda2,
     accountId: ids.accounts.fernanda,
     residencyId: null,
     buildingId: ids.buildings.bosque,
