@@ -6,6 +6,7 @@ import pingRoute from './routes/ping';
 import userCreate from './routes/user/create';
 import userUpdate from './routes/user/update';
 import userDelete from './routes/user/delete';
+import userGet from './routes/user/get';
 
 // Residency Routes
 import addResident from './routes/residency/addResident';
@@ -33,6 +34,7 @@ registerRoute(pingRoute);
 registerRoute(userCreate);
 registerRoute(userDelete);
 registerRoute(userUpdate);
+registerRoute(userGet);
 
 // Residency Routes
 registerRoute(addResident);
