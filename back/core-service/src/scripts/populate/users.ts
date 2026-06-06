@@ -1,9 +1,12 @@
 import { UserInsert } from '@app/db/schema';
 import { ids } from './ids';
-import { AdminPermission, UserManagePermission } from '@app/permissions';
-
-const RESIDENT_RESERVATION_PERMISSIONS = ['@Reservation:Create', '@Reservation:ViewResidency'];
-const STAFF_RESERVATION_PERMISSIONS = ['@Reservation:ViewBuilding'];
+import {
+  AdminPermission,
+  ReservationViewResidencyPermission,
+  ReservationCreatePermission,
+  UserManagePermission,
+  ReservationViewBuildingPermission,
+} from '@app/permissions';
 
 export const userData: UserInsert[] = [
   {
@@ -11,7 +14,7 @@ export const userData: UserInsert[] = [
     residencyId: ids.residencies.ap101,
     buildingId: ids.buildings.jardim,
     name: 'João Silva',
-    permissions: RESIDENT_RESERVATION_PERMISSIONS,
+    permissions: [ReservationViewResidencyPermission, ReservationCreatePermission],
     active: true,
   },
 
@@ -20,7 +23,7 @@ export const userData: UserInsert[] = [
     residencyId: ids.residencies.ap102,
     buildingId: ids.buildings.jardim,
     name: 'Maria Silva',
-    permissions: RESIDENT_RESERVATION_PERMISSIONS,
+    permissions: [ReservationViewResidencyPermission, ReservationCreatePermission],
     active: true,
   },
 
@@ -31,7 +34,7 @@ export const userData: UserInsert[] = [
     residencyId: ids.residencies.ap201,
     buildingId: ids.buildings.jardim,
     name: 'Carlos Souza',
-    permissions: RESIDENT_RESERVATION_PERMISSIONS,
+    permissions: [ReservationViewResidencyPermission, ReservationCreatePermission],
     active: true,
   },
 
@@ -40,7 +43,7 @@ export const userData: UserInsert[] = [
     residencyId: ids.residencies.casa01,
     buildingId: ids.buildings.bosque,
     name: 'Carlos Souza',
-    permissions: RESIDENT_RESERVATION_PERMISSIONS,
+    permissions: [ReservationViewResidencyPermission, ReservationCreatePermission],
     active: true,
   },
 
@@ -51,7 +54,7 @@ export const userData: UserInsert[] = [
     residencyId: null,
     buildingId: ids.buildings.jardim,
     name: 'Ana Recepção',
-    permissions: [UserManagePermission, STAFF_RESERVATION_PERMISSIONS],
+    permissions: [UserManagePermission, ReservationViewBuildingPermission],
     active: true,
   },
 
@@ -60,7 +63,7 @@ export const userData: UserInsert[] = [
     residencyId: null,
     buildingId: ids.buildings.jardim,
     name: 'Pedro Zelador',
-    permissions: STAFF_RESERVATION_PERMISSIONS,
+    permissions: [],
     active: true,
   },
 

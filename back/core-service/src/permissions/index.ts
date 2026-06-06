@@ -13,3 +13,8 @@ export const CommunicationManagePermission = '@communication:post:manage';
 // Visitor Service
 export const VisitorViewPermission = '@visitor:view';
 export const VisitorCreatePermission = '@visitor:create';
+
+// Reservation Service
+export const ReservationCreatePermission = '@reservation:create';
+export const ReservationViewResidencyPermission = '@reservation:view:residency';
+export const ReservationViewBuildingPermission = '@reservation:view:building';
