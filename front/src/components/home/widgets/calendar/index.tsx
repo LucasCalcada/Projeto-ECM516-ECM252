@@ -35,7 +35,7 @@ export default function CalendarWidget(props: { events: CalendarEvent[] }) {
         <p className="text-2xl font-bold">{t('calendar:title')}</p>
       </div>
       {props.events.length > 0 ? (
-        <div className="flex flex-col overflow-y-scroll pt-2">
+        <div className="flex h-full flex-col overflow-y-scroll pt-2">
           {props.events.map((e) => (
             <CalendarEventEntry event={e} />
           ))}
