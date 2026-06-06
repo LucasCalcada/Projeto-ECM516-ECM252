@@ -36,6 +36,7 @@ const routes: RouteConfig[] = [
       labelKey: 'sidebar.routes.residents',
       icon: UserRound,
     },
+    permissions: ['@core:user:manage'],
   },
   {
     path: '/reservations',
