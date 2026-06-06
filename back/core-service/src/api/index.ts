@@ -6,10 +6,17 @@ import pingRoute from './routes/ping';
 import userCreate from './routes/user/create';
 import userUpdate from './routes/user/update';
 import userDelete from './routes/user/delete';
+import userGet from './routes/user/get';
 
 // Residency Routes
 import addResident from './routes/residency/addResident';
 import removeResident from './routes/residency/removeResident';
+import listResidencyByGroup from './routes/residency/list';
+import listResidencyUsers from './routes/residency/listResidents';
+
+// Group Routes
+import groupList from './routes/groups/list';
+import groupGet from './routes/groups/get';
 
 // Building Routes
 import buildingGet from './routes/building/get';
@@ -27,10 +34,17 @@ registerRoute(pingRoute);
 registerRoute(userCreate);
 registerRoute(userDelete);
 registerRoute(userUpdate);
+registerRoute(userGet);
 
 // Residency Routes
 registerRoute(addResident);
 registerRoute(removeResident);
+registerRoute(listResidencyByGroup);
+registerRoute(listResidencyUsers);
+
+// Group Routes
+registerRoute(groupGet);
+registerRoute(groupList);
 
 // Building Routes
 registerRoute(buildingGet);

@@ -1,5 +1,6 @@
 import { UserInsert } from '@app/db/schema';
 import { ids } from './ids';
+import { AdminPermission, UserManagePermission } from '@app/permissions';
 
 export const userData: UserInsert[] = [
   {
@@ -47,7 +48,7 @@ export const userData: UserInsert[] = [
     residencyId: null,
     buildingId: ids.buildings.jardim,
     name: 'Ana Recepção',
-    permissions: [],
+    permissions: [UserManagePermission],
     active: true,
   },
 
@@ -65,7 +66,7 @@ export const userData: UserInsert[] = [
     residencyId: null,
     buildingId: ids.buildings.jardim,
     name: 'Fernanda Síndica',
-    permissions: [],
+    permissions: [AdminPermission],
     active: true,
   },
 
@@ -74,7 +75,7 @@ export const userData: UserInsert[] = [
     residencyId: null,
     buildingId: ids.buildings.bosque,
     name: 'Fernanda Síndica',
-    permissions: [],
+    permissions: [AdminPermission],
     active: true,
   },
 ];
