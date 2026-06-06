@@ -21,7 +21,6 @@ interface BuildingDetailsResponse {
 interface ResidencyOption {
   id: string;
   name: string;
-  label: string;
 }
 
 interface PackageCreateFormProps {
@@ -32,7 +31,7 @@ const initialDescription = '';
 
 export default function PackageCreateForm({ buildingId }: PackageCreateFormProps) {
   const [residencies, setResidencies] = useState<ResidencyOption[]>([]);
-  const [selectedResidencyName, setSelectedResidencyName] = useState('');
+  const [selectedResidencyId, setSelectedResidencyId] = useState('');
   const [description, setDescription] = useState(initialDescription);
   const [isLoadingResidencies, setIsLoadingResidencies] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -41,7 +40,7 @@ export default function PackageCreateForm({ buildingId }: PackageCreateFormProps
   const deliveryService = useService('delivery');
 
   const sortedResidencies = useMemo(
-    () => [...residencies].sort((a, b) => a.label.localeCompare(b.label)),
+    () => [...residencies].sort((a, b) => a.name.localeCompare(b.name)),
     [residencies],
   );
 
@@ -63,12 +62,11 @@ export default function PackageCreateForm({ buildingId }: PackageCreateFormProps
           .map((residency) => ({
             id: residency.id,
             name: residency.name,
-            label: residency.name,
           })),
       );
 
       setResidencies(options);
-      setSelectedResidencyName((current) => current || options[0]?.name || '');
+      setSelectedResidencyId((current) => current || options[0]?.id || '');
     } catch (error) {
       console.error(error);
       notifyError('Erro', 'Não foi possível carregar as residências.');
@@ -84,7 +82,7 @@ export default function PackageCreateForm({ buildingId }: PackageCreateFormProps
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (!selectedResidencyName || !description.trim()) {
+    if (!selectedResidencyId || !description.trim()) {
       notifyWarning('Campos obrigatórios', 'Selecione uma residência e informe a descrição.');
       return;
     }
@@ -92,7 +90,7 @@ export default function PackageCreateForm({ buildingId }: PackageCreateFormProps
     setIsSubmitting(true);
     try {
       await deliveryService.post('/packages', {
-        residencyName: selectedResidencyName,
+        residencyId: selectedResidencyId,
         description: description.trim(),
       });
 
@@ -125,16 +123,16 @@ export default function PackageCreateForm({ buildingId }: PackageCreateFormProps
           <span className="mb-1 block text-sm text-neutral-300">Residência</span>
           <select
             className="w-full rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm"
-            value={selectedResidencyName}
-            onChange={(event) => setSelectedResidencyName(event.target.value)}
+            value={selectedResidencyId}
+            onChange={(event) => setSelectedResidencyId(event.target.value)}
             disabled={isLoadingResidencies || sortedResidencies.length === 0}
           >
             {sortedResidencies.length === 0 ? (
               <option value="">Nenhuma residência encontrada</option>
             ) : (
               sortedResidencies.map((residency) => (
-                <option key={residency.id} value={residency.name}>
-                  {residency.label}
+                <option key={residency.id} value={residency.id}>
+                  {residency.name}
                 </option>
               ))
             )}
