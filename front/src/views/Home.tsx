@@ -52,7 +52,7 @@ function Home() {
   );
 
   return (
-    <div className="flex h-8/12 items-center gap-4 p-12">
+    <div className="flex h-full items-center gap-4 p-12">
       <AnnouncementWidget announcements={announcements} />
       <CalendarWidget events={calendarEvents} />
     </div>

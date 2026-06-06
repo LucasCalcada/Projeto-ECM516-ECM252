@@ -18,7 +18,7 @@ function CalendarEventEntry(props: { event: CalendarEvent }) {
 function NoEvents() {
   const { t } = useTranslation();
   return (
-    <div className="flex w-full items-center justify-center gap-2 rounded-xl bg-red-500/10 p-2">
+    <div className="flex items-center justify-center gap-2 rounded-xl bg-red-500/10 p-2">
       <LucideCalendarX />
       <p className="text-2xl font-bold">{t('calendar:no_events')}</p>
     </div>
@@ -29,7 +29,7 @@ export default function CalendarWidget(props: { events: CalendarEvent[] }) {
   const { t } = useTranslation();
 
   return (
-    <div className="flex-1 self-stretch rounded-xl border-1 border-neutral-800 p-4">
+    <div className="h-full flex-1 rounded-xl border-1 border-neutral-800 p-4">
       <div className="flex items-center gap-2 pb-4">
         <Calendar />
         <p className="text-2xl font-bold">{t('calendar:title')}</p>

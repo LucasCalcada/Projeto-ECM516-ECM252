@@ -37,7 +37,7 @@ function NoAnnouncements() {
 export default function AnnouncementWidget(props: { announcements: Announcement[] }) {
   const { t } = useTranslation();
   return (
-    <div className="min-h-1/2 flex-2 self-stretch rounded-xl border-1 border-neutral-800 p-4">
+    <div className="h-full flex-1 rounded-xl border-1 border-neutral-800 p-4">
       <div className="flex items-center gap-2 pb-4">
         <Megaphone />
         <p className="text-2xl font-bold">{t('announcements:title')}</p>
