@@ -6,6 +6,7 @@ import VisitorAccessHeader, {
 } from '../components/visitorAccess/VisitorAccessHeader';
 import VisitorAccessResidencyList from '../components/visitorAccess/VisitorAccessResidencyList';
 import hasPermission from '../helpers/hasPermission';
+import hasResidency from '../helpers/hasResidency';
 
 const CREATE_VISITOR_ACCESS_PERMISSION = '@visitor:create';
 const VIEW_VISITOR_ACCESS_PERMISSION = '@visitor:view';
@@ -13,7 +14,7 @@ const VIEW_VISITOR_ACCESS_PERMISSION = '@visitor:view';
 function getAvailableViews() {
   const options: VisitorAccessViewOption[] = [];
 
-  if (hasPermission([CREATE_VISITOR_ACCESS_PERMISSION])) {
+  if (hasPermission([CREATE_VISITOR_ACCESS_PERMISSION]) && hasResidency()) {
     options.push({ mode: 'create', label: 'Registrar' });
   }
 
