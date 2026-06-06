@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import VisitorAccessForm from '../components/visitorAccess/VisitorAccessForm';
 import VisitorAccessHeader, {
   type VisitorAccessViewMode,
@@ -11,7 +12,7 @@ import hasResidency from '../helpers/hasResidency';
 const CREATE_VISITOR_ACCESS_PERMISSION = '@visitor:create';
 const VIEW_VISITOR_ACCESS_PERMISSION = '@visitor:view';
 
-function getAvailableViews() {
+function getAvailableViews(t: (key: string) => string) {
   const options: VisitorAccessViewOption[] = [];
 
   if (hasPermission([CREATE_VISITOR_ACCESS_PERMISSION]) && hasResidency()) {
@@ -42,7 +43,8 @@ function renderVisitorAccessView(mode: VisitorAccessViewMode) {
 }
 
 export default function VisitorAccessView() {
-  const options = getAvailableViews();
+  const { t } = useTranslation();
+  const options = getAvailableViews(t);
   const [activeMode, setActiveMode] = useState<VisitorAccessViewMode>(options[0]?.mode ?? 'create');
   const currentMode = options.some((option) => option.mode === activeMode)
     ? activeMode
@@ -63,7 +65,7 @@ export default function VisitorAccessView() {
 
   return (
     <div className="flex h-screen items-center justify-center">
-      <h1 className="text-2xl font-bold text-neutral-100">Acesso negado</h1>
+      <h1 className="text-2xl font-bold text-neutral-100">{t('common:accessDenied')}</h1>
     </div>
   );
 }

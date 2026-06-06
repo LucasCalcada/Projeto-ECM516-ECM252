@@ -3,10 +3,63 @@
   "description": "Sigue aquí los paquetes recibidos en la portería.",
   "loading": "Cargando paquetes...",
   "notFound": "No se encontraron paquetes para esta residencia.",
+  "views": {
+    "create": {
+      "label": "Registrar",
+      "title": "Registrar paquete"
+    },
+    "building": {
+      "label": "Edificio",
+      "title": "Paquetes del edificio"
+    },
+    "residency": {
+      "label": "Residencia",
+      "title": "Mis paquetes"
+    }
+  },
+  "list": {
+    "buildingTitle": "Paquetes del edificio",
+    "residencyTitle": "Paquetes de la residencia",
+    "empty": "No se encontraron paquetes.",
+    "refresh": "Actualizar",
+    "updating": "Actualizando...",
+    "confirming": "Confirmando...",
+    "confirm": "Confirmar",
+    "toast": {
+      "listError": "No fue posible listar los paquetes.",
+      "confirmTitle": "Recepción confirmada",
+      "confirmMessage": "El paquete fue marcado como entregado.",
+      "confirmError": "No fue posible confirmar la recepción."
+    }
+  },
+  "form": {
+    "title": "Nuevo paquete",
+    "refreshResidencies": "Actualizar residencias",
+    "noResidencies": "No se encontraron residencias",
+    "descriptionPlaceholder": "Ej.: Paquete Amazon",
+    "submitting": "Registrando...",
+    "submit": "Registrar paquete",
+    "toast": {
+      "missingBuilding": "No fue posible identificar el edificio del usuario.",
+      "loadResidenciesError": "No fue posible cargar las residencias.",
+      "requiredTitle": "Campos obligatorios",
+      "requiredMessage": "Seleccione una residencia e informe la descripción.",
+      "successTitle": "Paquete registrado",
+      "successMessage": "El paquete fue registrado correctamente.",
+      "createError": "No fue posible registrar el paquete."
+    }
+  },
+  "statusValue": {
+    "PENDING": "Pendiente",
+    "DELIVERED": "Entregado",
+    "CANCELED": "Cancelado"
+  },
   "table": {
+    "residency": "Residencia",
     "description": "Descripción",
     "status": "Estado",
-    "receivedAt": "Fecha de Recepción",
-    "deliveredAt": "Fecha de Entrega"
+    "receivedAt": "Recibido en",
+    "deliveredAt": "Entregado en",
+    "action": "Acción"
   }
 }

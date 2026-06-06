@@ -2,9 +2,10 @@ import { useEffect, useMemo, useState } from 'react';
 import commonAreas from '../../mockedData/commonAreas';
 import type { ReservationApiResponse } from '../../types/Reservation';
 import useService from '../../helpers/useService';
+import { useTranslation } from 'react-i18next';
 
-function formatReservationDate(date: string): string {
-  return new Date(`${date}T00:00:00`).toLocaleDateString('pt-BR', {
+function formatReservationDate(date: string, locale: string): string {
+  return new Date(`${date}T00:00:00`).toLocaleDateString(locale, {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',
@@ -12,7 +13,9 @@ function formatReservationDate(date: string): string {
 }
 
 export default function BuildingReservationsList() {
+  const { i18n, t } = useTranslation();
   const reservationService = useService('reservation');
+  const locale = i18n.resolvedLanguage || i18n.language;
   const [commonAreaId, setCommonAreaId] = useState(commonAreas[0]?.id ?? '');
   const [reservations, setReservations] = useState<ReservationApiResponse[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -40,20 +43,24 @@ export default function BuildingReservationsList() {
         setReservations(response.data);
       } catch (error) {
         console.error('Erro ao buscar reservas do prédio:', error);
-        setFeedback('Não foi possível carregar as reservas desta área comum.');
+        setFeedback(t('reservations:lists.loadBuildingError'));
       } finally {
         setIsLoading(false);
       }
     }
 
     fetchReservations();
-  }, [commonAreaId, reservationService]);
+  }, [commonAreaId, reservationService, t]);
+
+  const selectedAreaName = selectedArea
+    ? t(`reservations:commonAreas.${selectedArea.id}`, { defaultValue: selectedArea.name })
+    : '';
 
   return (
     <section className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900/40 p-3">
       <div className="mb-4 flex shrink-0 flex-wrap items-end justify-between gap-3">
         <label className="block w-full max-w-sm">
-          <span className="mb-1 block text-sm text-neutral-300">Área comum</span>
+          <span className="mb-1 block text-sm text-neutral-300">{t('common:commonArea')}</span>
           <select
             className="h-10 w-full rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm"
             value={commonAreaId}
@@ -61,7 +68,8 @@ export default function BuildingReservationsList() {
           >
             {commonAreas.map((area) => (
               <option key={area.id} value={area.id}>
-                {area.name} ({area.capacity} pessoas)
+                {t(`reservations:commonAreas.${area.id}`, { defaultValue: area.name })} (
+                {t('reservations:form.people', { count: area.capacity })})
               </option>
             ))}
           </select>
@@ -69,7 +77,7 @@ export default function BuildingReservationsList() {
 
         {isLoading ? (
           <span className="rounded-full border border-neutral-700 px-2 py-0.5 text-xs text-neutral-300">
-            Carregando
+            {t('common:loading')}
           </span>
         ) : null}
       </div>
@@ -83,7 +91,7 @@ export default function BuildingReservationsList() {
 
         {!feedback && !isLoading && reservations.length === 0 ? (
           <p className="text-sm text-neutral-400">
-            Nenhuma reserva futura para {selectedArea?.name}.
+            {t('reservations:lists.emptyBuilding', { areaName: selectedAreaName })}
           </p>
         ) : null}
 
@@ -95,11 +103,11 @@ export default function BuildingReservationsList() {
             <div className="flex flex-wrap items-center justify-between gap-2">
               <p className="font-medium text-neutral-100">{reservation.commonAreaName}</p>
               <span className="rounded-full border border-neutral-700 px-2 py-0.5 text-xs text-neutral-300">
-                Dia inteiro
+                {t('common:allDay')}
               </span>
             </div>
             <p className="text-sm text-neutral-300">
-              {formatReservationDate(reservation.reservationDate)}
+              {formatReservationDate(reservation.reservationDate, locale)}
             </p>
             <p className="mt-1 text-xs text-neutral-500">{reservation.residentName}</p>
           </article>

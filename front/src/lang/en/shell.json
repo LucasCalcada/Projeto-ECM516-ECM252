@@ -14,6 +14,21 @@
       "logout": "Sign out"
     }
   },
+  "residents": {
+    "title": "{{buildingName}} - Residents",
+    "userEditor": {
+      "title": "Edit user",
+      "name": "Name",
+      "namePlaceholder": "Enter the name",
+      "permissions": "Permissions",
+      "permissionPlaceholder": "Enter a permission",
+      "add": "Add",
+      "cancel": "Cancel",
+      "save": "Save",
+      "saving": "Saving...",
+      "loading": "Loading user..."
+    }
+  },
   "settings": {
     "title": "Settings",
     "subtitle": "Manage your preferences and profile",
@@ -26,7 +41,13 @@
       "phone": "Phone"
     },
     "language": {
-      "title": "Language"
+      "title": "Language",
+      "selected": "Selected",
+      "options": {
+        "pt": "Portuguese",
+        "en": "English",
+        "es": "Spanish"
+      }
     },
     "messages": {
       "profileUpdated": "Profile updated successfully!"

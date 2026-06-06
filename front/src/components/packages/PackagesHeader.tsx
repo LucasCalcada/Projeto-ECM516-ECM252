@@ -1,4 +1,5 @@
 import { Building2, Home, PackageIcon, PackagePlus } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import type { PackageViewMode, PackageViewOption } from './types';
 
 interface PackagesHeaderProps {
@@ -7,12 +8,6 @@ interface PackagesHeaderProps {
   onModeChange: (mode: PackageViewMode) => void;
 }
 
-const titleByMode: Record<PackageViewMode, string> = {
-  create: 'Registrar encomenda',
-  building: 'Encomendas do predio',
-  residency: 'Minhas encomendas',
-};
-
 const iconByMode = {
   create: PackagePlus,
   building: Building2,
@@ -20,13 +15,16 @@ const iconByMode = {
 };
 
 export default function PackagesHeader({ activeMode, options, onModeChange }: PackagesHeaderProps) {
+  const { t } = useTranslation();
   const ActiveIcon = iconByMode[activeMode];
 
   return (
     <header className="mb-6 flex flex-wrap items-center justify-between gap-3">
       <div className="flex items-center gap-2 text-cyan-300">
         <ActiveIcon size={22} />
-        <h1 className="text-2xl font-bold text-neutral-100">{titleByMode[activeMode]}</h1>
+        <h1 className="text-2xl font-bold text-neutral-100">
+          {t(`packages:views.${activeMode}.title`)}
+        </h1>
       </div>
 
       {options.length > 1 && (

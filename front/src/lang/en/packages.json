@@ -3,10 +3,63 @@
   "description": "Track the packages received at the front desk here.",
   "loading": "Loading packages...",
   "notFound": "No packages found for this residence.",
+  "views": {
+    "create": {
+      "label": "Register",
+      "title": "Register package"
+    },
+    "building": {
+      "label": "Building",
+      "title": "Building packages"
+    },
+    "residency": {
+      "label": "Residence",
+      "title": "My packages"
+    }
+  },
+  "list": {
+    "buildingTitle": "Building packages",
+    "residencyTitle": "Residence packages",
+    "empty": "No packages found.",
+    "refresh": "Refresh",
+    "updating": "Updating...",
+    "confirming": "Confirming...",
+    "confirm": "Confirm",
+    "toast": {
+      "listError": "Could not list packages.",
+      "confirmTitle": "Receipt confirmed",
+      "confirmMessage": "The package was marked as delivered.",
+      "confirmError": "Could not confirm receipt."
+    }
+  },
+  "form": {
+    "title": "New package",
+    "refreshResidencies": "Refresh residences",
+    "noResidencies": "No residences found",
+    "descriptionPlaceholder": "E.g.: Amazon package",
+    "submitting": "Registering...",
+    "submit": "Register package",
+    "toast": {
+      "missingBuilding": "Could not identify the user's building.",
+      "loadResidenciesError": "Could not load residences.",
+      "requiredTitle": "Required fields",
+      "requiredMessage": "Select a residence and enter the description.",
+      "successTitle": "Package registered",
+      "successMessage": "The package was registered successfully.",
+      "createError": "Could not register the package."
+    }
+  },
+  "statusValue": {
+    "PENDING": "Pending",
+    "DELIVERED": "Delivered",
+    "CANCELED": "Canceled"
+  },
   "table": {
+    "residency": "Residence",
     "description": "Description",
     "status": "Status",
-    "receivedAt": "Received Date",
-    "deliveredAt": "Delivery Date"
+    "receivedAt": "Received at",
+    "deliveredAt": "Delivered at",
+    "action": "Action"
   }
 }

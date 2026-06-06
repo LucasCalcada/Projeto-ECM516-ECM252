@@ -3,6 +3,7 @@ import { Globe } from 'lucide-react';
 
 export default function Settings() {
   const { i18n, t } = useTranslation();
+  const language = i18n.resolvedLanguage || i18n.language;
 
   return (
     <div className="h-full p-4 transition-colors md:p-8">
@@ -19,22 +20,24 @@ export default function Settings() {
 
         <div className="space-y-3">
           {[
-            { code: 'pt', flag: 'BR', name: 'Portugues' },
-            { code: 'en', flag: 'EN', name: 'English' },
-            { code: 'es', flag: 'ES', name: 'Espanol' },
+            { code: 'pt', flag: 'BR', name: t('settings.language.options.pt') },
+            { code: 'en', flag: 'EN', name: t('settings.language.options.en') },
+            { code: 'es', flag: 'ES', name: t('settings.language.options.es') },
           ].map(({ code, flag, name }) => (
             <button
               key={code}
               onClick={() => i18n.changeLanguage(code)}
               className={`flex w-full items-center gap-3 rounded-lg border p-3 transition ${
-                i18n.language === code
+                language === code
                   ? 'border-blue-500 bg-blue-600/20 text-blue-300'
                   : 'border-neutral-700 bg-neutral-800 text-neutral-300 hover:bg-neutral-700/50'
               }`}
             >
               <span className="text-sm font-bold">{flag}</span>
               <span className="font-medium">{name}</span>
-              {i18n.language === code && <span className="ml-auto">OK</span>}
+              {language === code && (
+                <span className="ml-auto">{t('settings.language.selected')}</span>
+              )}
             </button>
           ))}
         </div>

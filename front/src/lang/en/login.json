@@ -9,7 +9,9 @@
       "placeholder": "Enter your password"
     }
   },
+  "title": "Login",
   "login": "Login",
+  "serverError": "Error connecting to the server",
   "selector": {
     "title": "Select Residence",
     "error": {

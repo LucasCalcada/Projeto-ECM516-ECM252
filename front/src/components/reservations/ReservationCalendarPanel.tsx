@@ -24,8 +24,8 @@ function getHttpStatus(error: unknown) {
   return response?.status;
 }
 
-function formatReservationDate(date: string): string {
-  return new Date(`${date}T00:00:00`).toLocaleDateString('pt-BR', {
+function formatReservationDate(date: string, locale: string): string {
+  return new Date(`${date}T00:00:00`).toLocaleDateString(locale, {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',
@@ -33,8 +33,9 @@ function formatReservationDate(date: string): string {
 }
 
 export default function ReservationCalendarPanel() {
-  const { t } = useTranslation();
+  const { i18n, t } = useTranslation();
   const reservationService = useService('reservation');
+  const locale = i18n.resolvedLanguage || i18n.language;
 
   const [calendarReservations, setCalendarReservations] = useState<Reservation[]>([]);
   const [isCalendarLoading, setIsCalendarLoading] = useState(false);
@@ -47,6 +48,9 @@ export default function ReservationCalendarPanel() {
   });
 
   const selectedArea = commonAreas.find((area) => area.id === form.commonAreaId);
+  const selectedAreaName = selectedArea
+    ? t(`reservations:commonAreas.${selectedArea.id}`, { defaultValue: selectedArea.name })
+    : '';
 
   useEffect(() => {
     async function fetchReservations() {
@@ -81,7 +85,7 @@ export default function ReservationCalendarPanel() {
     event.preventDefault();
 
     if (!selectedArea || !form.date) {
-      setFeedback('Selecione uma area comum e uma data disponivel.');
+      setFeedback(t('reservations:form.feedback.missingFields'));
       return;
     }
 
@@ -97,16 +101,19 @@ export default function ReservationCalendarPanel() {
 
       const reservation = mapReservationApiResponse(response.data);
       setCalendarReservations((prev) => [...prev, reservation]);
-      notifySuccess('Reserva', 'Reserva registrada com sucesso.');
+      notifySuccess(
+        t('reservations:form.toast.successTitle'),
+        t('reservations:form.toast.successMessage'),
+      );
       setForm((prev) => ({ ...prev, date: '' }));
     } catch (error) {
       if (getHttpStatus(error) === 409) {
-        setFeedback('Este dia já foi reservado. Escolha outra data.');
+        setFeedback(t('reservations:form.feedback.conflict'));
         return;
       }
 
       console.error('Erro ao criar reserva:', error);
-      setFeedback('Não foi possível criar a reserva. Tente novamente mais tarde.');
+      setFeedback(t('reservations:form.feedback.createError'));
     } finally {
       setIsSubmitting(false);
     }
@@ -115,7 +122,7 @@ export default function ReservationCalendarPanel() {
   return (
     <section className="flex min-h-0 flex-col overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900/40 p-3">
       <div className="mb-3 shrink-0">
-        <h2 className="mb-2 text-base font-semibold">Nova reserva</h2>
+        <h2 className="mb-2 text-base font-semibold">{t('reservations:form.title')}</h2>
         <form className="grid gap-2" onSubmit={onSubmit}>
           <div className="flex flex-col gap-2">
             <label className="block">
@@ -126,7 +133,8 @@ export default function ReservationCalendarPanel() {
               >
                 {commonAreas.map((area) => (
                   <option key={area.id} value={area.id}>
-                    {area.name} ({area.capacity} pessoas)
+                    {t(`reservations:commonAreas.${area.id}`, { defaultValue: area.name })} (
+                    {t('reservations:form.people', { count: area.capacity })})
                   </option>
                 ))}
               </select>
@@ -135,7 +143,9 @@ export default function ReservationCalendarPanel() {
             {selectedArea ? (
               <div className="rounded-md border border-neutral-800 bg-neutral-950 px-3 py-2 text-sm text-neutral-300">
                 <p className={form.date ? 'text-neutral-100' : 'text-neutral-500'}>
-                  {form.date ? formatReservationDate(form.date) : 'Selecione no calendário'}
+                  {form.date
+                    ? formatReservationDate(form.date, locale)
+                    : t('reservations:form.selectDate')}
                 </p>
               </div>
             ) : null}
@@ -147,7 +157,7 @@ export default function ReservationCalendarPanel() {
               disabled={isSubmitting}
               className="h-10 w-full rounded-md bg-neutral-100 px-4 text-sm font-medium text-neutral-900 transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-60 md:w-auto"
             >
-              {isSubmitting ? 'Aguarde...' : t('reservations:form.confirm')}
+              {isSubmitting ? t('reservations:form.submitting') : t('reservations:form.confirm')}
             </button>
           </div>
         </form>
@@ -157,14 +167,14 @@ export default function ReservationCalendarPanel() {
 
       <div className="mb-2 flex shrink-0 flex-wrap items-start justify-between gap-2">
         <div>
-          <h2 className="text-base font-semibold">Calendário da área</h2>
+          <h2 className="text-base font-semibold">{t('reservations:calendar.title')}</h2>
           <p className="text-xs text-neutral-400">
-            Dias marcados em vermelho já estão reservados para {selectedArea?.name}.
+            {t('reservations:calendar.description', { areaName: selectedAreaName })}
           </p>
         </div>
         {isCalendarLoading ? (
           <span className="rounded-full border border-neutral-700 px-2 py-0.5 text-xs text-neutral-300">
-            Carregando
+            {t('common:loading')}
           </span>
         ) : null}
       </div>

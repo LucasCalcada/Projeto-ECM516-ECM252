@@ -2,6 +2,7 @@ import { type FormEvent, useCallback, useEffect, useMemo, useState } from 'react
 import { PackagePlus, RefreshCw } from 'lucide-react';
 import { useToast } from '../Toast';
 import useService from '../../helpers/useService';
+import { useTranslation } from 'react-i18next';
 
 interface ResidencyDetails {
   id: string;
@@ -30,6 +31,7 @@ interface PackageCreateFormProps {
 const initialDescription = '';
 
 export default function PackageCreateForm({ buildingId }: PackageCreateFormProps) {
+  const { t } = useTranslation();
   const [residencies, setResidencies] = useState<ResidencyOption[]>([]);
   const [selectedResidencyId, setSelectedResidencyId] = useState('');
   const [description, setDescription] = useState(initialDescription);
@@ -46,7 +48,7 @@ export default function PackageCreateForm({ buildingId }: PackageCreateFormProps
 
   const fetchResidencies = useCallback(async () => {
     if (!buildingId) {
-      notifyError('Erro', 'Não foi possível identificar o prédio do usuário.');
+      notifyError(t('common:error'), t('packages:form.toast.missingBuilding'));
       return;
     }
 
@@ -69,11 +71,11 @@ export default function PackageCreateForm({ buildingId }: PackageCreateFormProps
       setSelectedResidencyId((current) => current || options[0]?.id || '');
     } catch (error) {
       console.error(error);
-      notifyError('Erro', 'Não foi possível carregar as residências.');
+      notifyError(t('common:error'), t('packages:form.toast.loadResidenciesError'));
     } finally {
       setIsLoadingResidencies(false);
     }
-  }, [buildingId, coreService, notifyError]);
+  }, [buildingId, coreService, notifyError, t]);
 
   useEffect(() => {
     fetchResidencies();
@@ -82,8 +84,11 @@ export default function PackageCreateForm({ buildingId }: PackageCreateFormProps
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (!selectedResidencyId || !description.trim()) {
-      notifyWarning('Campos obrigatórios', 'Selecione uma residência e informe a descrição.');
+    if (!selectedResidencyName || !description.trim()) {
+      notifyWarning(
+        t('packages:form.toast.requiredTitle'),
+        t('packages:form.toast.requiredMessage'),
+      );
       return;
     }
 
@@ -94,11 +99,11 @@ export default function PackageCreateForm({ buildingId }: PackageCreateFormProps
         description: description.trim(),
       });
 
-      notifySuccess('Encomenda registrada', 'O pacote foi registrado com sucesso.');
+      notifySuccess(t('packages:form.toast.successTitle'), t('packages:form.toast.successMessage'));
       setDescription(initialDescription);
     } catch (error) {
       console.error(error);
-      notifyError('Erro', 'Não foi possível registrar a encomenda.');
+      notifyError(t('common:error'), t('packages:form.toast.createError'));
     } finally {
       setIsSubmitting(false);
     }
@@ -114,13 +119,15 @@ export default function PackageCreateForm({ buildingId }: PackageCreateFormProps
           disabled={isLoadingResidencies}
         >
           <RefreshCw size={16} />
-          {isLoadingResidencies ? 'Atualizando...' : 'Atualizar residências'}
+          {isLoadingResidencies
+            ? t('packages:list.updating')
+            : t('packages:form.refreshResidencies')}
         </button>
       </div>
 
       <form className="grid grid-cols-1 gap-3 md:grid-cols-2" onSubmit={handleSubmit}>
         <label className="block">
-          <span className="mb-1 block text-sm text-neutral-300">Residência</span>
+          <span className="mb-1 block text-sm text-neutral-300">{t('common:residency')}</span>
           <select
             className="w-full rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm"
             value={selectedResidencyId}
@@ -128,7 +135,7 @@ export default function PackageCreateForm({ buildingId }: PackageCreateFormProps
             disabled={isLoadingResidencies || sortedResidencies.length === 0}
           >
             {sortedResidencies.length === 0 ? (
-              <option value="">Nenhuma residência encontrada</option>
+              <option value="">{t('packages:form.noResidencies')}</option>
             ) : (
               sortedResidencies.map((residency) => (
                 <option key={residency.id} value={residency.id}>
@@ -140,12 +147,12 @@ export default function PackageCreateForm({ buildingId }: PackageCreateFormProps
         </label>
 
         <label className="block">
-          <span className="mb-1 block text-sm text-neutral-300">Descrição</span>
+          <span className="mb-1 block text-sm text-neutral-300">{t('common:description')}</span>
           <input
             className="w-full rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm"
             value={description}
             onChange={(event) => setDescription(event.target.value)}
-            placeholder="Ex.: Pacote Amazon"
+            placeholder={t('packages:form.descriptionPlaceholder')}
           />
         </label>
 
@@ -154,7 +161,7 @@ export default function PackageCreateForm({ buildingId }: PackageCreateFormProps
           className="rounded-md bg-cyan-300 px-3 py-2 text-sm font-semibold text-neutral-950 transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-60 md:col-span-2"
           disabled={isSubmitting || isLoadingResidencies || sortedResidencies.length === 0}
         >
-          {isSubmitting ? 'Registrando...' : 'Registrar encomenda'}
+          {isSubmitting ? t('packages:form.submitting') : t('packages:form.submit')}
         </button>
       </form>
     </section>

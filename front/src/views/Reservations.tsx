@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Building2, CalendarCheck2, Home } from 'lucide-react';
 import BuildingReservationsList from '../components/reservations/BuildingReservationsList';
 import FutureReservationsList from '../components/reservations/FutureReservationsList';
@@ -17,7 +18,7 @@ const CREATE_RESERVATION_PERMISSION = '@reservation:create';
 const VIEW_BUILDING_RESERVATION_PERMISSION = '@reservation:view:building';
 const VIEW_RESIDENCY_RESERVATION_PERMISSION = '@reservation:view:residency';
 
-function getAvailableViews() {
+function getAvailableViews(t: (key: string) => string) {
   const options: ReservationViewOption[] = [];
 
   if (hasPermission([CREATE_RESERVATION_PERMISSION])) {
@@ -35,18 +36,6 @@ function getAvailableViews() {
   return options;
 }
 
-const titleByMode: Record<ReservationViewMode, string> = {
-  create: 'Registrar reserva',
-  building: 'Reservas do prédio',
-  residency: 'Minhas reservas',
-};
-
-const descriptionByMode: Record<ReservationViewMode, string> = {
-  create: 'Escolha uma área comum e uma data disponível.',
-  building: 'Veja as reservas por área comum.',
-  residency: 'Acompanhe as próximas reservas da sua unidade.',
-};
-
 const iconByMode = {
   create: CalendarCheck2,
   building: Building2,
@@ -62,6 +51,7 @@ function ReservationsHeader({
   options: ReservationViewOption[];
   onModeChange: (mode: ReservationViewMode) => void;
 }) {
+  const { t } = useTranslation();
   const ActiveIcon = iconByMode[activeMode];
 
   return (
@@ -69,9 +59,11 @@ function ReservationsHeader({
       <div>
         <div className="flex items-center gap-2 text-cyan-300">
           <ActiveIcon size={22} />
-          <h1 className="text-2xl font-bold text-neutral-100">{titleByMode[activeMode]}</h1>
+          <h1 className="text-2xl font-bold text-neutral-100">
+            {t(`reservations:views.${activeMode}.title`)}
+          </h1>
         </div>
-        <p className="text-neutral-400">{descriptionByMode[activeMode]}</p>
+        <p className="text-neutral-400">{t(`reservations:views.${activeMode}.description`)}</p>
       </div>
 
       {options.length > 1 && (
@@ -139,7 +131,8 @@ function renderReservationsView(mode: ReservationViewMode) {
 }
 
 export default function Reservations() {
-  const options = getAvailableViews();
+  const { t } = useTranslation();
+  const options = getAvailableViews(t);
   const [activeMode, setActiveMode] = useState<ReservationViewMode>(options[0]?.mode ?? 'create');
   const currentMode = options.some((option) => option.mode === activeMode)
     ? activeMode
@@ -148,7 +141,7 @@ export default function Reservations() {
   if (!currentMode) {
     return (
       <div className="flex h-screen items-center justify-center">
-        <h1 className="text-2xl font-bold text-neutral-100">Acesso negado</h1>
+        <h1 className="text-2xl font-bold text-neutral-100">{t('common:accessDenied')}</h1>
       </div>
     );
   }

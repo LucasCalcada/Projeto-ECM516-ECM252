@@ -1,5 +1,23 @@
 {
-  "name": "Nome",
+  "accessDenied": "Acesso negado",
+  "action": "Ação",
+  "allDay": "Dia inteiro",
+  "commonArea": "Área comum",
+  "confirm": "Confirmar",
+  "date": "Data",
+  "dateTime": "Data e hora",
+  "description": "Descrição",
+  "error": "Erro",
   "group": "Grupo",
-  "residency": "Residência"
+  "loading": "Carregando",
+  "loadingEllipsis": "Carregando...",
+  "name": "Nome",
+  "refresh": "Atualizar",
+  "residency": "Residência",
+  "status": "Status",
+  "time": {
+    "hours": "Horas",
+    "minutes": "Minutos"
+  },
+  "updating": "Atualizando..."
 }

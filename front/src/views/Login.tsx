@@ -35,7 +35,8 @@ export default function Login() {
         setCredentialError(errorText);
       }
     } catch (error) {
-      alert('Erro ao conectar com o servidor');
+      console.error(error);
+      alert(t('login:serverError'));
     }
   };
 
@@ -44,7 +45,7 @@ export default function Login() {
       <Logo />
 
       <div className="w-full max-w-sm rounded-lg bg-neutral-800 p-10">
-        <h2 className="mb-8 text-center text-2xl font-bold text-neutral-100">Login</h2>
+        <h2 className="mb-8 text-center text-2xl font-bold text-neutral-100">{t('login:title')}</h2>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <TextField

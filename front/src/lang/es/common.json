@@ -1,4 +1,25 @@
 {
+  "accessDenied": "Acceso denegado",
+  "action": "Acción",
+  "allDay": "Todo el día",
+  "commonArea": "Área común",
+  "confirm": "Confirmar",
+  "date": "Fecha",
+  "dateTime": "Fecha y hora",
+  "description": "Descripción",
+  "error": "Error",
+  "group": "Grupo",
+  "loading": "Cargando",
+  "loadingEllipsis": "Cargando...",
+  "name": "Nombre",
+  "refresh": "Actualizar",
+  "residency": "Residencia",
+  "status": "Estado",
+  "time": {
+    "hours": "Horas",
+    "minutes": "Minutos"
+  },
+  "updating": "Actualizando..."
   "name": "",
   "group": "",
   "residency": ""
