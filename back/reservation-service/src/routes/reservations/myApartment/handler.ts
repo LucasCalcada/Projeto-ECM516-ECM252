@@ -8,7 +8,7 @@ import { VIEW_RESIDENCY_RESERVATION_PERMISSION, requirePermission } from '@app/h
 import BadRequest from '@app/middlewares/error/errors/BadRequest';
 
 export default async function getMyApartmentReservations(req: Request, ctx: Context) {
-  requirePermission(ctx, VIEW_RESIDENCY_RESERVATION_PERMISSION);
+  requirePermission(ctx, [VIEW_RESIDENCY_RESERVATION_PERMISSION]);
 
   if (!ctx.auth.residencyId) {
     throw BadRequest;

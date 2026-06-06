@@ -9,7 +9,7 @@ import { isValidDateString, todayAsDateString } from '../helpers';
 import { CREATE_RESERVATION_PERMISSION, requirePermission } from '@app/helpers/permissions';
 
 export default async function createReservation(req: Request, ctx: Context) {
-  requirePermission(ctx, CREATE_RESERVATION_PERMISSION);
+  requirePermission(ctx, [CREATE_RESERVATION_PERMISSION]);
 
   const { commonAreaId, commonAreaName, reservationDate } = req.body;
 

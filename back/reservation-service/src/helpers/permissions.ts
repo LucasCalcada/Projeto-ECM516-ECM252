@@ -1,22 +1,17 @@
 import Unauthorized from '@app/middlewares/error/errors/Unauthorized';
 import { Context } from '@app/middlewares/routeWrapper';
+import _ from 'lodash';
 
 export const CREATE_RESERVATION_PERMISSION = '@reservation:create';
 export const VIEW_BUILDING_RESERVATION_PERMISSION = '@reservation:view:building';
 export const VIEW_RESIDENCY_RESERVATION_PERMISSION = '@reservation:view:residency';
 
-function hasPermission(ctx: Context, permission: string) {
-  return ctx.auth.permissions.includes(permission);
-}
+export function requirePermission(ctx: Context, permissions: string[]) {
+  const userPermissions = ctx.auth.permissions;
+  const allowedPermissions = ['@core:admin', ...permissions];
+  const hasPermission = _.intersection(userPermissions, allowedPermissions).length > 0;
 
-export function requirePermission(ctx: Context, permission: string) {
-  if (!hasPermission(ctx, permission)) {
-    throw Unauthorized;
-  }
-}
-
-export function requireAnyPermission(ctx: Context, permissions: string[]) {
-  if (!permissions.some((permission) => hasPermission(ctx, permission))) {
+  if (!hasPermission) {
     throw Unauthorized;
   }
 }

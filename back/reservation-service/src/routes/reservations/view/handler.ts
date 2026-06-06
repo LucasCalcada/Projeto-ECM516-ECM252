@@ -8,11 +8,11 @@ import { todayAsDateString } from '../helpers';
 import {
   CREATE_RESERVATION_PERMISSION,
   VIEW_BUILDING_RESERVATION_PERMISSION,
-  requireAnyPermission,
+  requirePermission,
 } from '@app/helpers/permissions';
 
 export default async function getReservations(req: Request, ctx: Context) {
-  requireAnyPermission(ctx, [CREATE_RESERVATION_PERMISSION, VIEW_BUILDING_RESERVATION_PERMISSION]);
+  requirePermission(ctx, [CREATE_RESERVATION_PERMISSION, VIEW_BUILDING_RESERVATION_PERMISSION]);
 
   const commonAreaId = req.query.commonAreaId;
 
