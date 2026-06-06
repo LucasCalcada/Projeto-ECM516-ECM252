@@ -4,6 +4,7 @@ import PackageList from '../components/packages/PackageList';
 import PackagesHeader from '../components/packages/PackagesHeader';
 import type { PackageViewMode, PackageViewOption } from '../components/packages/types';
 import hasPermission from '../helpers/hasPermission';
+import hasResidency from '../helpers/hasResidency';
 
 function getAvailableViews() {
   const options: PackageViewOption[] = [];
@@ -16,7 +17,7 @@ function getAvailableViews() {
     options.push({ mode: 'building', label: 'Prédio' });
   }
 
-  if (hasPermission(['@delivery:view:residency'])) {
+  if (hasPermission(['@delivery:view:residency']) && hasResidency()) {
     options.push({ mode: 'residency', label: 'Residência' });
   }
 
