@@ -4,25 +4,22 @@ import PackageList from '../components/packages/PackageList';
 import PackagesHeader from '../components/packages/PackagesHeader';
 import type { PackageViewMode, PackageViewOption } from '../components/packages/types';
 import { useTranslation } from 'react-i18next';
-
-function hasPermission(permission: string) {
-  const permissions = JSON.parse(localStorage.getItem('permissions') || '[]');
-  return permissions.includes(permission);
-}
+import hasPermission from '../helpers/hasPermission';
+import hasResidency from '../helpers/hasResidency';
 
 function getAvailableViews(t: (key: string) => string) {
   const options: PackageViewOption[] = [];
 
-  if (hasPermission('@Delivery:Create')) {
-    options.push({ mode: 'create', label: t('packages:views.create.label') });
+  if (hasPermission(['@delivery:create'])) {
+    options.push({ mode: 'create', label: 'Registrar' });
   }
 
-  if (hasPermission('@Delivery:ViewBuilding')) {
-    options.push({ mode: 'building', label: t('packages:views.building.label') });
+  if (hasPermission(['@delivery:view:building'])) {
+    options.push({ mode: 'building', label: 'Prédio' });
   }
 
-  if (hasPermission('@Delivery:ViewResidency')) {
-    options.push({ mode: 'residency', label: t('packages:views.residency.label') });
+  if (hasPermission(['@delivery:view:residency']) && hasResidency()) {
+    options.push({ mode: 'residency', label: 'Residência' });
   }
 
   return options;

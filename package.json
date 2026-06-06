@@ -15,7 +15,8 @@
     "db:init:delivery": "yarn workspace delivery-service db:init",
     "db:init:reservation": "yarn workspace reservation-service db:init",
     "db:init:visitor": "yarn workspace visitor-service db:init",
-    "db:init": "yarn db:init:auth && yarn db:init:core && yarn db:init:delivery && yarn db:init:reservation && yarn db:init:visitor"
+    "db:init:communication": "yarn workspace communication-service db:init",
+    "db:init": "yarn db:init:auth && yarn db:init:core && yarn db:init:delivery && yarn db:init:reservation && yarn db:init:visitor && yarn db:init:communication"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^8.57.2",

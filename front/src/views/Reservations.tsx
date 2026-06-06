@@ -4,6 +4,8 @@ import { Building2, CalendarCheck2, Home } from 'lucide-react';
 import BuildingReservationsList from '../components/reservations/BuildingReservationsList';
 import FutureReservationsList from '../components/reservations/FutureReservationsList';
 import ReservationCalendarPanel from '../components/reservations/ReservationCalendarPanel';
+import hasResidency from '../helpers/hasResidency';
+import hasPermission from '../helpers/hasPermission';
 
 type ReservationViewMode = 'create' | 'building' | 'residency';
 
@@ -12,28 +14,23 @@ interface ReservationViewOption {
   label: string;
 }
 
-const CREATE_RESERVATION_PERMISSION = '@Reservation:Create';
-const VIEW_BUILDING_RESERVATION_PERMISSION = '@Reservation:ViewBuilding';
-const VIEW_RESIDENCY_RESERVATION_PERMISSION = '@Reservation:ViewResidency';
-
-function hasPermission(permission: string) {
-  const permissions = JSON.parse(localStorage.getItem('permissions') || '[]');
-  return permissions.includes(permission);
-}
+const CREATE_RESERVATION_PERMISSION = '@reservation:create';
+const VIEW_BUILDING_RESERVATION_PERMISSION = '@reservation:view:building';
+const VIEW_RESIDENCY_RESERVATION_PERMISSION = '@reservation:view:residency';
 
 function getAvailableViews(t: (key: string) => string) {
   const options: ReservationViewOption[] = [];
 
-  if (hasPermission(CREATE_RESERVATION_PERMISSION)) {
-    options.push({ mode: 'create', label: t('reservations:views.create.label') });
+  if (hasPermission([CREATE_RESERVATION_PERMISSION])) {
+    options.push({ mode: 'create', label: 'Registrar' });
   }
 
-  if (hasPermission(VIEW_BUILDING_RESERVATION_PERMISSION)) {
-    options.push({ mode: 'building', label: t('reservations:views.building.label') });
+  if (hasPermission([VIEW_BUILDING_RESERVATION_PERMISSION])) {
+    options.push({ mode: 'building', label: 'Prédio' });
   }
 
-  if (hasPermission(VIEW_RESIDENCY_RESERVATION_PERMISSION)) {
-    options.push({ mode: 'residency', label: t('reservations:views.residency.label') });
+  if (hasPermission([VIEW_RESIDENCY_RESERVATION_PERMISSION]) && hasResidency()) {
+    options.push({ mode: 'residency', label: 'Minha unidade' });
   }
 
   return options;
