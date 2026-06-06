@@ -58,6 +58,7 @@ const routes: RouteConfig[] = [
     viewComponent: Packages,
     layout: 'sidebar',
     visible: true,
+    permissions: ['@delivery:create', '@delivery:view:building', '@delivery:view:residency'],
     display: {
       labelKey: 'sidebar.routes.packages',
       icon: PackageIcon,
