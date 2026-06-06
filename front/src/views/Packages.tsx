@@ -3,24 +3,20 @@ import PackageCreateForm from '../components/packages/PackageCreateForm';
 import PackageList from '../components/packages/PackageList';
 import PackagesHeader from '../components/packages/PackagesHeader';
 import type { PackageViewMode, PackageViewOption } from '../components/packages/types';
-
-function hasPermission(permission: string) {
-  const permissions = JSON.parse(localStorage.getItem('permissions') || '[]');
-  return permissions.includes(permission);
-}
+import hasPermission from '../helpers/hasPermission';
 
 function getAvailableViews() {
   const options: PackageViewOption[] = [];
 
-  if (hasPermission('@Delivery:Create')) {
+  if (hasPermission(['@delivery:create'])) {
     options.push({ mode: 'create', label: 'Registrar' });
   }
 
-  if (hasPermission('@Delivery:ViewBuilding')) {
+  if (hasPermission(['@delivery:view:building'])) {
     options.push({ mode: 'building', label: 'Prédio' });
   }
 
-  if (hasPermission('@Delivery:ViewResidency')) {
+  if (hasPermission(['@delivery:view:residency'])) {
     options.push({ mode: 'residency', label: 'Residência' });
   }
 
