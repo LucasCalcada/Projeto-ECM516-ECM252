@@ -1,7 +1,4 @@
 {
-  "title": "Reservas",
-  "description": "Gestione reservas de parrilla, salón de fiestas y otras áreas comunes.",
-  "upcoming": "Próximas Reservas",
   "views": {
     "create": {
       "label": "Registrar",
@@ -30,10 +27,6 @@
     "cancelled": "Cancelada"
   },
   "form": {
-    "resident": "Residente",
-    "resource": "Área común",
-    "date": "Fecha",
-    "comment": "Observaciones",
     "confirm": "Solicitar reserva",
     "title": "Nueva reserva",
     "selectDate": "Seleccione en el calendario",
@@ -48,7 +41,8 @@
     "toast": {
       "successTitle": "Reserva",
       "successMessage": "Reserva registrada correctamente."
-    }
+    },
+    "people_many": ""
   },
   "calendar": {
     "title": "Calendario del área",
@@ -63,21 +57,29 @@
     },
     "reservationsFor": "Reservas para {{date}}",
     "reservedDay": "Este día ya fue reservado.",
-    "weekDays": ["D", "L", "M", "M", "J", "V", "S"],
-    "months": [
-      "Enero",
-      "Febrero",
-      "Marzo",
-      "Abril",
-      "Mayo",
-      "Junio",
-      "Julio",
-      "Agosto",
-      "Septiembre",
-      "Octubre",
-      "Noviembre",
-      "Diciembre"
-    ]
+    "weekDays": {
+      "0": "D",
+      "1": "L",
+      "2": "M",
+      "3": "M",
+      "4": "J",
+      "5": "V",
+      "6": "S"
+    },
+    "months": {
+      "0": "Enero",
+      "1": "Febrero",
+      "2": "Marzo",
+      "3": "Abril",
+      "4": "Mayo",
+      "5": "Junio",
+      "6": "Julio",
+      "7": "Agosto",
+      "8": "Septiembre",
+      "9": "Octubre",
+      "10": "Noviembre",
+      "11": "Diciembre"
+    }
   },
   "lists": {
     "futureTitle": "Mis próximas reservas",
@@ -95,7 +97,10 @@
     "weeks_one": "En {{count}} semana",
     "weeks_other": "En {{count}} semanas",
     "months_one": "En {{count}} mes",
-    "months_other": "En {{count}} meses"
+    "months_other": "En {{count}} meses",
+    "days_many": "",
+    "weeks_many": "",
+    "months_many": ""
   },
   "rules": {
     "title": "¡Reserva confirmada!",
@@ -124,7 +129,10 @@
       },
       "capacity": {
         "title": "Límite de personas",
-        "description": "Máximo de {{count}} personas simultáneas en el área común reservada."
+        "description": "Máximo de {{count}} personas simultáneas en el área común reservada.",
+        "description_many": "",
+        "description_one": "",
+        "description_other": ""
       },
       "returnArea": {
         "title": "Devolución del área",

@@ -1,6 +1,4 @@
 {
-  "title": "Encomendas",
-  "description": "Acompanhe aqui os pacotes recebidos na portaria.",
   "loading": "Carregando encomendas...",
   "notFound": "Nenhuma encomenda encontrada para esta residência.",
   "views": {
@@ -18,8 +16,6 @@
     }
   },
   "list": {
-    "buildingTitle": "Encomendas do prédio",
-    "residencyTitle": "Encomendas da residência",
     "empty": "Nenhuma encomenda encontrada.",
     "refresh": "Atualizar",
     "updating": "Atualizando...",
@@ -33,7 +29,6 @@
     }
   },
   "form": {
-    "title": "Nova encomenda",
     "refreshResidencies": "Atualizar residências",
     "noResidencies": "Nenhuma residência encontrada",
     "descriptionPlaceholder": "Ex.: Pacote Amazon",

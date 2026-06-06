@@ -1,6 +1,4 @@
 {
-  "title": "Paquetes",
-  "description": "Sigue aquí los paquetes recibidos en la portería.",
   "loading": "Cargando paquetes...",
   "notFound": "No se encontraron paquetes para esta residencia.",
   "views": {
@@ -18,8 +16,6 @@
     }
   },
   "list": {
-    "buildingTitle": "Paquetes del edificio",
-    "residencyTitle": "Paquetes de la residencia",
     "empty": "No se encontraron paquetes.",
     "refresh": "Actualizar",
     "updating": "Actualizando...",
@@ -33,7 +29,6 @@
     }
   },
   "form": {
-    "title": "Nuevo paquete",
     "refreshResidencies": "Actualizar residencias",
     "noResidencies": "No se encontraron residencias",
     "descriptionPlaceholder": "Ej.: Paquete Amazon",

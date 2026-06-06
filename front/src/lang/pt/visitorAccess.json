@@ -10,7 +10,6 @@
     }
   },
   "form": {
-    "title": "Registrar entrada",
     "submit": "Registrar acesso",
     "submitting": "Registrando...",
     "namePlaceholder": "Ex.: João da Silva",
@@ -23,7 +22,6 @@
     }
   },
   "list": {
-    "title": "Histórico do prédio",
     "empty": "Nenhum acesso encontrado.",
     "toast": {
       "listError": "Não foi possível listar os acessos."

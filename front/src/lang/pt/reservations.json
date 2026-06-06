@@ -1,7 +1,4 @@
 {
-  "title": "Reservas",
-  "description": "Gerencie reservas de churrasqueira, salão de festas e demais ambientes.",
-  "upcoming": "Próximas Reservas",
   "views": {
     "create": {
       "label": "Registrar",
@@ -30,10 +27,6 @@
     "cancelled": "Cancelada"
   },
   "form": {
-    "resident": "Morador",
-    "resource": "Área comum",
-    "date": "Data",
-    "comment": "Observações",
     "confirm": "Solicitar reserva",
     "title": "Nova reserva",
     "selectDate": "Selecione no calendário",
@@ -48,7 +41,8 @@
     "toast": {
       "successTitle": "Reserva",
       "successMessage": "Reserva registrada com sucesso."
-    }
+    },
+    "people_many": "form.people"
   },
   "calendar": {
     "title": "Calendário da área",
@@ -63,21 +57,29 @@
     },
     "reservationsFor": "Reservas para {{date}}",
     "reservedDay": "Este dia já foi reservado.",
-    "weekDays": ["D", "S", "T", "Q", "Q", "S", "S"],
-    "months": [
-      "Janeiro",
-      "Fevereiro",
-      "Março",
-      "Abril",
-      "Maio",
-      "Junho",
-      "Julho",
-      "Agosto",
-      "Setembro",
-      "Outubro",
-      "Novembro",
-      "Dezembro"
-    ]
+    "weekDays": {
+      "0": "D",
+      "1": "S",
+      "2": "T",
+      "3": "Q",
+      "4": "Q",
+      "5": "S",
+      "6": "S"
+    },
+    "months": {
+      "0": "Janeiro",
+      "1": "Fevereiro",
+      "2": "Março",
+      "3": "Abril",
+      "4": "Maio",
+      "5": "Junho",
+      "6": "Julho",
+      "7": "Agosto",
+      "8": "Setembro",
+      "9": "Outubro",
+      "10": "Novembro",
+      "11": "Dezembro"
+    }
   },
   "lists": {
     "futureTitle": "Minhas futuras reservas",
@@ -95,7 +97,10 @@
     "weeks_one": "Em {{count}} semana",
     "weeks_other": "Em {{count}} semanas",
     "months_one": "Em {{count}} mês",
-    "months_other": "Em {{count}} meses"
+    "months_other": "Em {{count}} meses",
+    "days_many": "relative.days",
+    "weeks_many": "relative.weeks",
+    "months_many": "relative.months"
   },
   "rules": {
     "title": "Reserva Confirmada!",
@@ -124,7 +129,10 @@
       },
       "capacity": {
         "title": "Limite de Pessoas",
-        "description": "Máximo de {{count}} pessoas simultâneas na área comum reservada."
+        "description": "Máximo de {{count}} pessoas simultâneas na área comum reservada.",
+        "description_many": "rules.items.capacity.description",
+        "description_one": "rules.items.capacity.description",
+        "description_other": "rules.items.capacity.description"
       },
       "returnArea": {
         "title": "Devolução da Área",

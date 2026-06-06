@@ -32,14 +32,6 @@
   "settings": {
     "title": "Settings",
     "subtitle": "Manage your preferences and profile",
-    "profile": {
-      "title": "Profile",
-      "edit": "✏️ Edit Profile",
-      "save": "💾 Save",
-      "cancel": "✕ Cancel",
-      "email": "Email",
-      "phone": "Phone"
-    },
     "language": {
       "title": "Language",
       "selected": "Selected",
@@ -48,9 +40,6 @@
         "en": "English",
         "es": "Spanish"
       }
-    },
-    "messages": {
-      "profileUpdated": "Profile updated successfully!"
     }
   }
 }

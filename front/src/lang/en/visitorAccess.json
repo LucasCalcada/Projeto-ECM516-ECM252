@@ -10,7 +10,6 @@
     }
   },
   "form": {
-    "title": "Register entry",
     "submit": "Register access",
     "submitting": "Registering...",
     "namePlaceholder": "E.g.: John Smith",
@@ -23,7 +22,6 @@
     }
   },
   "list": {
-    "title": "Building history",
     "empty": "No accesses found.",
     "toast": {
       "listError": "Could not list accesses."

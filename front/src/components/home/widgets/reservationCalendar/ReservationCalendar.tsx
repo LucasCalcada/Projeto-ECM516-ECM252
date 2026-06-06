@@ -86,7 +86,10 @@ export function ReservationCalendar({
     setCurrentMonth(currentMonth + 1);
   }
 
-  const monthNames = t('reservations:calendar.months', { returnObjects: true }) as string[];
+  const monthNames = t('reservations:calendar.months', { returnObjects: true }) as Record<
+    number,
+    string
+  >;
 
   const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
   const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay();
@@ -99,7 +102,10 @@ export function ReservationCalendar({
     days.push(i);
   }
 
-  const weekDays = t('reservations:calendar.weekDays', { returnObjects: true }) as string[];
+  const weekDays = t(`reservations:calendar.weekDays`, { returnObjects: true }) as Record<
+    number,
+    string
+  >;
   const selectedReservations = selectedDate ? reservationsByDate.get(selectedDate) : undefined;
 
   return (
@@ -130,9 +136,9 @@ export function ReservationCalendar({
       </div>
 
       <div className="weekdays">
-        {weekDays.map((day, index) => (
+        {Object.values(weekDays).map((day, index) => (
           <div key={`${day}-${index}`} className="weekday">
-            {day}
+            {day.toUpperCase()}
           </div>
         ))}
       </div>
