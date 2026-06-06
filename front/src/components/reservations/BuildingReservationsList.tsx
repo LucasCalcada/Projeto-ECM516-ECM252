@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
-import commonAreas from '../../mockedData/commonAreas';
 import type { ReservationApiResponse } from '../../types/Reservation';
 import useService from '../../helpers/useService';
 import { useTranslation } from 'react-i18next';
+import useCommonAreas from '../../helpers/useCommonAreas';
 
 function formatReservationDate(date: string, locale: string): string {
   return new Date(`${date}T00:00:00`).toLocaleDateString(locale, {
@@ -15,20 +15,35 @@ function formatReservationDate(date: string, locale: string): string {
 export default function BuildingReservationsList() {
   const { i18n, t } = useTranslation();
   const reservationService = useService('reservation');
+  const {
+    commonAreas,
+    isLoading: isCommonAreasLoading,
+    error: commonAreasError,
+  } = useCommonAreas();
   const locale = i18n.resolvedLanguage || i18n.language;
-  const [commonAreaId, setCommonAreaId] = useState(commonAreas[0]?.id ?? '');
+  const [commonAreaId, setCommonAreaId] = useState('');
   const [reservations, setReservations] = useState<ReservationApiResponse[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [feedback, setFeedback] = useState('');
 
   const selectedArea = useMemo(
     () => commonAreas.find((area) => area.id === commonAreaId),
-    [commonAreaId],
+    [commonAreas, commonAreaId],
   );
 
   useEffect(() => {
+    if (commonAreas.length === 0) return;
+    if (commonAreas.some((area) => area.id === commonAreaId)) return;
+
+    setCommonAreaId(commonAreas[0].id);
+  }, [commonAreas, commonAreaId]);
+
+  useEffect(() => {
     async function fetchReservations() {
-      if (!commonAreaId) return;
+      if (!commonAreaId) {
+        setReservations([]);
+        return;
+      }
 
       try {
         setIsLoading(true);
@@ -52,6 +67,12 @@ export default function BuildingReservationsList() {
     fetchReservations();
   }, [commonAreaId, reservationService, t]);
 
+  useEffect(() => {
+    if (commonAreasError) {
+      setFeedback(t('reservations:lists.loadBuildingError'));
+    }
+  }, [commonAreasError, t]);
+
   const selectedAreaName = selectedArea
     ? t(`reservations:commonAreas.${selectedArea.id}`, { defaultValue: selectedArea.name })
     : '';
@@ -65,17 +86,18 @@ export default function BuildingReservationsList() {
             className="h-10 w-full rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm"
             value={commonAreaId}
             onChange={(event) => setCommonAreaId(event.target.value)}
+            disabled={isCommonAreasLoading || commonAreas.length === 0}
           >
             {commonAreas.map((area) => (
               <option key={area.id} value={area.id}>
                 {t(`reservations:commonAreas.${area.id}`, { defaultValue: area.name })} (
-                {t('reservations:form.people', { count: area.capacity })})
+                {t('reservations:form.people', { count: area.limit })})
               </option>
             ))}
           </select>
         </label>
 
-        {isLoading ? (
+        {isLoading || isCommonAreasLoading ? (
           <span className="rounded-full border border-neutral-700 px-2 py-0.5 text-xs text-neutral-300">
             {t('common:loading')}
           </span>

@@ -1,6 +1,5 @@
 import { type FormEvent, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import commonAreas from '../../mockedData/commonAreas';
 import {
   mapReservationApiResponse,
   type Reservation,
@@ -9,6 +8,7 @@ import {
 import { ReservationCalendar } from '../home/widgets/reservationCalendar';
 import useService from '../../helpers/useService';
 import { useToast } from '../Toast';
+import useCommonAreas from '../../helpers/useCommonAreas';
 
 interface NewReservationForm {
   commonAreaId: string;
@@ -35,6 +35,7 @@ function formatReservationDate(date: string, locale: string): string {
 export default function ReservationCalendarPanel() {
   const { i18n, t } = useTranslation();
   const reservationService = useService('reservation');
+  const { commonAreas, isLoading: isCommonAreasLoading } = useCommonAreas();
   const locale = i18n.resolvedLanguage || i18n.language;
 
   const [calendarReservations, setCalendarReservations] = useState<Reservation[]>([]);
@@ -43,7 +44,7 @@ export default function ReservationCalendarPanel() {
   const [feedback, setFeedback] = useState<string>('');
   const { notifySuccess } = useToast();
   const [form, setForm] = useState<NewReservationForm>({
-    commonAreaId: commonAreas[0]?.id ?? '',
+    commonAreaId: '',
     date: '',
   });
 
@@ -53,8 +54,18 @@ export default function ReservationCalendarPanel() {
     : '';
 
   useEffect(() => {
+    if (commonAreas.length === 0) return;
+    if (commonAreas.some((area) => area.id === form.commonAreaId)) return;
+
+    setForm({ commonAreaId: commonAreas[0].id, date: '' });
+  }, [commonAreas, form.commonAreaId]);
+
+  useEffect(() => {
     async function fetchReservations() {
-      if (!form.commonAreaId) return;
+      if (!form.commonAreaId) {
+        setCalendarReservations([]);
+        return;
+      }
 
       try {
         setIsCalendarLoading(true);
@@ -130,11 +141,12 @@ export default function ReservationCalendarPanel() {
                 className="h-10 w-full rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm"
                 value={form.commonAreaId}
                 onChange={(event) => onCommonAreaChange(event.target.value)}
+                disabled={isCommonAreasLoading || commonAreas.length === 0}
               >
                 {commonAreas.map((area) => (
                   <option key={area.id} value={area.id}>
                     {t(`reservations:commonAreas.${area.id}`, { defaultValue: area.name })} (
-                    {t('reservations:form.people', { count: area.capacity })})
+                    {t('reservations:form.people', { count: area.limit })})
                   </option>
                 ))}
               </select>
@@ -154,7 +166,7 @@ export default function ReservationCalendarPanel() {
           <div className="justify-begin flex">
             <button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSubmitting || isCommonAreasLoading || !selectedArea}
               className="h-10 w-full rounded-md bg-neutral-100 px-4 text-sm font-medium text-neutral-900 transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-60 md:w-auto"
             >
               {isSubmitting ? t('reservations:form.submitting') : t('reservations:form.confirm')}

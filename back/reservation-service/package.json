@@ -10,7 +10,8 @@
     "start:watch": "tsx watch src/index.ts",
     "db:generate": "yarn drizzle-kit generate",
     "db:migrate": "yarn drizzle-kit migrate",
-    "db:init": "yarn db:generate && yarn db:migrate"
+    "db:populate": "tsx src/scripts/populate/index.ts",
+    "db:init": "yarn db:generate && yarn db:migrate && yarn db:populate"
   },
   "dependencies": {
     "cors": "^2.8.6",
@@ -25,6 +26,7 @@
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",
+    "@types/lodash": "^4.17.24",
     "@types/node": "^25.6.0",
     "@types/pg": "^8.20.0",
     "drizzle-kit": "^0.31.10",
