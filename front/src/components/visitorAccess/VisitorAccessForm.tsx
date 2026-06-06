@@ -56,11 +56,6 @@ export default function VisitorAccessForm() {
 
   return (
     <section className="rounded-lg border border-neutral-800 bg-neutral-900/40 p-4">
-      <div className="mb-4 flex items-center gap-2 text-neutral-100">
-        <UserPlus size={18} />
-        <h2 className="text-lg font-semibold">Registrar entrada</h2>
-      </div>
-
       <form className="grid grid-cols-1 gap-3 md:grid-cols-2" onSubmit={handleSubmit}>
         <label className="block">
           <span className="mb-1 block text-sm text-neutral-300">Nome</span>
