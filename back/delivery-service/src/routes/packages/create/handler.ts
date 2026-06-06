@@ -9,7 +9,7 @@ import { randomUUID } from 'crypto';
 import { Request } from 'express';
 
 export async function createPackage(req: Request, ctx: Context) {
-  requirePermission(ctx, CREATE_DELIVERY_PERMISSION);
+  requirePermission(ctx, [CREATE_DELIVERY_PERMISSION]);
 
   const { residencyName, description } = req.body;
 

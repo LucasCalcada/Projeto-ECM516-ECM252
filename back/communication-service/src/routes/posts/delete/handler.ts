@@ -8,7 +8,7 @@ import { and, eq } from 'drizzle-orm';
 import { Request } from 'express';
 
 export default async function deletePost(req: Request, ctx: Context) {
-  requirePermission(ctx, MANAGE_COMMUNICATION_POSTS_PERMISSION);
+  requirePermission(ctx, [MANAGE_COMMUNICATION_POSTS_PERMISSION]);
 
   const postId = req.params.id;
   if (!postId || Array.isArray(postId)) {

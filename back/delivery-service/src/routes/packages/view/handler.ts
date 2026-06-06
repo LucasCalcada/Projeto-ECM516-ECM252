@@ -23,7 +23,7 @@ export default async function getPackages(req: Request, ctx: Context) {
   const scope = req.query.scope;
 
   if (scope === 'building') {
-    requirePermission(ctx, VIEW_BUILDING_PERMISSION);
+    requirePermission(ctx, [VIEW_BUILDING_PERMISSION]);
     return deliveryDb
       .select()
       .from(packages)
@@ -32,7 +32,7 @@ export default async function getPackages(req: Request, ctx: Context) {
   }
 
   if (scope === 'residency') {
-    requirePermission(ctx, VIEW_RESIDENCY_PERMISSION);
+    requirePermission(ctx, [VIEW_RESIDENCY_PERMISSION]);
     const residencyId = requireResidencyId(ctx);
 
     return deliveryDb
@@ -54,7 +54,7 @@ export default async function getPackages(req: Request, ctx: Context) {
       .orderBy(desc(packages.createdAt));
   }
 
-  requirePermission(ctx, VIEW_RESIDENCY_PERMISSION);
+  requirePermission(ctx, [VIEW_RESIDENCY_PERMISSION]);
   const residencyId = requireResidencyId(ctx);
 
   return deliveryDb

@@ -16,7 +16,7 @@ function requireResidencyId(ctx: Context) {
 }
 
 export default async function updatePackageStatus(req: Request, ctx: Context) {
-  requirePermission(ctx, VIEW_RESIDENCY_PERMISSION);
+  requirePermission(ctx, [VIEW_RESIDENCY_PERMISSION]);
   const residencyId = requireResidencyId(ctx);
 
   const { packageId } = req.body;

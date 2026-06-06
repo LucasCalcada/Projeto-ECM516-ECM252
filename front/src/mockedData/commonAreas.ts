@@ -5,25 +5,16 @@ const commonAreas: CommonArea[] = [
     id: 'bbq',
     name: 'Churrasqueira',
     capacity: 20,
-    openingHour: '10:00',
-    closingHour: '22:00',
-    reservationSlotMinutes: 120,
   },
   {
     id: 'party-hall',
-    name: 'Salao de Festas',
+    name: 'Salão de Festas',
     capacity: 60,
-    openingHour: '08:00',
-    closingHour: '23:00',
-    reservationSlotMinutes: 240,
   },
   {
     id: 'meeting-room',
-    name: 'Sala de Reunioes',
+    name: 'Sala de Reuniões',
     capacity: 12,
-    openingHour: '08:00',
-    closingHour: '20:00',
-    reservationSlotMinutes: 60,
   },
 ];
 

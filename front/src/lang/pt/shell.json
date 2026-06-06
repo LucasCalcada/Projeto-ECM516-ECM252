@@ -14,6 +14,21 @@
       "logout": "Desconectar"
     }
   },
+  "residents": {
+    "title": "{{buildingName}} - Moradores",
+    "userEditor": {
+      "title": "Editar usuário",
+      "name": "Nome",
+      "namePlaceholder": "Digite o nome",
+      "permissions": "Permissões",
+      "permissionPlaceholder": "Digite uma permissão",
+      "add": "Adicionar",
+      "cancel": "Cancelar",
+      "save": "Salvar",
+      "saving": "Salvando...",
+      "loading": "Carregando usuário..."
+    }
+  },
   "settings": {
     "title": "Configurações",
     "subtitle": "Gerencie suas preferências e perfil",
