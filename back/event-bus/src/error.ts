@@ -1,4 +1,4 @@
-import { ApiError } from '@app/api/error';
+import { ApiError } from './middlewares/error';
 import { NextFunction, Request, Response } from 'express';
 
 export default function errorMiddleware(
