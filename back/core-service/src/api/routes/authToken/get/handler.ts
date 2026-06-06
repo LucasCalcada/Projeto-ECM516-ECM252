@@ -1,5 +1,5 @@
 import client from '@app/db/client';
-import { residencies, users } from '@app/db/schema';
+import { buildings, residencies, users } from '@app/db/schema';
 import jwt from 'jsonwebtoken';
 import { Context } from '@app/middlewares/routeWrapper';
 import { Request } from 'express';
@@ -18,11 +18,13 @@ export default async function getUserToken(req: Request, ctx: Context) {
     .select({
       id: users.id,
       buildingId: users.buildingId,
+      buildingName: buildings.name,
       residencyId: users.residencyId,
       residencyName: residencies.name,
       permissions: users.permissions,
     })
     .from(users)
+    .leftJoin(buildings, eq(users.buildingId, buildings.id))
     .leftJoin(residencies, eq(users.residencyId, residencies.id))
     .where(eq(users.id, userId));
 
@@ -34,6 +36,7 @@ export default async function getUserToken(req: Request, ctx: Context) {
     tokenKind: 'user',
     userId: user.id,
     buildingId: user.buildingId,
+    buildingName: user.buildingName,
     residencyId: user.residencyId,
     residencyName: user.residencyName,
     permissions: user.permissions,
