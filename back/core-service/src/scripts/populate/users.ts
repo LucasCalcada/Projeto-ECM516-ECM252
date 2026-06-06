@@ -1,5 +1,6 @@
 import { UserInsert } from '@app/db/schema';
 import { ids } from './ids';
+import { AdminPermission, UserManagePermission } from '@app/permissions';
 
 const RESIDENT_RESERVATION_PERMISSIONS = ['@Reservation:Create', '@Reservation:ViewResidency'];
 const STAFF_RESERVATION_PERMISSIONS = ['@Reservation:ViewBuilding'];
@@ -50,7 +51,7 @@ export const userData: UserInsert[] = [
     residencyId: null,
     buildingId: ids.buildings.jardim,
     name: 'Ana Recepção',
-    permissions: STAFF_RESERVATION_PERMISSIONS,
+    permissions: [UserManagePermission, STAFF_RESERVATION_PERMISSIONS],
     active: true,
   },
 
@@ -68,7 +69,7 @@ export const userData: UserInsert[] = [
     residencyId: null,
     buildingId: ids.buildings.jardim,
     name: 'Fernanda Síndica',
-    permissions: STAFF_RESERVATION_PERMISSIONS,
+    permissions: [AdminPermission],
     active: true,
   },
 
@@ -77,7 +78,7 @@ export const userData: UserInsert[] = [
     residencyId: null,
     buildingId: ids.buildings.bosque,
     name: 'Fernanda Síndica',
-    permissions: STAFF_RESERVATION_PERMISSIONS,
+    permissions: [AdminPermission],
     active: true,
   },
 ];
