@@ -6,7 +6,15 @@ import {
   ReservationCreatePermission,
   UserManagePermission,
   ReservationViewBuildingPermission,
+  DeliveryViewPermission,
+  DeliveryListPermission,
 } from '@app/permissions';
+
+const commonUserPermissions = [
+  ReservationCreatePermission,
+  ReservationViewResidencyPermission,
+  DeliveryViewPermission,
+];
 
 export const userData: UserInsert[] = [
   {
@@ -14,7 +22,7 @@ export const userData: UserInsert[] = [
     residencyId: ids.residencies.ap101,
     buildingId: ids.buildings.jardim,
     name: 'João Silva',
-    permissions: [ReservationViewResidencyPermission, ReservationCreatePermission],
+    permissions: commonUserPermissions,
     active: true,
   },
 
@@ -23,7 +31,7 @@ export const userData: UserInsert[] = [
     residencyId: ids.residencies.ap102,
     buildingId: ids.buildings.jardim,
     name: 'Maria Silva',
-    permissions: [ReservationViewResidencyPermission, ReservationCreatePermission],
+    permissions: commonUserPermissions,
     active: true,
   },
 
@@ -34,7 +42,7 @@ export const userData: UserInsert[] = [
     residencyId: ids.residencies.ap201,
     buildingId: ids.buildings.jardim,
     name: 'Carlos Souza',
-    permissions: [ReservationViewResidencyPermission, ReservationCreatePermission],
+    permissions: commonUserPermissions,
     active: true,
   },
 
@@ -43,7 +51,7 @@ export const userData: UserInsert[] = [
     residencyId: ids.residencies.casa01,
     buildingId: ids.buildings.bosque,
     name: 'Carlos Souza',
-    permissions: [ReservationViewResidencyPermission, ReservationCreatePermission],
+    permissions: commonUserPermissions,
     active: true,
   },
 
@@ -54,7 +62,7 @@ export const userData: UserInsert[] = [
     residencyId: null,
     buildingId: ids.buildings.jardim,
     name: 'Ana Recepção',
-    permissions: [UserManagePermission, ReservationViewBuildingPermission],
+    permissions: [UserManagePermission, ReservationViewBuildingPermission, DeliveryListPermission],
     active: true,
   },
 
