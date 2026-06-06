@@ -16,11 +16,6 @@
       "description": "Track the upcoming reservations for your unit."
     }
   },
-  "commonAreas": {
-    "bbq": "Barbecue area",
-    "party-hall": "Party hall",
-    "meeting-room": "Meeting room"
-  },
   "status": {
     "pending": "Pending",
     "confirmed": "Confirmed",

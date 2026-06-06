@@ -16,11 +16,6 @@
       "description": "Acompañe las próximas reservas de su unidad."
     }
   },
-  "commonAreas": {
-    "bbq": "Parrilla",
-    "party-hall": "Salón de fiestas",
-    "meeting-room": "Sala de reuniones"
-  },
   "status": {
     "pending": "Pendiente",
     "confirmed": "Confirmada",

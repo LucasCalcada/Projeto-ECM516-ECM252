@@ -16,11 +16,6 @@
       "description": "Acompanhe as próximas reservas da sua unidade."
     }
   },
-  "commonAreas": {
-    "bbq": "Churrasqueira",
-    "party-hall": "Salão de Festas",
-    "meeting-room": "Sala de Reuniões"
-  },
   "status": {
     "pending": "Pendente",
     "confirmed": "Confirmada",

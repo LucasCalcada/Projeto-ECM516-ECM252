@@ -18,7 +18,6 @@ export default defineConfig({
       'packages:statusValue.*',
       'packages:views.*',
       'reservations:calendar.*',
-      'reservations:commonAreas.*',
       'reservations:relative.*',
       'reservations:rules.*',
       'reservations:status.*',
