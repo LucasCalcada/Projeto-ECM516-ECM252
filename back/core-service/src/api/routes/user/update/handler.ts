@@ -1,7 +1,7 @@
 import BadRequest from '@app/api/error/errors/BadRequest';
 import NotFoundError from '@app/api/error/errors/NotFoundError';
 import client from '@app/db/client';
-import { buildings, users } from '@app/db/schema';
+import { users } from '@app/db/schema';
 import { requirePermission } from '@app/helpers/requirePermission';
 import { Context } from '@app/middlewares/routeWrapper';
 import { UserManagePermission } from '@app/permissions';
@@ -35,7 +35,7 @@ export default async function userUpdate(req: Request, ctx: Context) {
     throw BadRequest;
   }
 
-  const filter = and(eq(buildings.id, ctx.token.buildingId), eq(users.id, id));
+  const filter = and(eq(users.buildingId, ctx.token.buildingId), eq(users.id, id));
   const [user] = await client.update(users).set(updatedFields).where(filter).returning();
 
   return { user };
