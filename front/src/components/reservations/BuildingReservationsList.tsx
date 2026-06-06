@@ -78,7 +78,7 @@ export default function BuildingReservationsList() {
     : '';
 
   return (
-    <section className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900/40 p-3">
+    <section className="flex h-full flex-col overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900/40 p-3">
       <div className="mb-4 flex shrink-0 flex-wrap items-end justify-between gap-3">
         <label className="block w-full max-w-sm">
           <span className="mb-1 block text-sm text-neutral-300">{t('common:commonArea')}</span>
@@ -104,7 +104,7 @@ export default function BuildingReservationsList() {
         ) : null}
       </div>
 
-      <div className="min-h-0 flex-1 space-y-3 overflow-y-auto pr-1">
+      <div className="flex flex-col space-y-3 overflow-y-auto pr-1">
         {feedback ? (
           <p className="rounded-md border border-red-900/50 bg-red-950/30 p-3 text-sm text-red-200">
             {feedback}

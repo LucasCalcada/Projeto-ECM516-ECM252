@@ -75,7 +75,7 @@ export default function FutureReservationsList() {
   }, [reservationService, t]);
 
   return (
-    <section className="flex min-h-0 flex-col overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900/40 p-3">
+    <section className="flex h-full flex-col overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900/40 p-3">
       <div className="mb-3 flex shrink-0 flex-wrap items-center justify-between gap-2">
         <h2 className="text-lg font-semibold">{t('reservations:lists.futureTitle')}</h2>
         {isMyReservationsLoading ? (
@@ -85,7 +85,7 @@ export default function FutureReservationsList() {
         ) : null}
       </div>
 
-      <div className="min-h-0 flex-1 space-y-3 overflow-y-auto pr-1">
+      <div className="flex h-full flex-col gap-2 space-y-3 overflow-y-auto pr-1">
         {myReservationsFeedback ? (
           <p className="rounded-md border border-red-900/50 bg-red-950/30 p-3 text-sm text-red-200">
             {myReservationsFeedback}
