@@ -20,7 +20,7 @@ export default function Options() {
   }
 
   return (
-    <div className="mt-auto flex flex-col gap-2 border-t-1 border-neutral-800 p-1 px-3 pt-4">
+    <div className="flex flex-col gap-2 border-t-1 border-neutral-800 p-1 px-3 pt-4">
       <NavLink
         to="/settings"
         className={({ isActive }) => (isActive ? 'rounded-md bg-neutral-800' : '')}
