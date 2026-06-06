@@ -43,7 +43,7 @@ export default function AnnouncementWidget(props: { announcements: Announcement[
         <p className="text-2xl font-bold">{t('announcements:title')}</p>
       </div>
       {props.announcements?.length > 0 ? (
-        <div className="grid h-full grid-cols-1 gap-4 overflow-y-scroll pt-2">
+        <div className="flex flex-col gap-4 overflow-y-scroll pt-2">
           {props.announcements.map((a) => (
             <AnnouncementEntry announcement={a} />
           ))}
