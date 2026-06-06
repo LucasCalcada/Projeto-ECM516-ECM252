@@ -1,0 +1,15 @@
+export const ids = {
+  buildings: {
+    jardim: '22222222-2222-2222-2222-222222222221',
+    bosque: '22222222-2222-2222-2222-222222222222',
+  },
+
+  commonAreas: {
+    jardimChurrasqueira: '55555555-5555-5555-5555-555555555551',
+    jardimSalaoFestas: '55555555-5555-5555-5555-555555555552',
+    jardimSalaReuniao: '55555555-5555-5555-5555-555555555553',
+    bosqueChurrasqueira: '55555555-5555-5555-5555-555555555554',
+    bosqueSalaoFestas: '55555555-5555-5555-5555-555555555555',
+    bosqueSalaReuniao: '55555555-5555-5555-5555-555555555556',
+  },
+} as const;

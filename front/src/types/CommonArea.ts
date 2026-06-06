@@ -1,5 +1,6 @@
 export interface CommonArea {
   id: string;
+  buildingId: string;
   name: string;
-  capacity: number;
+  limit: number;
 }

@@ -3,18 +3,21 @@ import type { CommonArea } from '../types/CommonArea';
 const commonAreas: CommonArea[] = [
   {
     id: 'bbq',
+    buildingId: '22222222-2222-2222-2222-222222222221',
     name: 'Churrasqueira',
-    capacity: 20,
+    limit: 20,
   },
   {
     id: 'party-hall',
+    buildingId: '22222222-2222-2222-2222-222222222221',
     name: 'Salão de Festas',
-    capacity: 60,
+    limit: 60,
   },
   {
     id: 'meeting-room',
+    buildingId: '22222222-2222-2222-2222-222222222221',
     name: 'Sala de Reuniões',
-    capacity: 12,
+    limit: 12,
   },
 ];
 

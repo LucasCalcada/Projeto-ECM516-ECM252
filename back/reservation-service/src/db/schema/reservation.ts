@@ -1,5 +1,26 @@
 import { InferInsertModel, InferSelectModel } from 'drizzle-orm';
-import { date, pgTable, text, timestamp, unique, uuid, varchar } from 'drizzle-orm/pg-core';
+import {
+  date,
+  integer,
+  pgTable,
+  text,
+  timestamp,
+  unique,
+  uuid,
+  varchar,
+} from 'drizzle-orm/pg-core';
+
+export const commonAreas = pgTable(
+  'common_areas',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    buildingId: uuid('building_id').notNull(),
+    name: text('name').notNull(),
+    limit: integer('limit').notNull(),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  },
+  (c) => [unique().on(c.buildingId, c.name)],
+);
 
 export const reservations = pgTable(
   'reservations',
@@ -19,3 +40,5 @@ export const reservations = pgTable(
 
 export type Reservation = InferSelectModel<typeof reservations>;
 export type ReservationInsert = InferInsertModel<typeof reservations>;
+export type CommonArea = InferSelectModel<typeof commonAreas>;
+export type CommonAreaInsert = InferInsertModel<typeof commonAreas>;
