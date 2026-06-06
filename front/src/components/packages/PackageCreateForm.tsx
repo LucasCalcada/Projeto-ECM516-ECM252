@@ -84,7 +84,7 @@ export default function PackageCreateForm({ buildingId }: PackageCreateFormProps
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (!selectedResidencyName || !description.trim()) {
+    if (!selectedResidencyId || !description.trim()) {
       notifyWarning(
         t('packages:form.toast.requiredTitle'),
         t('packages:form.toast.requiredMessage'),
