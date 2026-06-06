@@ -3,6 +3,6 @@ export const AdminPermission = '@core:admin';
 export const UserManagePermission = '@core:user:manage';
 
 // Delivery Service
-export const DeliveryCreatePermission = '@Delivery:Create';
-export const DeliveryListPermission = '@Delivery:ViewBuilding';
-export const DeliveryViewPermission = '@Delivery:ViewResidency';
+export const DeliveryCreatePermission = '@delivery:create';
+export const DeliveryListPermission = '@delivery:view:building';
+export const DeliveryViewPermission = '@delivery:view:residency';
