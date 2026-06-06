@@ -2,6 +2,28 @@
   "title": "Reservations",
   "description": "Manage reservations for the barbecue, party room, and other facilities.",
   "upcoming": "Upcoming Reservations",
+  "views": {
+    "create": {
+      "label": "Register",
+      "title": "Register reservation",
+      "description": "Choose a common area and an available date."
+    },
+    "building": {
+      "label": "Building",
+      "title": "Building reservations",
+      "description": "View reservations by common area."
+    },
+    "residency": {
+      "label": "My unit",
+      "title": "My reservations",
+      "description": "Track the upcoming reservations for your unit."
+    }
+  },
+  "commonAreas": {
+    "bbq": "Barbecue area",
+    "party-hall": "Party hall",
+    "meeting-room": "Meeting room"
+  },
   "status": {
     "pending": "Pending",
     "confirmed": "Confirmed",
@@ -9,9 +31,105 @@
   },
   "form": {
     "resident": "Resident",
-    "resource": "Common Area",
+    "resource": "Common area",
     "date": "Date",
     "comment": "Comments",
-    "confirm": "Request reservation"
+    "confirm": "Request reservation",
+    "title": "New reservation",
+    "selectDate": "Select on the calendar",
+    "submitting": "Please wait...",
+    "people_one": "{{count}} person",
+    "people_other": "{{count}} people",
+    "feedback": {
+      "missingFields": "Select a common area and an available date.",
+      "conflict": "This day has already been reserved. Choose another date.",
+      "createError": "Could not create the reservation. Try again later."
+    },
+    "toast": {
+      "successTitle": "Reservation",
+      "successMessage": "Reservation registered successfully."
+    }
+  },
+  "calendar": {
+    "title": "Area calendar",
+    "description": "Days marked in red are already reserved for {{areaName}}.",
+    "previousMonth": "Previous month",
+    "nextMonth": "Next month",
+    "monthYear": "{{month}} {{year}}",
+    "dayStatus": {
+      "past": "Past date",
+      "reserved": "Reserved day",
+      "available": "Available"
+    },
+    "reservationsFor": "Reservations for {{date}}",
+    "reservedDay": "This day has already been reserved.",
+    "weekDays": ["S", "M", "T", "W", "T", "F", "S"],
+    "months": [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December"
+    ]
+  },
+  "lists": {
+    "futureTitle": "My upcoming reservations",
+    "emptyFuture": "Your apartment does not have upcoming reservations yet.",
+    "emptyBuilding": "No upcoming reservations for {{areaName}}.",
+    "loadFutureError": "Could not load your upcoming reservations.",
+    "loadBuildingError": "Could not load the reservations for this common area."
+  },
+  "relative": {
+    "past": "Past",
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "days_one": "In {{count}} day",
+    "days_other": "In {{count}} days",
+    "weeks_one": "In {{count}} week",
+    "weeks_other": "In {{count}} weeks",
+    "months_one": "In {{count}} month",
+    "months_other": "In {{count}} months"
+  },
+  "rules": {
+    "title": "Reservation Confirmed!",
+    "resident": "Resident:",
+    "commonArea": "Common area:",
+    "date": "Date:",
+    "importantRules": "Important Building Rules:",
+    "acknowledgment": "You acknowledge that you have read and agree to the condominium rules.",
+    "understood": "Understood",
+    "items": {
+      "quietHours": {
+        "title": "Quiet Hours",
+        "description": "Monday to Friday: nighttime period (10 PM to 8 AM). Weekends: all day until 9 PM."
+      },
+      "cleaning": {
+        "title": "Cleaning Team",
+        "description": "Tuesdays and Thursdays, from 8 AM to 11 AM. Normal circulation is allowed during these periods."
+      },
+      "volume": {
+        "title": "Maximum Volume",
+        "description": "Respect your neighbors. Avoid loud music, extended parties, and excessive noise."
+      },
+      "forbidden": {
+        "title": "Forbidden",
+        "description": "Alcoholic beverages are not allowed outside the authorized period (4 PM - 11 PM)."
+      },
+      "capacity": {
+        "title": "People Limit",
+        "description": "Maximum of {{count}} people at the same time in the reserved common area."
+      },
+      "returnArea": {
+        "title": "Area Return",
+        "description": "The area must be returned in perfect condition at the end of the reservation period."
+      }
+    }
   }
 }

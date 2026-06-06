@@ -41,7 +41,13 @@
       "phone": "Telefone"
     },
     "language": {
-      "title": "Idioma"
+      "title": "Idioma",
+      "selected": "Selecionado",
+      "options": {
+        "pt": "Português",
+        "en": "Inglês",
+        "es": "Espanhol"
+      }
     },
     "messages": {
       "profileUpdated": "Perfil atualizado com sucesso!"

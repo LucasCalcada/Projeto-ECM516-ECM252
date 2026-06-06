@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { Clock } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import './styles.css';
 
 interface TimePickerProps {
@@ -10,6 +12,7 @@ interface TimePickerProps {
 }
 
 export function TimePicker({ value, onChange, minTime, maxTime, label }: TimePickerProps) {
+  const { t } = useTranslation();
   const [hours, setHours] = useState<string>('00');
   const [minutes, setMinutes] = useState<string>('00');
   const [isOpen, setIsOpen] = useState(false);
@@ -96,13 +99,13 @@ export function TimePicker({ value, onChange, minTime, maxTime, label }: TimePic
           <span className="time-display">
             {hours}:{minutes}
           </span>
-          <span className="time-icon">🕐</span>
+          <Clock className="time-icon" size={18} />
         </button>
 
         {isOpen && (
           <div className="time-picker-panel">
             <div className="time-picker-section">
-              <div className="time-picker-label-section">Horas</div>
+              <div className="time-picker-label-section">{t('common:time.hours')}</div>
 
               <div className="time-input-group">
                 <button
@@ -135,7 +138,7 @@ export function TimePicker({ value, onChange, minTime, maxTime, label }: TimePic
             <div className="time-picker-divider">:</div>
 
             <div className="time-picker-section">
-              <div className="time-picker-label-section">Minutos</div>
+              <div className="time-picker-label-section">{t('common:time.minutes')}</div>
 
               <div className="time-input-group">
                 <button

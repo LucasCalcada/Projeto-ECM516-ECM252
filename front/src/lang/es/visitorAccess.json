@@ -1,0 +1,39 @@
+{
+  "views": {
+    "create": {
+      "label": "Registrar",
+      "title": "Registrar visita"
+    },
+    "view": {
+      "label": "Historial",
+      "title": "Historial de visitas"
+    }
+  },
+  "form": {
+    "title": "Registrar entrada",
+    "submit": "Registrar acceso",
+    "submitting": "Registrando...",
+    "namePlaceholder": "Ej.: Juan Pérez",
+    "toast": {
+      "requiredTitle": "Campos obligatorios",
+      "requiredMessage": "Complete nombre, CPF y RG.",
+      "successTitle": "Acceso registrado",
+      "successMessage": "Entrada registrada correctamente.",
+      "createError": "No fue posible registrar el acceso."
+    }
+  },
+  "list": {
+    "title": "Historial del edificio",
+    "empty": "No se encontraron accesos.",
+    "toast": {
+      "listError": "No fue posible listar los accesos."
+    }
+  },
+  "table": {
+    "visitor": "Visitante",
+    "residency": "Residencia",
+    "cpf": "CPF",
+    "rg": "RG",
+    "entry": "Entrada"
+  }
+}

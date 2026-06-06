@@ -12,7 +12,7 @@ export default function UserRow(props: { user: User }) {
     ? createPortal(
         <EditUser
           userId={props.user.id}
-          onClose={(name: string, permissions: string[]) => {
+          onClose={(name: string) => {
             setName(name);
             setEditing(false);
           }}

@@ -7,7 +7,8 @@ interface PackagesTableProps {
 }
 
 export default function PackagesTable({ packages, isLoading }: PackagesTableProps) {
-  const { t } = useTranslation();
+  const { i18n, t } = useTranslation();
+  const locale = i18n.resolvedLanguage || i18n.language;
 
   if (isLoading) {
     return <div className="loading-container">{t('packages:loading')}</div>;
@@ -33,11 +34,13 @@ export default function PackagesTable({ packages, isLoading }: PackagesTableProp
             <tr key={pkg.id}>
               <td>{pkg.description}</td>
               <td>
-                <span className={`status-badge ${pkg.status.toLowerCase()}`}>{pkg.status}</span>
+                <span className={`status-badge ${pkg.status.toLowerCase()}`}>
+                  {t(`packages:statusValue.${pkg.status}`, { defaultValue: pkg.status })}
+                </span>
               </td>
-              <td>{new Date(pkg.createdAt).toLocaleDateString('pt-BR')}</td>
+              <td>{new Date(pkg.createdAt).toLocaleDateString(locale)}</td>
               <td>
-                {pkg.deliveredAt ? new Date(pkg.deliveredAt).toLocaleDateString('pt-BR') : '-'}
+                {pkg.deliveredAt ? new Date(pkg.deliveredAt).toLocaleDateString(locale) : '-'}
               </td>
             </tr>
           ))}

@@ -2,6 +2,7 @@ import { type FormEvent, useState } from 'react';
 import { UserPlus } from 'lucide-react';
 import { useToast } from '../Toast';
 import useService from '../../helpers/useService';
+import { useTranslation } from 'react-i18next';
 
 interface AccessFormState {
   rg: string;
@@ -18,6 +19,7 @@ const initialForm: AccessFormState = {
 };
 
 export default function VisitorAccessForm() {
+  const { t } = useTranslation();
   const [form, setForm] = useState<AccessFormState>(initialForm);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { notify } = useToast();
@@ -31,7 +33,11 @@ export default function VisitorAccessForm() {
     event.preventDefault();
 
     if (!form.name || !form.cpf || !form.rg) {
-      notify('Campos obrigatorios', 'Preencha nome, CPF e RG.', 'warning');
+      notify(
+        t('visitorAccess:form.toast.requiredTitle'),
+        t('visitorAccess:form.toast.requiredMessage'),
+        'warning',
+      );
       return;
     }
 
@@ -44,11 +50,15 @@ export default function VisitorAccessForm() {
         entryAt: form.entryAt || undefined,
       });
 
-      notify('Acesso registrado', 'Entrada registrada com sucesso.', 'success');
+      notify(
+        t('visitorAccess:form.toast.successTitle'),
+        t('visitorAccess:form.toast.successMessage'),
+        'success',
+      );
       setForm(initialForm);
     } catch (error) {
       console.error(error);
-      notify('Erro', 'Nao foi possivel registrar o acesso.', 'error');
+      notify(t('common:error'), t('visitorAccess:form.toast.createError'), 'error');
     } finally {
       setIsSubmitting(false);
     }
@@ -58,21 +68,23 @@ export default function VisitorAccessForm() {
     <section className="rounded-lg border border-neutral-800 bg-neutral-900/40 p-4">
       <div className="mb-4 flex items-center gap-2 text-neutral-100">
         <UserPlus size={18} />
-        <h2 className="text-lg font-semibold">Registrar entrada</h2>
+        <h2 className="text-lg font-semibold">{t('visitorAccess:form.title')}</h2>
       </div>
 
       <form className="grid grid-cols-1 gap-3 md:grid-cols-2" onSubmit={handleSubmit}>
         <label className="block">
-          <span className="mb-1 block text-sm text-neutral-300">Nome</span>
+          <span className="mb-1 block text-sm text-neutral-300">{t('common:name')}</span>
           <input
             className="w-full rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm"
             value={form.name}
             onChange={(e) => updateForm('name', e.target.value)}
-            placeholder="Ex.: Joao da Silva"
+            placeholder={t('visitorAccess:form.namePlaceholder')}
           />
         </label>
         <label className="block">
-          <span className="mb-1 block text-sm text-neutral-300">CPF</span>
+          <span className="mb-1 block text-sm text-neutral-300">
+            {t('visitorAccess:table.cpf')}
+          </span>
           <input
             className="w-full rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm"
             value={form.cpf}
@@ -81,7 +93,7 @@ export default function VisitorAccessForm() {
           />
         </label>
         <label className="block">
-          <span className="mb-1 block text-sm text-neutral-300">RG</span>
+          <span className="mb-1 block text-sm text-neutral-300">{t('visitorAccess:table.rg')}</span>
           <input
             className="w-full rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm"
             value={form.rg}
@@ -90,7 +102,7 @@ export default function VisitorAccessForm() {
           />
         </label>
         <label className="block">
-          <span className="mb-1 block text-sm text-neutral-300">Data e hora</span>
+          <span className="mb-1 block text-sm text-neutral-300">{t('common:dateTime')}</span>
           <input
             type="datetime-local"
             className="w-full rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm"
@@ -103,7 +115,7 @@ export default function VisitorAccessForm() {
           className="rounded-md bg-cyan-300 px-3 py-2 text-sm font-semibold text-neutral-950 transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-60 md:col-span-2"
           disabled={isSubmitting}
         >
-          {isSubmitting ? 'Registrando...' : 'Registrar acesso'}
+          {isSubmitting ? t('visitorAccess:form.submitting') : t('visitorAccess:form.submit')}
         </button>
       </form>
     </section>

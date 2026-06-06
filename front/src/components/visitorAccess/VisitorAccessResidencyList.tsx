@@ -3,12 +3,14 @@ import { ListChecks, RefreshCw } from 'lucide-react';
 import type { VisitorAccess } from '../../types/VisitorAccess';
 import { useToast } from '../Toast';
 import useService from '../../helpers/useService';
+import { useTranslation } from 'react-i18next';
 
 function getResidencyLabel(access: VisitorAccess) {
   return access.residencyCode ?? access.residencyName ?? access.residencyId;
 }
 
 export default function VisitorAccessResidencyList() {
+  const { i18n, t } = useTranslation();
   const [accesses, setAccesses] = useState<VisitorAccess[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const { notify } = useToast();
@@ -21,11 +23,13 @@ export default function VisitorAccessResidencyList() {
       setAccesses(response.data);
     } catch (error) {
       console.error(error);
-      notify('Erro', 'Não foi possível listar os acessos.', 'error');
+      notify(t('common:error'), t('visitorAccess:list.toast.listError'), 'error');
     } finally {
       setIsLoading(false);
     }
-  }, [notify, visitorService]);
+  }, [notify, t, visitorService]);
+
+  const locale = i18n.resolvedLanguage || i18n.language;
 
   useEffect(() => {
     fetchAccesses();
@@ -40,7 +44,7 @@ export default function VisitorAccessResidencyList() {
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2 text-neutral-100">
           <ListChecks size={18} />
-          <h2 className="text-lg font-semibold">Histórico do prédio</h2>
+          <h2 className="text-lg font-semibold">{t('visitorAccess:list.title')}</h2>
         </div>
         <button
           type="button"
@@ -49,24 +53,24 @@ export default function VisitorAccessResidencyList() {
           disabled={isLoading}
         >
           <RefreshCw size={16} />
-          {isLoading ? 'Atualizando...' : 'Atualizar'}
+          {isLoading ? t('common:updating') : t('common:refresh')}
         </button>
       </div>
 
       {isLoading ? (
-        <div className="text-sm text-neutral-400">Carregando...</div>
+        <div className="text-sm text-neutral-400">{t('common:loadingEllipsis')}</div>
       ) : accesses.length === 0 ? (
-        <div className="text-sm text-neutral-400">Nenhum acesso encontrado.</div>
+        <div className="text-sm text-neutral-400">{t('visitorAccess:list.empty')}</div>
       ) : (
         <div className="overflow-x-auto">
           <table className="min-w-full text-left text-sm">
             <thead className="text-xs text-neutral-400 uppercase">
               <tr>
-                <th className="py-2">Visitante</th>
-                <th className="py-2">Residência</th>
-                <th className="py-2">CPF</th>
-                <th className="py-2">RG</th>
-                <th className="py-2">Entrada</th>
+                <th className="py-2">{t('visitorAccess:table.visitor')}</th>
+                <th className="py-2">{t('visitorAccess:table.residency')}</th>
+                <th className="py-2">{t('visitorAccess:table.cpf')}</th>
+                <th className="py-2">{t('visitorAccess:table.rg')}</th>
+                <th className="py-2">{t('visitorAccess:table.entry')}</th>
               </tr>
             </thead>
             <tbody className="text-neutral-200">
@@ -76,7 +80,7 @@ export default function VisitorAccessResidencyList() {
                   <td className="py-2">{getResidencyLabel(access)}</td>
                   <td className="py-2">{access.cpf}</td>
                   <td className="py-2">{access.rg}</td>
-                  <td className="py-2">{new Date(access.entryAt).toLocaleString('pt-BR')}</td>
+                  <td className="py-2">{new Date(access.entryAt).toLocaleString(locale)}</td>
                 </tr>
               ))}
             </tbody>

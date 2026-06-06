@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import VisitorAccessForm from '../components/visitorAccess/VisitorAccessForm';
 import VisitorAccessHeader, {
   type VisitorAccessViewMode,
@@ -14,15 +15,15 @@ function hasPermission(permission: string) {
   return permissions.includes(permission);
 }
 
-function getAvailableViews() {
+function getAvailableViews(t: (key: string) => string) {
   const options: VisitorAccessViewOption[] = [];
 
   if (hasPermission(CREATE_VISITOR_ACCESS_PERMISSION)) {
-    options.push({ mode: 'create', label: 'Registrar' });
+    options.push({ mode: 'create', label: t('visitorAccess:views.create.label') });
   }
 
   if (hasPermission(VIEW_VISITOR_ACCESS_PERMISSION)) {
-    options.push({ mode: 'view', label: 'Histórico' });
+    options.push({ mode: 'view', label: t('visitorAccess:views.view.label') });
   }
 
   return options;
@@ -45,7 +46,8 @@ function renderVisitorAccessView(mode: VisitorAccessViewMode) {
 }
 
 export default function VisitorAccessView() {
-  const options = getAvailableViews();
+  const { t } = useTranslation();
+  const options = getAvailableViews(t);
   const [activeMode, setActiveMode] = useState<VisitorAccessViewMode>(options[0]?.mode ?? 'create');
   const currentMode = options.some((option) => option.mode === activeMode)
     ? activeMode
@@ -66,7 +68,7 @@ export default function VisitorAccessView() {
 
   return (
     <div className="flex h-screen items-center justify-center">
-      <h1 className="text-2xl font-bold text-neutral-100">Acesso negado</h1>
+      <h1 className="text-2xl font-bold text-neutral-100">{t('common:accessDenied')}</h1>
     </div>
   );
 }

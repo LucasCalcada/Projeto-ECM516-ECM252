@@ -6,6 +6,10 @@ export interface Reservation {
   commonAreaId: string;
   commonAreaName: string;
   date: string; // yyyy-mm-dd
+  startTime?: string;
+  endTime?: string;
+  notes?: string;
+  status?: ReservationStatus;
 }
 
 export interface ReservationApiResponse {

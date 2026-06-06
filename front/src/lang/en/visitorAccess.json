@@ -1,0 +1,39 @@
+{
+  "views": {
+    "create": {
+      "label": "Register",
+      "title": "Register visit"
+    },
+    "view": {
+      "label": "History",
+      "title": "Visit history"
+    }
+  },
+  "form": {
+    "title": "Register entry",
+    "submit": "Register access",
+    "submitting": "Registering...",
+    "namePlaceholder": "E.g.: John Smith",
+    "toast": {
+      "requiredTitle": "Required fields",
+      "requiredMessage": "Fill in name, CPF, and RG.",
+      "successTitle": "Access registered",
+      "successMessage": "Entry registered successfully.",
+      "createError": "Could not register the access."
+    }
+  },
+  "list": {
+    "title": "Building history",
+    "empty": "No accesses found.",
+    "toast": {
+      "listError": "Could not list accesses."
+    }
+  },
+  "table": {
+    "visitor": "Visitor",
+    "residency": "Residence",
+    "cpf": "CPF",
+    "rg": "RG",
+    "entry": "Entry"
+  }
+}

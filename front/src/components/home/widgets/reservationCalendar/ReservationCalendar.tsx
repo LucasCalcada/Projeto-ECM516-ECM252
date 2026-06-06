@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { Reservation } from '../../../../types/Reservation';
 import './styles.css';
 
@@ -16,9 +17,9 @@ function formatDateToYYYYMMDD(date: Date): string {
   return `${year}-${month}-${day}`;
 }
 
-function formatDisplayDate(dateStr: string): string {
+function formatDisplayDate(dateStr: string, locale: string): string {
   const date = new Date(`${dateStr}T00:00:00`);
-  return date.toLocaleDateString('pt-BR', {
+  return date.toLocaleDateString(locale, {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',
@@ -31,6 +32,8 @@ export function ReservationCalendar({
   selectedDate,
   onDateSelect,
 }: ReservationCalendarProps) {
+  const { i18n, t } = useTranslation();
+  const locale = i18n.resolvedLanguage || i18n.language;
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
@@ -83,20 +86,7 @@ export function ReservationCalendar({
     setCurrentMonth(currentMonth + 1);
   }
 
-  const monthNames = [
-    'Janeiro',
-    'Fevereiro',
-    'Marco',
-    'Abril',
-    'Maio',
-    'Junho',
-    'Julho',
-    'Agosto',
-    'Setembro',
-    'Outubro',
-    'Novembro',
-    'Dezembro',
-  ];
+  const monthNames = t('reservations:calendar.months', { returnObjects: true }) as string[];
 
   const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
   const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay();
@@ -109,7 +99,7 @@ export function ReservationCalendar({
     days.push(i);
   }
 
-  const weekDays = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
+  const weekDays = t('reservations:calendar.weekDays', { returnObjects: true }) as string[];
   const selectedReservations = selectedDate ? reservationsByDate.get(selectedDate) : undefined;
 
   return (
@@ -119,18 +109,21 @@ export function ReservationCalendar({
           type="button"
           onClick={handlePrevMonth}
           className="nav-button"
-          aria-label="Mes anterior"
+          aria-label={t('reservations:calendar.previousMonth')}
         >
           {'<'}
         </button>
         <h3 className="month-year">
-          {monthNames[currentMonth]} de {currentYear}
+          {t('reservations:calendar.monthYear', {
+            month: monthNames[currentMonth],
+            year: currentYear,
+          })}
         </h3>
         <button
           type="button"
           onClick={handleNextMonth}
           className="nav-button"
-          aria-label="Proximo mes"
+          aria-label={t('reservations:calendar.nextMonth')}
         >
           {'>'}
         </button>
@@ -164,10 +157,10 @@ export function ReservationCalendar({
               onClick={() => canClick && onDateSelect(dateStr)}
               title={
                 status === 'past'
-                  ? 'Data passada'
+                  ? t('reservations:calendar.dayStatus.past')
                   : status === 'reserved'
-                    ? 'Dia reservado'
-                    : 'Disponivel'
+                    ? t('reservations:calendar.dayStatus.reserved')
+                    : t('reservations:calendar.dayStatus.available')
               }
             >
               <span className="day-number">{day}</span>
@@ -179,8 +172,12 @@ export function ReservationCalendar({
 
       {selectedReservations && selectedReservations.length > 0 ? (
         <div className="day-reservations">
-          <h4 className="reservations-title">Reservas para {formatDisplayDate(selectedDate)}</h4>
-          <div className="alert-message">Este dia ja foi reservado.</div>
+          <h4 className="reservations-title">
+            {t('reservations:calendar.reservationsFor', {
+              date: formatDisplayDate(selectedDate, locale),
+            })}
+          </h4>
+          <div className="alert-message">{t('reservations:calendar.reservedDay')}</div>
         </div>
       ) : null}
     </div>

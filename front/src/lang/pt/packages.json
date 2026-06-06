@@ -3,10 +3,63 @@
   "description": "Acompanhe aqui os pacotes recebidos na portaria.",
   "loading": "Carregando encomendas...",
   "notFound": "Nenhuma encomenda encontrada para esta residência.",
+  "views": {
+    "create": {
+      "label": "Registrar",
+      "title": "Registrar encomenda"
+    },
+    "building": {
+      "label": "Prédio",
+      "title": "Encomendas do prédio"
+    },
+    "residency": {
+      "label": "Residência",
+      "title": "Minhas encomendas"
+    }
+  },
+  "list": {
+    "buildingTitle": "Encomendas do prédio",
+    "residencyTitle": "Encomendas da residência",
+    "empty": "Nenhuma encomenda encontrada.",
+    "refresh": "Atualizar",
+    "updating": "Atualizando...",
+    "confirming": "Confirmando...",
+    "confirm": "Confirmar",
+    "toast": {
+      "listError": "Não foi possível listar as encomendas.",
+      "confirmTitle": "Recebimento confirmado",
+      "confirmMessage": "A encomenda foi marcada como entregue.",
+      "confirmError": "Não foi possível confirmar o recebimento."
+    }
+  },
+  "form": {
+    "title": "Nova encomenda",
+    "refreshResidencies": "Atualizar residências",
+    "noResidencies": "Nenhuma residência encontrada",
+    "descriptionPlaceholder": "Ex.: Pacote Amazon",
+    "submitting": "Registrando...",
+    "submit": "Registrar encomenda",
+    "toast": {
+      "missingBuilding": "Não foi possível identificar o prédio do usuário.",
+      "loadResidenciesError": "Não foi possível carregar as residências.",
+      "requiredTitle": "Campos obrigatórios",
+      "requiredMessage": "Selecione uma residência e informe a descrição.",
+      "successTitle": "Encomenda registrada",
+      "successMessage": "O pacote foi registrado com sucesso.",
+      "createError": "Não foi possível registrar a encomenda."
+    }
+  },
+  "statusValue": {
+    "PENDING": "Pendente",
+    "DELIVERED": "Entregue",
+    "CANCELED": "Cancelada"
+  },
   "table": {
+    "residency": "Residência",
     "description": "Descrição",
     "status": "Status",
-    "receivedAt": "Data de Recebimento",
-    "deliveredAt": "Data de Entrega"
+    "receivedAt": "Recebida em",
+    "deliveredAt": "Entregue em",
+    "action": "Ação"
   }
 }

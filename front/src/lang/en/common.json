@@ -1,1 +1,23 @@
-{}
+{
+  "accessDenied": "Access denied",
+  "action": "Action",
+  "allDay": "All day",
+  "commonArea": "Common area",
+  "confirm": "Confirm",
+  "date": "Date",
+  "dateTime": "Date and time",
+  "description": "Description",
+  "error": "Error",
+  "group": "Group",
+  "loading": "Loading",
+  "loadingEllipsis": "Loading...",
+  "name": "Name",
+  "refresh": "Refresh",
+  "residency": "Residence",
+  "status": "Status",
+  "time": {
+    "hours": "Hours",
+    "minutes": "Minutes"
+  },
+  "updating": "Updating..."
+}
