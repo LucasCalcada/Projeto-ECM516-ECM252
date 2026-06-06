@@ -20,7 +20,7 @@ const VIEW_RESIDENCY_RESERVATION_PERMISSION = '@reservation:view:residency';
 function getAvailableViews() {
   const options: ReservationViewOption[] = [];
 
-  if (hasPermission([CREATE_RESERVATION_PERMISSION])) {
+  if (hasPermission([CREATE_RESERVATION_PERMISSION]) && hasResidency()) {
     options.push({ mode: 'create', label: 'Registrar' });
   }
 
