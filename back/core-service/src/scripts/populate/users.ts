@@ -8,12 +8,14 @@ import {
   ReservationViewBuildingPermission,
   DeliveryViewPermission,
   DeliveryListPermission,
+  VisitorCreatePermission,
 } from '@app/permissions';
 
 const commonUserPermissions = [
   ReservationCreatePermission,
   ReservationViewResidencyPermission,
   DeliveryViewPermission,
+  VisitorCreatePermission,
 ];
 
 export const userData: UserInsert[] = [
