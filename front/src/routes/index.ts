@@ -43,6 +43,11 @@ const routes: RouteConfig[] = [
     viewComponent: Reservations,
     layout: 'sidebar',
     visible: true,
+    permissions: [
+      '@reservation:create',
+      '@reservation:view:residency',
+      '@reservation:view:building',
+    ],
     display: {
       labelKey: 'sidebar.routes.reservations',
       icon: CalendarCheck2,
