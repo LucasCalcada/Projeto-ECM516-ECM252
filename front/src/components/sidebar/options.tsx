@@ -7,15 +7,7 @@ export default function Options() {
   const navigate = useNavigate();
 
   function handleLogout() {
-    localStorage.removeItem('accountToken');
-    localStorage.removeItem('userToken');
-    localStorage.removeItem('permissions');
-    localStorage.removeItem('buildingId');
-    localStorage.removeItem('residencyId');
-    localStorage.removeItem('residencyName');
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('userProfile');
-
+    localStorage.clear();
     navigate('/login', { replace: true });
   }
 
