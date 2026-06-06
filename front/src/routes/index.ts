@@ -69,6 +69,7 @@ const routes: RouteConfig[] = [
     viewComponent: VisitorAccess,
     layout: 'sidebar',
     visible: true,
+    permissions: ['@visitor:view', '@visitor:create'],
     display: {
       labelKey: 'sidebar.routes.visitorAccess',
       icon: ShieldCheck,
