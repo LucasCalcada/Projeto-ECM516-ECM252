@@ -52,20 +52,5 @@
     "messages": {
       "profileUpdated": "¡Perfil actualizado correctamente!"
     }
-  },
-  "residents": {
-    "title": "",
-    "userEditor": {
-      "title": "",
-      "name": "",
-      "namePlaceholder": "",
-      "permissions": "",
-      "permissionPlaceholder": "",
-      "add": "",
-      "cancel": "",
-      "save": "",
-      "saving": "",
-      "loading": ""
-    }
   }
 }
