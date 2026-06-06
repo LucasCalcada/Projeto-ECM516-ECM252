@@ -15,15 +15,15 @@ function hasPermission(permission: string) {
   return permissions.includes(permission);
 }
 
-function getAvailableViews(t: (key: string) => string) {
+function getAvailableViews() {
   const options: VisitorAccessViewOption[] = [];
 
   if (hasPermission(CREATE_VISITOR_ACCESS_PERMISSION)) {
-    options.push({ mode: 'create', label: t('visitorAccess:views.create.label') });
+    options.push({ mode: 'create' });
   }
 
   if (hasPermission(VIEW_VISITOR_ACCESS_PERMISSION)) {
-    options.push({ mode: 'view', label: t('visitorAccess:views.view.label') });
+    options.push({ mode: 'view' });
   }
 
   return options;
@@ -47,7 +47,7 @@ function renderVisitorAccessView(mode: VisitorAccessViewMode) {
 
 export default function VisitorAccessView() {
   const { t } = useTranslation();
-  const options = getAvailableViews(t);
+  const options = getAvailableViews();
   const [activeMode, setActiveMode] = useState<VisitorAccessViewMode>(options[0]?.mode ?? 'create');
   const currentMode = options.some((option) => option.mode === activeMode)
     ? activeMode

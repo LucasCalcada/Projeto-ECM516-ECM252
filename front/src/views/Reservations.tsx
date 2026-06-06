@@ -9,7 +9,6 @@ type ReservationViewMode = 'create' | 'building' | 'residency';
 
 interface ReservationViewOption {
   mode: ReservationViewMode;
-  label: string;
 }
 
 const CREATE_RESERVATION_PERMISSION = '@Reservation:Create';
@@ -21,19 +20,19 @@ function hasPermission(permission: string) {
   return permissions.includes(permission);
 }
 
-function getAvailableViews(t: (key: string) => string) {
+function getAvailableViews() {
   const options: ReservationViewOption[] = [];
 
   if (hasPermission(CREATE_RESERVATION_PERMISSION)) {
-    options.push({ mode: 'create', label: t('reservations:views.create.label') });
+    options.push({ mode: 'create' });
   }
 
   if (hasPermission(VIEW_BUILDING_RESERVATION_PERMISSION)) {
-    options.push({ mode: 'building', label: t('reservations:views.building.label') });
+    options.push({ mode: 'building' });
   }
 
   if (hasPermission(VIEW_RESIDENCY_RESERVATION_PERMISSION)) {
-    options.push({ mode: 'residency', label: t('reservations:views.residency.label') });
+    options.push({ mode: 'residency' });
   }
 
   return options;
@@ -87,7 +86,7 @@ function ReservationsHeader({
                 onClick={() => onModeChange(option.mode)}
               >
                 <Icon size={16} />
-                {option.label}
+                {t(`reservations:views.${option.mode}.label`)}
               </button>
             );
           })}
@@ -135,7 +134,7 @@ function renderReservationsView(mode: ReservationViewMode) {
 
 export default function Reservations() {
   const { t } = useTranslation();
-  const options = getAvailableViews(t);
+  const options = getAvailableViews();
   const [activeMode, setActiveMode] = useState<ReservationViewMode>(options[0]?.mode ?? 'create');
   const currentMode = options.some((option) => option.mode === activeMode)
     ? activeMode

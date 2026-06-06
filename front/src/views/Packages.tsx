@@ -10,19 +10,19 @@ function hasPermission(permission: string) {
   return permissions.includes(permission);
 }
 
-function getAvailableViews(t: (key: string) => string) {
+function getAvailableViews() {
   const options: PackageViewOption[] = [];
 
   if (hasPermission('@Delivery:Create')) {
-    options.push({ mode: 'create', label: t('packages:views.create.label') });
+    options.push({ mode: 'create' });
   }
 
   if (hasPermission('@Delivery:ViewBuilding')) {
-    options.push({ mode: 'building', label: t('packages:views.building.label') });
+    options.push({ mode: 'building' });
   }
 
   if (hasPermission('@Delivery:ViewResidency')) {
-    options.push({ mode: 'residency', label: t('packages:views.residency.label') });
+    options.push({ mode: 'residency' });
   }
 
   return options;
@@ -54,7 +54,7 @@ function renderPackagesView(mode: PackageViewMode) {
 
 export default function PackagesView() {
   const { t } = useTranslation();
-  const options = getAvailableViews(t);
+  const options = getAvailableViews();
   const [activeMode, setActiveMode] = useState<PackageViewMode>(options[0]?.mode ?? 'create');
   const currentMode = options.some((option) => option.mode === activeMode)
     ? activeMode

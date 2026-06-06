@@ -5,7 +5,6 @@ export type VisitorAccessViewMode = 'create' | 'view';
 
 export interface VisitorAccessViewOption {
   mode: VisitorAccessViewMode;
-  label: string;
 }
 
 interface VisitorAccessHeaderProps {
@@ -54,7 +53,7 @@ export default function VisitorAccessHeader({
                 onClick={() => onModeChange(option.mode)}
               >
                 <Icon size={16} />
-                {option.label}
+                {t(`visitorAccess:views.${option.mode}.label`)}
               </button>
             );
           })}
