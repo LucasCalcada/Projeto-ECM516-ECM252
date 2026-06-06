@@ -7,7 +7,7 @@ import { desc, eq } from 'drizzle-orm';
 import { Request } from 'express';
 
 export default async function listAdminPosts(req: Request, ctx: Context) {
-  requirePermission(ctx, MANAGE_COMMUNICATION_POSTS_PERMISSION);
+  requirePermission(ctx, [MANAGE_COMMUNICATION_POSTS_PERMISSION]);
 
   const results = await client
     .select()

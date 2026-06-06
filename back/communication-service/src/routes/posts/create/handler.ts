@@ -7,7 +7,7 @@ import { MANAGE_COMMUNICATION_POSTS_PERMISSION, requirePermission } from '@app/h
 import { mapPostsWithRecipients, parsePostPayload } from '@app/helpers/posts';
 
 export default async function createPost(req: Request, ctx: Context) {
-  requirePermission(ctx, MANAGE_COMMUNICATION_POSTS_PERMISSION);
+  requirePermission(ctx, [MANAGE_COMMUNICATION_POSTS_PERMISSION]);
 
   const { title, description, recipientUserIds, eventAt } = parsePostPayload(req.body);
 
