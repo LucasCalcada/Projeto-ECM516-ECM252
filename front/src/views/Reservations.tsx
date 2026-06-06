@@ -21,15 +21,15 @@ function getAvailableViews() {
   const options: ReservationViewOption[] = [];
 
   if (hasPermission([CREATE_RESERVATION_PERMISSION]) && hasResidency()) {
-    options.push({ mode: 'create', label: 'Registrar' });
+    options.push({ mode: 'create' });
   }
 
   if (hasPermission([VIEW_BUILDING_RESERVATION_PERMISSION])) {
-    options.push({ mode: 'building', label: 'Prédio' });
+    options.push({ mode: 'building' });
   }
 
   if (hasPermission([VIEW_RESIDENCY_RESERVATION_PERMISSION]) && hasResidency()) {
-    options.push({ mode: 'residency', label: 'Minha unidade' });
+    options.push({ mode: 'residency' });
   }
 
   return options;
