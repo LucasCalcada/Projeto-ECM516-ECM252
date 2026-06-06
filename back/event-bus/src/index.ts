@@ -2,7 +2,7 @@ import express from 'express';
 import config from '@app/config';
 import { setupRouter } from '@helpers/routeRegistry';
 import errorMiddleware from './middlewares/error';
-import './api';
+import './routes';
 import log from './helpers/logger';
 import loggerMiddleware from './middlewares/logger';
 

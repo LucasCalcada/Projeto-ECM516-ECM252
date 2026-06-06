@@ -47,7 +47,7 @@ export default function PackageCreateForm({ buildingId }: PackageCreateFormProps
 
   const fetchResidencies = useCallback(async () => {
     if (!buildingId) {
-      notifyError('Erro', 'Nao foi possivel identificar o predio do usuario.');
+      notifyError('Erro', 'Não foi possível identificar o prédio do usuário.');
       return;
     }
 
@@ -71,7 +71,7 @@ export default function PackageCreateForm({ buildingId }: PackageCreateFormProps
       setSelectedResidencyName((current) => current || options[0]?.name || '');
     } catch (error) {
       console.error(error);
-      notifyError('Erro', 'Nao foi possivel carregar as residencias.');
+      notifyError('Erro', 'Não foi possível carregar as residências.');
     } finally {
       setIsLoadingResidencies(false);
     }
@@ -85,7 +85,7 @@ export default function PackageCreateForm({ buildingId }: PackageCreateFormProps
     event.preventDefault();
 
     if (!selectedResidencyName || !description.trim()) {
-      notifyWarning('Campos obrigatorios', 'Selecione uma residencia e informe a descricao.');
+      notifyWarning('Campos obrigatórios', 'Selecione uma residência e informe a descrição.');
       return;
     }
 
@@ -100,7 +100,7 @@ export default function PackageCreateForm({ buildingId }: PackageCreateFormProps
       setDescription(initialDescription);
     } catch (error) {
       console.error(error);
-      notifyError('Erro', 'Nao foi possivel registrar a encomenda.');
+      notifyError('Erro', 'Não foi possível registrar a encomenda.');
     } finally {
       setIsSubmitting(false);
     }
@@ -120,13 +120,13 @@ export default function PackageCreateForm({ buildingId }: PackageCreateFormProps
           disabled={isLoadingResidencies}
         >
           <RefreshCw size={16} />
-          {isLoadingResidencies ? 'Atualizando...' : 'Atualizar residencias'}
+          {isLoadingResidencies ? 'Atualizando...' : 'Atualizar residências'}
         </button>
       </div>
 
       <form className="grid grid-cols-1 gap-3 md:grid-cols-2" onSubmit={handleSubmit}>
         <label className="block">
-          <span className="mb-1 block text-sm text-neutral-300">Residencia</span>
+          <span className="mb-1 block text-sm text-neutral-300">Residência</span>
           <select
             className="w-full rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm"
             value={selectedResidencyName}
@@ -134,7 +134,7 @@ export default function PackageCreateForm({ buildingId }: PackageCreateFormProps
             disabled={isLoadingResidencies || sortedResidencies.length === 0}
           >
             {sortedResidencies.length === 0 ? (
-              <option value="">Nenhuma residencia encontrada</option>
+              <option value="">Nenhuma residência encontrada</option>
             ) : (
               sortedResidencies.map((residency) => (
                 <option key={residency.id} value={residency.name}>
@@ -146,7 +146,7 @@ export default function PackageCreateForm({ buildingId }: PackageCreateFormProps
         </label>
 
         <label className="block">
-          <span className="mb-1 block text-sm text-neutral-300">Descricao</span>
+          <span className="mb-1 block text-sm text-neutral-300">Descrição</span>
           <input
             className="w-full rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm"
             value={description}

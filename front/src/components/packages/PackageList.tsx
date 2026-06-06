@@ -40,7 +40,7 @@ export default function PackageList({ scope }: PackageListProps) {
       setPackages(response.data);
     } catch (error) {
       console.error(error);
-      notifyError('Erro', 'Nao foi possivel listar as encomendas.');
+      notifyError('Erro', 'Não foi possível listar as encomendas.');
     } finally {
       setIsLoading(false);
     }
@@ -58,7 +58,7 @@ export default function PackageList({ scope }: PackageListProps) {
       fetchPackages();
     } catch (error) {
       console.error(error);
-      notifyError('Erro', 'Nao foi possivel confirmar o recebimento.');
+      notifyError('Erro', 'Não foi possível confirmar o recebimento.');
     } finally {
       setConfirmingId(null);
     }
@@ -70,7 +70,7 @@ export default function PackageList({ scope }: PackageListProps) {
         <div className="flex items-center gap-2 text-neutral-100">
           <ListChecks size={18} />
           <h2 className="text-lg font-semibold">
-            {isResidencyScope ? 'Encomendas da residencia' : 'Encomendas do predio'}
+            {isResidencyScope ? 'Encomendas da residência' : 'Encomendas do prédio'}
           </h2>
         </div>
         <button
@@ -93,12 +93,12 @@ export default function PackageList({ scope }: PackageListProps) {
           <table className="min-w-full text-left text-sm">
             <thead className="text-xs text-neutral-400 uppercase">
               <tr>
-                {!isResidencyScope && <th className="py-2 pr-4">Residencia</th>}
-                <th className="py-2 pr-4">Descricao</th>
+                {!isResidencyScope && <th className="py-2 pr-4">Residência</th>}
+                <th className="py-2 pr-4">Descrição</th>
                 <th className="py-2 pr-4">Status</th>
                 <th className="py-2 pr-4">Recebida em</th>
                 <th className="py-2 pr-4">Entregue em</th>
-                {isResidencyScope && <th className="py-2 text-right">Acao</th>}
+                {isResidencyScope && <th className="py-2 text-right">Ação</th>}
               </tr>
             </thead>
             <tbody className="text-neutral-200">

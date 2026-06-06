@@ -17,11 +17,11 @@ function getAvailableViews() {
   }
 
   if (hasPermission('@Delivery:ViewBuilding')) {
-    options.push({ mode: 'building', label: 'Predio' });
+    options.push({ mode: 'building', label: 'Prédio' });
   }
 
   if (hasPermission('@Delivery:ViewResidency')) {
-    options.push({ mode: 'residency', label: 'Residencia' });
+    options.push({ mode: 'residency', label: 'Residência' });
   }
 
   return options;
