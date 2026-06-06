@@ -45,7 +45,7 @@ export default function PackagesHeader({ activeMode, options, onModeChange }: Pa
                 onClick={() => onModeChange(option.mode)}
               >
                 <Icon size={16} />
-                {option.label}
+                {t(`packages:views.${option.mode}.label`)}
               </button>
             );
           })}

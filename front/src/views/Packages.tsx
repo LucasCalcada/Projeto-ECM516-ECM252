@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import hasPermission from '../helpers/hasPermission';
 import hasResidency from '../helpers/hasResidency';
 
-function getAvailableViews(t: (key: string) => string) {
+function getAvailableViews() {
   const options: PackageViewOption[] = [];
 
   if (hasPermission(['@delivery:create'])) {
@@ -51,7 +51,7 @@ function renderPackagesView(mode: PackageViewMode) {
 
 export default function PackagesView() {
   const { t } = useTranslation();
-  const options = getAvailableViews(t);
+  const options = getAvailableViews();
   const [activeMode, setActiveMode] = useState<PackageViewMode>(options[0]?.mode ?? 'create');
   const currentMode = options.some((option) => option.mode === activeMode)
     ? activeMode

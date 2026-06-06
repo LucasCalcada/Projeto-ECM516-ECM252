@@ -12,7 +12,7 @@ import hasResidency from '../helpers/hasResidency';
 const CREATE_VISITOR_ACCESS_PERMISSION = '@visitor:create';
 const VIEW_VISITOR_ACCESS_PERMISSION = '@visitor:view';
 
-function getAvailableViews(t: (key: string) => string) {
+function getAvailableViews() {
   const options: VisitorAccessViewOption[] = [];
 
   if (hasPermission([CREATE_VISITOR_ACCESS_PERMISSION]) && hasResidency()) {
@@ -44,7 +44,7 @@ function renderVisitorAccessView(mode: VisitorAccessViewMode) {
 
 export default function VisitorAccessView() {
   const { t } = useTranslation();
-  const options = getAvailableViews(t);
+  const options = getAvailableViews();
   const [activeMode, setActiveMode] = useState<VisitorAccessViewMode>(options[0]?.mode ?? 'create');
   const currentMode = options.some((option) => option.mode === activeMode)
     ? activeMode
