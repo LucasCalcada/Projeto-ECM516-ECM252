@@ -10,7 +10,7 @@ interface AppConfig {
 
 const config: AppConfig = {
   port: 8006,
-  dbConnectionString: 'postgresql://admin:adminPasswd@localhost:5432/communicationdb',
+  dbConnectionString: 'postgresql://admin:adminPasswd@localhost:5432/communicationDb',
   jwtSecret: 'test-token',
   coreUrl: 'http://localhost:8000',
   eventBusUrl: 'http://localhost:8004',

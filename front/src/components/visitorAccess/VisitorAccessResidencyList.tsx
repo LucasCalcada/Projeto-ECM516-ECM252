@@ -42,13 +42,9 @@ export default function VisitorAccessResidencyList() {
   return (
     <section className="rounded-lg border border-neutral-800 bg-neutral-900/40 p-4">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2 text-neutral-100">
-          <ListChecks size={18} />
-          <h2 className="text-lg font-semibold">{t('visitorAccess:list.title')}</h2>
-        </div>
         <button
           type="button"
-          className="inline-flex items-center gap-2 rounded-md bg-cyan-300 px-3 py-2 text-sm font-semibold text-neutral-950 transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-60"
+          className="ml-auto inline-flex items-center gap-2 rounded-md bg-cyan-300 px-3 py-2 text-sm font-semibold text-neutral-950 transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-60"
           onClick={handleRefresh}
           disabled={isLoading}
         >

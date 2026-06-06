@@ -6,24 +6,21 @@ import VisitorAccessHeader, {
   type VisitorAccessViewOption,
 } from '../components/visitorAccess/VisitorAccessHeader';
 import VisitorAccessResidencyList from '../components/visitorAccess/VisitorAccessResidencyList';
+import hasPermission from '../helpers/hasPermission';
+import hasResidency from '../helpers/hasResidency';
 
-const CREATE_VISITOR_ACCESS_PERMISSION = '@Visitor:Create';
-const VIEW_VISITOR_ACCESS_PERMISSION = '@Visitor:View';
-
-function hasPermission(permission: string) {
-  const permissions = JSON.parse(localStorage.getItem('permissions') || '[]');
-  return permissions.includes(permission);
-}
+const CREATE_VISITOR_ACCESS_PERMISSION = '@visitor:create';
+const VIEW_VISITOR_ACCESS_PERMISSION = '@visitor:view';
 
 function getAvailableViews() {
   const options: VisitorAccessViewOption[] = [];
 
-  if (hasPermission(CREATE_VISITOR_ACCESS_PERMISSION)) {
-    options.push({ mode: 'create' });
+  if (hasPermission([CREATE_VISITOR_ACCESS_PERMISSION]) && hasResidency()) {
+    options.push({ mode: 'create', label: 'Registrar' });
   }
 
-  if (hasPermission(VIEW_VISITOR_ACCESS_PERMISSION)) {
-    options.push({ mode: 'view' });
+  if (hasPermission([VIEW_VISITOR_ACCESS_PERMISSION])) {
+    options.push({ mode: 'view', label: 'Histórico' });
   }
 
   return options;

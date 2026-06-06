@@ -22,7 +22,6 @@ interface BuildingDetailsResponse {
 interface ResidencyOption {
   id: string;
   name: string;
-  label: string;
 }
 
 interface PackageCreateFormProps {
@@ -34,7 +33,7 @@ const initialDescription = '';
 export default function PackageCreateForm({ buildingId }: PackageCreateFormProps) {
   const { t } = useTranslation();
   const [residencies, setResidencies] = useState<ResidencyOption[]>([]);
-  const [selectedResidencyName, setSelectedResidencyName] = useState('');
+  const [selectedResidencyId, setSelectedResidencyId] = useState('');
   const [description, setDescription] = useState(initialDescription);
   const [isLoadingResidencies, setIsLoadingResidencies] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -43,7 +42,7 @@ export default function PackageCreateForm({ buildingId }: PackageCreateFormProps
   const deliveryService = useService('delivery');
 
   const sortedResidencies = useMemo(
-    () => [...residencies].sort((a, b) => a.label.localeCompare(b.label)),
+    () => [...residencies].sort((a, b) => a.name.localeCompare(b.name)),
     [residencies],
   );
 
@@ -65,12 +64,11 @@ export default function PackageCreateForm({ buildingId }: PackageCreateFormProps
           .map((residency) => ({
             id: residency.id,
             name: residency.name,
-            label: residency.name,
           })),
       );
 
       setResidencies(options);
-      setSelectedResidencyName((current) => current || options[0]?.name || '');
+      setSelectedResidencyId((current) => current || options[0]?.id || '');
     } catch (error) {
       console.error(error);
       notifyError(t('common:error'), t('packages:form.toast.loadResidenciesError'));
@@ -97,7 +95,7 @@ export default function PackageCreateForm({ buildingId }: PackageCreateFormProps
     setIsSubmitting(true);
     try {
       await deliveryService.post('/packages', {
-        residencyName: selectedResidencyName,
+        residencyId: selectedResidencyId,
         description: description.trim(),
       });
 
@@ -114,13 +112,9 @@ export default function PackageCreateForm({ buildingId }: PackageCreateFormProps
   return (
     <section className="rounded-lg border border-neutral-800 bg-neutral-900/40 p-4">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2 text-neutral-100">
-          <PackagePlus size={18} />
-          <h2 className="text-lg font-semibold">{t('packages:form.title')}</h2>
-        </div>
         <button
           type="button"
-          className="inline-flex items-center gap-2 rounded-md bg-neutral-800 px-3 py-2 text-sm font-semibold text-neutral-100 transition hover:bg-neutral-700 disabled:cursor-not-allowed disabled:opacity-60"
+          className="ml-auto inline-flex items-center gap-2 rounded-md bg-neutral-800 px-3 py-2 text-sm font-semibold text-neutral-100 transition hover:bg-neutral-700 disabled:cursor-not-allowed disabled:opacity-60"
           onClick={fetchResidencies}
           disabled={isLoadingResidencies}
         >
@@ -136,16 +130,16 @@ export default function PackageCreateForm({ buildingId }: PackageCreateFormProps
           <span className="mb-1 block text-sm text-neutral-300">{t('common:residency')}</span>
           <select
             className="w-full rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm"
-            value={selectedResidencyName}
-            onChange={(event) => setSelectedResidencyName(event.target.value)}
+            value={selectedResidencyId}
+            onChange={(event) => setSelectedResidencyId(event.target.value)}
             disabled={isLoadingResidencies || sortedResidencies.length === 0}
           >
             {sortedResidencies.length === 0 ? (
               <option value="">{t('packages:form.noResidencies')}</option>
             ) : (
               sortedResidencies.map((residency) => (
-                <option key={residency.id} value={residency.name}>
-                  {residency.label}
+                <option key={residency.id} value={residency.id}>
+                  {residency.name}
                 </option>
               ))
             )}

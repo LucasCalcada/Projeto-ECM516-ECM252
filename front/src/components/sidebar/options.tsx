@@ -7,20 +7,12 @@ export default function Options() {
   const navigate = useNavigate();
 
   function handleLogout() {
-    localStorage.removeItem('accountToken');
-    localStorage.removeItem('userToken');
-    localStorage.removeItem('permissions');
-    localStorage.removeItem('buildingId');
-    localStorage.removeItem('residencyId');
-    localStorage.removeItem('residencyName');
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('userProfile');
-
+    localStorage.clear();
     navigate('/login', { replace: true });
   }
 
   return (
-    <div className="mt-auto flex flex-col gap-2 border-t-1 border-neutral-800 p-1 px-3 pt-4">
+    <div className="flex flex-col gap-2 border-t-1 border-neutral-800 p-1 px-3 pt-4">
       <NavLink
         to="/settings"
         className={({ isActive }) => (isActive ? 'rounded-md bg-neutral-800' : '')}
