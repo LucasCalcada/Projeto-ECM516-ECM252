@@ -6,13 +6,13 @@ export default function Settings() {
   const language = i18n.resolvedLanguage || i18n.language;
 
   return (
-    <div className="h-full p-4 transition-colors md:p-8">
+    <div className="h-full w-full p-4 transition-colors md:p-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-neutral-100">{t('settings.title')}</h1>
         <p className="mt-2 text-neutral-400">{t('settings.subtitle')}</p>
       </div>
 
-      <section className="max-w-xl rounded-lg border border-neutral-800 bg-neutral-900/40 p-6 transition-colors">
+      <section className="w-full rounded-lg border border-neutral-800 bg-neutral-900/40 p-6 transition-colors">
         <div className="mb-4 flex items-center gap-2 text-xl font-bold text-neutral-100">
           <Globe />
           <p>{t('settings.language.title')}</p>
