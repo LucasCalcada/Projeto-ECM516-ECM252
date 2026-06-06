@@ -10,22 +10,22 @@ type ToastStyle = {
 const styleMappings: Record<ToastMood, ToastStyle> = {
   success: {
     icon: BadgeCheck,
-    bg: 'bg-green-600/40',
+    bg: 'bg-green-600/90',
     iconColor: 'text-green-400',
   },
   warning: {
     icon: BadgeAlert,
-    bg: 'bg-yellow-600/40',
+    bg: 'bg-yellow-600/90',
     iconColor: 'text-yellow-400',
   },
   info: {
     icon: BadgeInfo,
-    bg: 'bg-neutral-300/40',
+    bg: 'bg-neutral-300/90',
     iconColor: 'text-neutral-400',
   },
   error: {
     icon: BadgeX,
-    bg: 'bg-red-600/40',
+    bg: 'bg-red-600/90',
     iconColor: 'text-red-400',
   },
 };

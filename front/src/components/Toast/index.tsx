@@ -61,7 +61,7 @@ function ToastFrame() {
   const { stack } = useToast();
 
   return (
-    <div className="pointer-events-none fixed right-0 flex h-screen w-1/8 flex-col gap-2 p-4">
+    <div className="pointer-events-none fixed right-0 flex h-screen min-w-sm flex-col gap-2 p-4">
       {stack.map((toast) => (
         <ToastEntry key={toast.id} data={toast} />
       ))}
