@@ -1,4 +1,4 @@
-import { Megaphone } from 'lucide-react';
+import { LucideMegaphoneOff, Megaphone } from 'lucide-react';
 import type { Announcement, AnnouncementTag } from '../../../../types/Announcement';
 import { useTranslation } from 'react-i18next';
 
@@ -24,19 +24,33 @@ function AnnouncementEntry(props: { announcement: Announcement }) {
   );
 }
 
+function NoAnnouncements() {
+  const { t } = useTranslation();
+  return (
+    <div className="flex w-full items-center justify-center gap-2 rounded-xl bg-red-500/10 p-2">
+      <LucideMegaphoneOff />
+      <p className="text-2xl font-bold">{t('announcements:no_announcements')}</p>
+    </div>
+  );
+}
+
 export default function AnnouncementWidget(props: { announcements: Announcement[] }) {
   const { t } = useTranslation();
   return (
-    <div className="flex-2 self-stretch rounded-xl border-1 border-neutral-800 p-4">
-      <div className="flex items-center gap-2">
+    <div className="min-h-1/2 flex-2 self-stretch rounded-xl border-1 border-neutral-800 p-4">
+      <div className="flex items-center gap-2 pb-4">
         <Megaphone />
         <p className="text-2xl font-bold">{t('announcements:title')}</p>
       </div>
-      <div className="grid grid-cols-2 gap-4 overflow-y-scroll pt-2">
-        {props.announcements.map((a) => (
-          <AnnouncementEntry announcement={a} />
-        ))}
-      </div>
+      {props.announcements?.length > 0 ? (
+        <div className="grid grid-cols-2 gap-4 overflow-y-scroll pt-2">
+          {props.announcements.map((a) => (
+            <AnnouncementEntry announcement={a} />
+          ))}
+        </div>
+      ) : (
+        <NoAnnouncements />
+      )}
     </div>
   );
 }
