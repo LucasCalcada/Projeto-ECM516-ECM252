@@ -1,4 +1,7 @@
 export default function hasResidency() {
   const residencyId = localStorage.getItem('residencyId');
-  return Boolean(residencyId);
+  if (!residencyId || residencyId == 'null') {
+    return false;
+  }
+  return true;
 }
