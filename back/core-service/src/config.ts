@@ -6,10 +6,11 @@ interface AppConfig {
 }
 
 const config: AppConfig = {
-  port: 8000,
-  dbConnectionString: 'postgresql://admin:adminPasswd@localhost:5432/coreDb',
-  jwtSecret: 'test-token',
-  internalSecret: 'internal-service-token',
+  port: Number(process.env.PORT ?? 8000),
+  dbConnectionString:
+    process.env.DATABASE_URL ?? 'postgresql://admin:adminPasswd@localhost:5432/coreDb',
+  jwtSecret: process.env.JWT_SECRET ?? 'test-token',
+  internalSecret: process.env.INTERNAL_SECRET ?? 'internal-service-token',
 };
 
 export default config;

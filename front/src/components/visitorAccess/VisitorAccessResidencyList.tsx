@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { ListChecks, RefreshCw } from 'lucide-react';
+import { RefreshCw } from 'lucide-react';
 import type { VisitorAccess } from '../../types/VisitorAccess';
 import { useToast } from '../Toast';
 import useService from '../../helpers/useService';
