@@ -1,0 +1,11 @@
+.git
+.github
+**/node_modules
+**/dist
+**/drizzle
+**/*.tsbuildinfo
+**/*.log
+**/*.err
+**/.env
+**/.env.*
+!**/.env.example

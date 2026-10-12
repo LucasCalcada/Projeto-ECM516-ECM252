@@ -4,8 +4,8 @@ interface AppConfig {
 }
 
 const config: AppConfig = {
-  port: 8004,
-  internalSecret: 'internal-service-token',
+  port: Number(process.env.PORT ?? 8004),
+  internalSecret: process.env.INTERNAL_SECRET ?? 'internal-service-token',
 };
 
 export default config;

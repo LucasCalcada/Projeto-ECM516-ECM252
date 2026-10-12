@@ -7,6 +7,9 @@ import log from './helpers/logger';
 import loggerMiddleware from './middlewares/logger';
 
 const app = express();
+app.get('/health', (_req, res) => {
+  res.status(200).json({ status: 'ok' });
+});
 app.use(express.json());
 app.use(loggerMiddleware);
 setupRouter(app);

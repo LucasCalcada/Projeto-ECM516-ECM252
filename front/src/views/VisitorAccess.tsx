@@ -16,11 +16,11 @@ function getAvailableViews() {
   const options: VisitorAccessViewOption[] = [];
 
   if (hasPermission([CREATE_VISITOR_ACCESS_PERMISSION]) && hasResidency()) {
-    options.push({ mode: 'create', label: 'Registrar' });
+    options.push({ mode: 'create' });
   }
 
   if (hasPermission([VIEW_VISITOR_ACCESS_PERMISSION])) {
-    options.push({ mode: 'view', label: 'Histórico' });
+    options.push({ mode: 'view' });
   }
 
   return options;

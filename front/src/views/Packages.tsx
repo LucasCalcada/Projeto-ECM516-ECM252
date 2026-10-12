@@ -11,15 +11,15 @@ function getAvailableViews() {
   const options: PackageViewOption[] = [];
 
   if (hasPermission(['@delivery:create'])) {
-    options.push({ mode: 'create', label: 'Registrar' });
+    options.push({ mode: 'create'  });
   }
 
   if (hasPermission(['@delivery:view:building'])) {
-    options.push({ mode: 'building', label: 'Prédio' });
+    options.push({ mode: 'building' });
   }
 
   if (hasPermission(['@delivery:view:residency']) && hasResidency()) {
-    options.push({ mode: 'residency', label: 'Residência' });
+    options.push({ mode: 'residency' });
   }
 
   return options;
