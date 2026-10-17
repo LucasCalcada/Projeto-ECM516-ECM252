@@ -1,4 +1,5 @@
 import express from 'express';
+import { setupHealthRoutes } from './helpers/health';
 import config from '@app/config';
 import { setupRouter } from '@helpers/routeRegistry';
 import errorMiddleware from './middlewares/error';
@@ -9,6 +10,7 @@ import cors from 'cors';
 import setupInternalResidencyRoutes from './internal/residencies';
 
 const app = express();
+setupHealthRoutes(app);
 app.use(cors());
 app.use(express.json());
 app.use(loggerMiddleware);

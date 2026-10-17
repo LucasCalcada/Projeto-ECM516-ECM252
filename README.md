@@ -38,11 +38,10 @@ docker build -f back/auth-service/docker/Dockerfile -t hiveapp-auth .
 
 O event bus oferece `GET /health`. Os seis serviços de negócio só iniciam depois
 que o healthcheck do event bus e o do PostgreSQL passam. O frontend depende da
-inicialização dos seis serviços. As inscrições do event bus ficam em memória;
-ao executar `docker compose restart event-bus`, o Compose também reinicia seus
-dependentes para restabelecer a inscrição do serviço de comunicação. Reinícios
-automáticos do processo não acionam essa dependência; nesse caso, reinicie também
-o `communication-service` para refazer a inscrição.
+inicialização dos seis serviços. As inscrições do event bus ficam em memória.
+O serviço de comunicação renova sua inscrição a cada 15 segundos e repete tentativas
+após falhas, permitindo recuperar a inscrição quando o event bus reinicia.
+O Compose também mantém o reinício dos dependentes em reinícios explícitos do bus.
 
 O frontend é compilado com Vite e servido pelo Nginx. As chamadas `/api/core`,
 `/api/auth`, `/api/delivery`, `/api/visitor`, `/api/reservation` e `/api/communication`
@@ -83,6 +82,29 @@ containers. Para parar a stack preservando os volumes:
 ```sh
 docker compose down
 ```
+
+## Executar com Kubernetes
+
+A configuração local está em [`k8s/`](k8s/README.md). Ela inclui frontend, seis APIs,
+event bus, PostgreSQL persistente, probes de saúde e Jobs de migração e população.
+O Docker Compose continua disponível e utiliza volumes separados do Kubernetes.
+
+Com Docker, kubectl, kind e PowerShell disponíveis, execute na raiz:
+
+```powershell
+New-Item -ItemType Directory -Force k8s/.local | Out-Null
+kind create cluster --name hiveapp --kubeconfig ./k8s/.local/kubeconfig --wait 120s
+./k8s/scripts/init-secrets.ps1
+./k8s/scripts/build.ps1 -ImageTag k8s-v1 -KindCluster hiveapp
+./k8s/scripts/deploy.ps1 -Kubeconfig ./k8s/.local/kubeconfig -ImageTag k8s-v1
+kubectl --kubeconfig ./k8s/.local/kubeconfig --context kind-hiveapp -n hiveapp port-forward service/front 5173:80
+```
+
+Abra http://localhost:5173. Se o Compose já ocupar essa porta, use `5174:80` e
+http://localhost:5174. A criação do cluster é necessária apenas uma vez.
+Os bancos começam vazios; a população é opcional e não é executada pelo deploy.
+Consulte o [guia Kubernetes](k8s/README.md) para população, acesso, verificações,
+atualizações e encerramento preservando os dados.
 
 ## 👤 Integrantes
 

@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: visitor-service
+spec:
+  selector:
+    app: visitor-service
+  ports:
+    - name: http
+      port: 8003
+      targetPort: 8003
