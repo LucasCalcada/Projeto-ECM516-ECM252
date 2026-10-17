@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-init
+data:
+  init-dbs.sql: "CREATE DATABASE \"authDb\";\r
+
+    CREATE DATABASE \"coreDb\";\r
+
+    CREATE DATABASE \"deliveryDb\";\r
+
+    CREATE DATABASE \"reservationDb\";\r
+
+    CREATE DATABASE \"communicationDb\";\r
+
+    CREATE DATABASE \"visitorDb\";\r\n"

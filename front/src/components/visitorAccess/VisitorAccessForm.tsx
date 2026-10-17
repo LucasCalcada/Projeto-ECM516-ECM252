@@ -1,5 +1,4 @@
 import { type FormEvent, useState } from 'react';
-import { UserPlus } from 'lucide-react';
 import { useToast } from '../Toast';
 import useService from '../../helpers/useService';
 import { useTranslation } from 'react-i18next';

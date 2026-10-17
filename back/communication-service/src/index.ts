@@ -1,4 +1,5 @@
 import express from 'express';
+import { setupHealthRoutes } from './helpers/health';
 import cors from 'cors';
 import config from '@app/config';
 import { setupRouter } from '@helpers/routeRegistry';
@@ -10,6 +11,7 @@ import { subscribeToEventBus } from './helpers/eventBus';
 import './routes';
 
 const app = express();
+setupHealthRoutes(app);
 
 app.use(cors());
 app.use(express.json());

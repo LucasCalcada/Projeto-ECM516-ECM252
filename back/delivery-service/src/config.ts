@@ -7,11 +7,12 @@ interface AppConfig {
 }
 
 const config: AppConfig = {
-  port: 8002,
-  dbConnectionString: 'postgresql://admin:adminPasswd@localhost:5432/deliveryDb',
-  jwtSecret: 'test-token',
-  coreServiceUrl: 'http://localhost:8000',
-  eventBusUrl: 'http://localhost:8004',
+  port: Number(process.env.PORT ?? 8002),
+  dbConnectionString:
+    process.env.DATABASE_URL ?? 'postgresql://admin:adminPasswd@localhost:5432/deliveryDb',
+  jwtSecret: process.env.JWT_SECRET ?? 'test-token',
+  coreServiceUrl: process.env.CORE_URL ?? 'http://localhost:8000',
+  eventBusUrl: process.env.EVENT_BUS_URL ?? 'http://localhost:8004',
 };
 
 export default config;
