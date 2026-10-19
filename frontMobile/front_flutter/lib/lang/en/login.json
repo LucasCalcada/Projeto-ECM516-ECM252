@@ -1,0 +1,28 @@
+{
+  "title": "Login",
+  "login": "Login",
+  "loading": "Signing in...",
+  "showPassword": "Show password",
+  "hidePassword": "Hide password",
+  "signOut": "Sign out",
+  "signingOut": "Signing out...",
+  "fields": {
+    "email": { "label": "Email", "placeholder": "Enter your email" },
+    "password": { "label": "Password", "placeholder": "Enter your password" }
+  },
+  "validation": {
+    "emailRequired": "Enter your email.",
+    "passwordRequired": "Enter your password."
+  },
+  "errors": {
+    "invalidCredentials": "Incorrect email or password.",
+    "invalidRequest": "Check the email and password you entered.",
+    "server": "The server is unavailable. Please try again.",
+    "network": "Could not connect to the server. Check your connection.",
+    "timeout": "The server took too long to respond. Please try again.",
+    "invalidResponse": "Could not confirm your login. Please try again.",
+    "storage": "Could not update the session on this device. Please try again.",
+    "unexpected": "Could not sign in. Please try again."
+  },
+  "success": { "title": "Signed in", "message": "You are signed in to your account." }
+}

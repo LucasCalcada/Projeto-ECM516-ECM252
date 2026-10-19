@@ -1,0 +1,28 @@
+{
+  "title": "Inicio de sesión",
+  "login": "Iniciar sesión",
+  "loading": "Iniciando sesión...",
+  "showPassword": "Mostrar contraseña",
+  "hidePassword": "Ocultar contraseña",
+  "signOut": "Cerrar sesión",
+  "signingOut": "Cerrando sesión...",
+  "fields": {
+    "email": { "label": "Email", "placeholder": "Ingrese su email" },
+    "password": { "label": "Contraseña", "placeholder": "Ingrese su contraseña" }
+  },
+  "validation": {
+    "emailRequired": "Ingrese su email.",
+    "passwordRequired": "Ingrese su contraseña."
+  },
+  "errors": {
+    "invalidCredentials": "Email o contraseña incorrectos.",
+    "invalidRequest": "Revise el email y la contraseña ingresados.",
+    "server": "El servidor no está disponible. Inténtelo de nuevo.",
+    "network": "Error al conectar con el servidor. Revise su conexión.",
+    "timeout": "El servidor tardó demasiado en responder. Inténtelo de nuevo.",
+    "invalidResponse": "No se pudo confirmar el inicio de sesión. Inténtelo de nuevo.",
+    "storage": "No se pudo actualizar la sesión en este dispositivo. Inténtelo de nuevo.",
+    "unexpected": "No se pudo iniciar sesión. Inténtelo de nuevo."
+  },
+  "success": { "title": "Sesión iniciada", "message": "Ha iniciado sesión en su cuenta." }
+}
