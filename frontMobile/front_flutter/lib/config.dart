@@ -9,9 +9,21 @@ abstract final class AppConfig {
   static String get authUrl {
     const configured = String.fromEnvironment('AUTH_URL');
     if (configured.isNotEmpty) return configured;
-    final host = !kIsWeb && defaultTargetPlatform == TargetPlatform.android
-        ? '10.0.2.2'
-        : 'localhost';
-    return 'http://$host:8001';
+    return 'http://$_host:8001';
   }
+
+  static String get coreUrl {
+    const configured = String.fromEnvironment('CORE_URL');
+    return configured.isNotEmpty ? configured : 'http://$_host:8000';
+  }
+
+  static String get communicationUrl {
+    const configured = String.fromEnvironment('COMMUNICATION_URL');
+    return configured.isNotEmpty ? configured : 'http://$_host:8006';
+  }
+
+  static String get _host =>
+      !kIsWeb && defaultTargetPlatform == TargetPlatform.android
+      ? '10.0.2.2'
+      : 'localhost';
 }

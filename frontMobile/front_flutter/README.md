@@ -1,6 +1,7 @@
 # HiveApp — Flutter
 
-Interface de login em Flutter, organizada de forma similar ao frontend web.
+Aplicativo Flutter com login, seleção de condomínio, menu lateral, Home com
+avisos e eventos e configurações de idioma.
 O código Dart fica em `lib`, com arquivos em `snake_case`.
 
 ## Estrutura
@@ -9,22 +10,34 @@ O código Dart fica em `lib`, com arquivos em `snake_case`.
 lib/
 ├── main.dart                    # Inicialização do Flutter
 ├── app.dart                     # Tema, idiomas, dependências e navegação
-├── config.dart                  # AUTH_URL e APP_LANGUAGE
+├── config.dart                  # AUTH_URL, CORE_URL, COMMUNICATION_URL e APP_LANGUAGE
 ├── components/login_box/        # Logo, campos e botão
+├── components/navigation/       # Menu lateral e identificação do condomínio
+├── components/home/             # Seções, conteúdo expansível e data dos eventos
+├── components/shared/           # Feedback de erro, estado vazio e tentativa
 ├── helpers/
 │   ├── auth_service.dart        # Requisição HTTP e classificação de erros
-│   └── session_storage.dart     # Persistência do token da conta
+│   ├── api_client.dart          # GET autenticado, timeout e falhas HTTP
+│   ├── core_service.dart        # Listagem e seleção dos vínculos
+│   ├── communication_service.dart # Avisos e eventos do usuário
+│   ├── preferences_storage.dart # Idioma persistido
+│   └── session_storage.dart     # Tokens da conta e do vínculo
 ├── lang/
 │   ├── login_localizations.dart # Delegate de localização
-│   ├── pt/login.json
-│   ├── en/login.json
-│   └── es/login.json
+│   ├── app_localizations.dart   # Textos da área autenticada e meses
+│   ├── pt/                     # login.json e app.json
+│   ├── en/
+│   └── es/
 ├── layouts/auth_layout.dart     # Layout adaptável e rolagem com teclado
+├── layouts/app_shell.dart       # Barra superior, drawer e expiração da sessão
 ├── routes/app_routes.dart       # Nomes das rotas
-├── types/auth_result.dart       # Resposta e falhas de autenticação
+├── routes/menu_destination.dart # Destinos, disponibilidade e permissões
+├── types/                       # Conta, sessão, posts e falhas tipadas
 └── views/
     ├── login.dart               # Formulário e estados da tela
-    └── account_session.dart     # Confirmação da autenticação e saída
+    ├── building_selector.dart   # Seleção do vínculo após o login
+    ├── home.dart                # Avisos e calendário em uma única rolagem
+    └── settings.dart            # Troca de idioma
 
 test/                           # Serviço, interface e traduções
 ```
@@ -38,19 +51,23 @@ flutter pub get
 flutter run -d chrome
 ```
 
-A API precisa estar em execução. Por padrão, o aplicativo usa
-`http://localhost:8001`; no emulador Android, usa `http://10.0.2.2:8001`.
-Em um celular físico, configure um endereço acessível pelo dispositivo:
+Os serviços de autenticação, core e comunicação precisam estar em execução.
+As portas padrão são 8001, 8000 e 8006, respectivamente. O host é `localhost`;
+no emulador Android, `10.0.2.2`. Em um celular físico, configure URLs acessíveis
+pelo dispositivo:
 
 ```sh
-flutter run --dart-define=AUTH_URL=https://seu-servidor.example
+flutter run --dart-define=AUTH_URL=https://seu-servidor.example/api/auth --dart-define=CORE_URL=https://seu-servidor.example/api/core --dart-define=COMMUNICATION_URL=https://seu-servidor.example/api/communication
 ```
 
-`AUTH_URL` é a URL base; o aplicativo acrescenta `/auth/login`.
+As variáveis são URLs base. O aplicativo acrescenta `/auth/login` ao serviço
+de autenticação, `/account` e `/auth` ao core e `/posts` ao de comunicação.
 A porta do backend deve estar acessível ao dispositivo. Para Flutter web,
 a API também deve permitir a origem do aplicativo por CORS.
 
-Português é o idioma padrão. Para usar inglês ou espanhol:
+Português é o idioma padrão. A tela Configurações permite escolher português,
+inglês ou espanhol e salva a preferência entre aberturas e desconexões.
+`APP_LANGUAGE` define o idioma inicial quando não existe preferência salva:
 
 ```sh
 flutter run -d chrome --dart-define=APP_LANGUAGE=en
@@ -62,16 +79,36 @@ flutter run -d chrome --dart-define=APP_LANGUAGE=es
 - Envia `POST /auth/login` com JSON `{ email, password }`.
 - Mantém a validação de campos obrigatórios do web; não altera a senha ou o email enviados.
 - Trata HTTP 400/401/5xx, problemas de rede, timeout de 15 segundos e respostas inválidas.
-- Salva apenas o token recebido, na chave `accountToken`, usando `flutter_secure_storage`.
-- Aguarda a gravação antes de abrir a confirmação; a opção Sair remove o token.
+- Salva o token da conta em `accountToken`, usando `flutter_secure_storage`.
+- Aguarda a gravação antes de listar os vínculos por `GET /account`.
+- Seleciona o vínculo por `GET /auth?userId=...`, usando o token de conta,
+  valida o formato e a identidade das claims recebidas e salva o `userToken`.
+- Só abre a Home depois de persistir o token de usuário. A identidade do
+  condomínio, a residência e as permissões são derivadas desse token.
+- A opção Sair remove os dois tokens e limpa a pilha de navegação.
 - A senha não é persistida pelo aplicativo. O gerenciador de senhas do sistema pode oferecer autofill.
-- A navegação remove o formulário anterior e protege a rota de confirmação contra acesso direto.
-- Como no fluxo web inicial, o aplicativo começa no login. Ainda não há restauração automática
-  de sessão, renovação de token ou seleção de residência.
+- A navegação protege seleção, Home e Configurações contra acesso direto.
+- O aplicativo começa no login; ainda não há restauração automática ou renovação
+  de sessão. Um novo login descarta o token de vínculo anterior.
+- HTTP 401, expiração do token durante o uso e retomada do aplicativo com token
+  expirado retornam ao login. HTTP 403 apresenta uma mensagem de falta de acesso.
 
-O backend emite um token de conta com validade de uma hora. A confirmação atual
-não representa uma residência selecionada. A próxima etapa é migrar
-`BuildingSelector` e integrar o token de usuário, sem confundi-lo com `accountToken`.
+As claims do JWT são usadas para apresentação. A verificação da assinatura e
+a autorização das operações são responsabilidade dos serviços.
+
+## Home e navegação
+
+- `GET /posts` usa exclusivamente o token de usuário e mantém a ordem da API.
+- Posts sem `eventAt` aparecem em Avisos; os demais, no Calendário.
+- Datas são convertidas para o fuso do dispositivo e formatadas conforme o idioma.
+- Uma única rolagem contém as duas seções. Os textos podem ser expandidos.
+- Atualização por gesto ou botão, carregamento, listas vazias e falhas com nova
+  tentativa têm estados próprios. Uma atualização que falha preserva os posts.
+- O menu identifica o condomínio e destaca a página ativa.
+- Home e Configurações estão disponíveis. Moradores, Reservas, Encomendas e
+  Acessos aparecem indisponíveis até a migração dessas telas.
+- A regra de permissão aceita qualquer permissão exigida ou `@core:admin`,
+  como no web. Itens sem permissão mostram cadeado e explicação.
 
 ## Plataformas
 
@@ -102,6 +139,19 @@ flutter build web
 
 Os testes usam respostas HTTP simuladas e armazenamento em memória. Eles cobrem
 validação, contrato da API, falhas, prevenção de envios duplicados, gravação antes
-da navegação, saída, descarte da tela durante uma requisição e layout pequeno com
-teclado e texto ampliado nos três idiomas. A validação com credenciais reais exige
-uma instância acessível da API e uma conta de teste.
+da navegação, saída, descarte da tela durante uma requisição, proteção das rotas,
+permissões, classificação dos posts, expiração, atualização com falha e idioma
+persistido. Os layouts são exercitados em telas de 320 pixels com texto ampliado
+nos três idiomas.
+
+Para gerar imagens locais de inspeção a partir dos testes de widgets:
+
+```sh
+flutter test test/main_flow_test.dart --dart-define=CAPTURE_PREVIEWS=true
+```
+
+As imagens ficam em `build/previews`. No Windows, essa opção carrega Segoe UI
+para que as imagens usem uma fonte legível em vez da fonte de teste Ahem.
+As imagens usam dados simulados. A validação com credenciais reais exige uma
+instância acessível da API e uma conta de teste; a validação Android exige um
+emulador configurado ou um aparelho conectado.

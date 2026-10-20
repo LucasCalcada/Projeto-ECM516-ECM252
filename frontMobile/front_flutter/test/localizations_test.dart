@@ -3,6 +3,8 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:front_flutter/lang/login_localizations.dart';
+import 'package:front_flutter/lang/app_localizations.dart';
+import 'package:front_flutter/types/api_failure.dart';
 import 'package:front_flutter/types/auth_result.dart';
 
 Set<String> keys(Map<String, dynamic> data, [String prefix = '']) => {
@@ -14,6 +16,24 @@ Set<String> keys(Map<String, dynamic> data, [String prefix = '']) => {
 };
 
 void main() {
+  test('app translations cover all failures, months and matching keys', () {
+    Set<String>? reference;
+    for (final language in ['pt', 'en', 'es']) {
+      final data = jsonDecode(
+        File('lib/lang/$language/app.json').readAsStringSync(),
+      ) as Map<String, dynamic>;
+      reference ??= data.keys.toSet();
+      expect(data.keys.toSet(), reference);
+      final strings = AppLocalizations(data);
+      for (final failure in ApiFailure.values) {
+        expect(strings.error(failure), isNotEmpty);
+      }
+      expect(data['months'], hasLength(12));
+      for (var month = 1; month <= 12; month++) {
+        expect(strings.month(month), isNotEmpty);
+      }
+    }
+  });
   test(
     'all languages contain the same messages, including every auth failure',
     () {

@@ -5,37 +5,15 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:front_flutter/app.dart';
 import 'package:front_flutter/helpers/auth_service.dart';
-import 'package:front_flutter/helpers/session_storage.dart';
+import 'package:front_flutter/helpers/api_client.dart';
+import 'package:front_flutter/helpers/core_service.dart';
 import 'package:front_flutter/routes/app_routes.dart';
-import 'package:front_flutter/views/account_session.dart';
+import 'package:front_flutter/views/building_selector.dart';
 import 'package:front_flutter/views/login.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 
-class FakeSessionStorage implements SessionStorage {
-  String? token;
-  int writes = 0;
-  bool failWrite = false;
-  bool failClear = false;
-  Completer<void>? pendingWrite;
-
-  @override
-  Future<void> saveAccountToken(String value) async {
-    writes++;
-    if (failWrite) throw StateError('storage unavailable');
-    if (pendingWrite != null) await pendingWrite!.future;
-    token = value;
-  }
-
-  @override
-  Future<String?> readAccountToken() async => token;
-
-  @override
-  Future<void> clearSession() async {
-    if (failClear) throw StateError('storage unavailable');
-    token = null;
-  }
-}
+import 'support/fakes.dart';
 
 Finder input(String key) => find.descendant(
   of: find.byKey(Key(key)),
@@ -64,6 +42,8 @@ Future<void> mount(
   String locale = 'pt',
 }) async {
   addTearDown(client.close);
+  final coreClient = MockClient((_) async => http.Response('[]', 200));
+  addTearDown(coreClient.close);
   await tester.runAsync(() async {
     await tester.pumpWidget(
       HiveApp(
@@ -72,6 +52,9 @@ Future<void> mount(
           baseUrl: 'https://example.test',
         ),
         sessionStorage: storage,
+        coreService: CoreService(
+          ApiClient(client: coreClient, baseUrl: 'https://core.example.test'),
+        ),
         locale: Locale(locale),
       ),
     );
@@ -86,6 +69,7 @@ void main() {
   setUpAll(() async {
     for (final language in ['pt', 'en', 'es']) {
       await rootBundle.loadString('lib/lang/$language/login.json');
+      await rootBundle.loadString('lib/lang/$language/app.json');
     }
   });
 
@@ -155,14 +139,14 @@ void main() {
 
       response.complete(http.Response('{"token":"account-token"}', 200));
       await tester.pump();
-      expect(find.byType(AccountSession), findsNothing);
+      expect(find.byType(BuildingSelector), findsNothing);
       storage.pendingWrite!.complete();
       await tester.pumpAndSettle();
       expect(storage.token, 'account-token');
-      expect(find.text('Login realizado'), findsOneWidget);
+      expect(find.text('Seu condomínio'), findsOneWidget);
       expect(find.byType(Login), findsNothing);
       expect(
-        Navigator.of(tester.element(find.byType(AccountSession))).canPop(),
+        Navigator.of(tester.element(find.byType(BuildingSelector))).canPop(),
         isFalse,
       );
 
@@ -170,7 +154,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(storage.token, isNull);
       expect(find.byType(Login), findsOneWidget);
-      expect(find.byType(AccountSession), findsNothing);
+      expect(find.byType(BuildingSelector), findsNothing);
       expect(
         tester.widget<TextFormField>(input('login-password')).controller!.text,
         isEmpty,
@@ -201,7 +185,7 @@ void main() {
     expect(tester.widget<ElevatedButton>(submitButton).onPressed, isNotNull);
     await submit(tester);
     await tester.pumpAndSettle();
-    expect(find.byType(AccountSession), findsOneWidget);
+    expect(find.byType(BuildingSelector), findsOneWidget);
   });
 
   testWidgets('storage failure keeps the user on login', (tester) async {
@@ -220,7 +204,7 @@ void main() {
       ),
       findsOneWidget,
     );
-    expect(find.byType(AccountSession), findsNothing);
+    expect(find.byType(BuildingSelector), findsNothing);
     expect(storage.token, isNull);
   });
 
@@ -255,7 +239,7 @@ void main() {
     await enterCredentials(tester);
     await tester.testTextInput.receiveAction(TextInputAction.done);
     await tester.pumpAndSettle();
-    expect(find.byType(AccountSession), findsOneWidget);
+    expect(find.byType(BuildingSelector), findsOneWidget);
   });
 
   testWidgets(
@@ -285,7 +269,7 @@ void main() {
     Navigator.of(tester.element(find.byType(Login)))
         .pushNamed(AppRoutes.account);
     await tester.pumpAndSettle();
-    expect(find.byType(AccountSession), findsNothing);
+    expect(find.byType(BuildingSelector), findsNothing);
     expect(find.byType(Login), findsOneWidget);
   });
 
