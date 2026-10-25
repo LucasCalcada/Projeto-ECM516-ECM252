@@ -1,0 +1,209 @@
+x-backend: &backend
+  restart: unless-stopped
+  init: true
+  depends_on:
+    event-bus:
+      condition: service_healthy
+      restart: true
+    db:
+      condition: service_healthy
+    db-init:
+      condition: service_completed_successfully
+
+x-backend-environment: &backend-environment
+  JWT_SECRET: ${JWT_SECRET:-test-token}
+  INTERNAL_SECRET: ${INTERNAL_SECRET:-internal-service-token}
+  CORE_URL: http://core-service:8000
+  EVENT_BUS_URL: http://event-bus:8004
+
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: adminPasswd
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./back/init-dbs.sql:/docker-entrypoint-initdb.d/init-dbs.sql:ro
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -h 127.0.0.1 -U admin -d postgres']
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+
+  db-init:
+    image: postgres:17-alpine
+    restart: 'no'
+    environment:
+      PGHOST: db
+      PGPORT: 5432
+      PGUSER: admin
+      PGPASSWORD: adminPasswd
+      PGDATABASE: postgres
+    volumes:
+      - ./back/init-dbs.sql:/init-dbs.sql:ro
+    command: ['psql', '--no-psqlrc', '--set=ON_ERROR_STOP=1', '--file=/init-dbs.sql']
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db-dashboard:
+    image: dpage/pgadmin4:9
+    restart: unless-stopped
+    ports:
+      - '9000:80'
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@test.com
+      PGADMIN_DEFAULT_PASSWORD: adminPasswd
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+      - ./back/servers.json:/pgadmin4/servers.json:ro
+    depends_on:
+      db:
+        condition: service_healthy
+
+  event-bus:
+    build:
+      context: .
+      dockerfile: back/event-bus/docker/Dockerfile
+    restart: unless-stopped
+    init: true
+    environment:
+      PORT: 8004
+      INTERNAL_SECRET: ${INTERNAL_SECRET:-internal-service-token}
+    ports:
+      - '8004:8004'
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:8004/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 10s
+
+  core-service:
+    <<: *backend
+    build:
+      context: .
+      dockerfile: back/core-service/docker/Dockerfile
+    environment:
+      <<: *backend-environment
+      PORT: 8000
+      DATABASE_URL: postgresql://admin:adminPasswd@db:5432/coreDb
+    ports:
+      - '8000:8000'
+
+  auth-service:
+    <<: *backend
+    build:
+      context: .
+      dockerfile: back/auth-service/docker/Dockerfile
+    environment:
+      <<: *backend-environment
+      PORT: 8001
+      DATABASE_URL: postgresql://admin:adminPasswd@db:5432/authDb
+    ports:
+      - '8001:8001'
+
+  delivery-service:
+    <<: *backend
+    build:
+      context: .
+      dockerfile: back/delivery-service/docker/Dockerfile
+    environment:
+      <<: *backend-environment
+      PORT: 8002
+      DATABASE_URL: postgresql://admin:adminPasswd@db:5432/deliveryDb
+    ports:
+      - '8002:8002'
+
+  visitor-service:
+    <<: *backend
+    build:
+      context: .
+      dockerfile: back/visitor-service/docker/Dockerfile
+    environment:
+      <<: *backend-environment
+      PORT: 8003
+      DATABASE_URL: postgresql://admin:adminPasswd@db:5432/visitorDb
+    ports:
+      - '8003:8003'
+
+  reservation-service:
+    <<: *backend
+    build:
+      context: .
+      dockerfile: back/reservation-service/docker/Dockerfile
+    environment:
+      <<: *backend-environment
+      PORT: 8005
+      DATABASE_URL: postgresql://admin:adminPasswd@db:5432/reservationDb
+    ports:
+      - '8005:8005'
+
+  communication-service:
+    <<: *backend
+    build:
+      context: .
+      dockerfile: back/communication-service/docker/Dockerfile
+    environment:
+      <<: *backend-environment
+      PORT: 8006
+      DATABASE_URL: postgresql://admin:adminPasswd@db:5432/communicationDb
+      SERVICE_URL: http://communication-service:8006
+    ports:
+      - '8006:8006'
+
+  complaint-service:
+    restart: unless-stopped
+    init: true
+    build:
+      context: .
+      dockerfile: back/complaint-service/docker/Dockerfile
+    environment:
+      PORT: 8007
+      HOST: 0.0.0.0
+      DATABASE_URL: postgresql://admin:adminPasswd@db:5432/complaintDb
+      DATABASE_SSL_MODE: disable
+      JWT_SECRET: ${JWT_SECRET:-test-token}
+    ports:
+      - '8007:8007'
+    depends_on:
+      db:
+        condition: service_healthy
+      db-init:
+        condition: service_completed_successfully
+
+  front:
+    build:
+      context: .
+      dockerfile: front/docker/Dockerfile
+    restart: unless-stopped
+    ports:
+      - '5173:80'
+    depends_on:
+      core-service:
+        condition: service_started
+      auth-service:
+        condition: service_started
+      delivery-service:
+        condition: service_started
+      visitor-service:
+        condition: service_started
+      reservation-service:
+        condition: service_started
+      communication-service:
+        condition: service_started
+      complaint-service:
+        condition: service_started
+
+volumes:
+  postgres-data:
+  pgadmin-data:
