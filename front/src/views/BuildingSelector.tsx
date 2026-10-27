@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { type AccountUser } from '../types/AccountUser';
 import UserSelector from '../components/Login/UserSelector';
 import { useToast } from '../components/Toast';
+import loadUserData from '../helpers/loadUserData';
 
 export default function SelectUserPage() {
   const [users, setUsers] = useState<AccountUser[]>([]);
@@ -19,7 +20,7 @@ export default function SelectUserPage() {
   const axiosInstance = axios.create({
     baseURL: config.coreUrl,
     headers: {
-      Authorization: token,
+      Authorization: token ? `Bearer ${token}` : undefined,
     },
   });
 
@@ -49,8 +50,7 @@ export default function SelectUserPage() {
 
       const token = response.data.token;
 
-      localStorage.setItem('userToken', token);
-      localStorage.setItem('permissions', JSON.stringify(user.permissions ?? []));
+      loadUserData(token);
       navigate('/home');
     } catch (error) {
       notifyError(

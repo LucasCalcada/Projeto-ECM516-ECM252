@@ -6,8 +6,26 @@ export interface Reservation {
   commonAreaId: string;
   commonAreaName: string;
   date: string; // yyyy-mm-dd
-  startTime: string; // HH:mm
-  endTime: string; // HH:mm
+  startTime?: string;
+  endTime?: string;
   notes?: string;
-  status: ReservationStatus;
+  status?: ReservationStatus;
+}
+
+export interface ReservationApiResponse {
+  id: string;
+  residentName: string;
+  commonAreaId: string;
+  commonAreaName: string;
+  reservationDate: string;
+}
+
+export function mapReservationApiResponse(reservation: ReservationApiResponse): Reservation {
+  return {
+    id: reservation.id,
+    residentName: reservation.residentName,
+    commonAreaId: reservation.commonAreaId,
+    commonAreaName: reservation.commonAreaName,
+    date: reservation.reservationDate,
+  };
 }

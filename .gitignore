@@ -6,3 +6,8 @@
 
 # Database files
 **/drizzle
+
+# Temp files
+*.log
+*.err
+*.rest

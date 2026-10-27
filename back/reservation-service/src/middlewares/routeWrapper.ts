@@ -6,8 +6,11 @@ export type WrappedRouteHandler = (req: Request, res: Response) => Promise<any>;
 export interface Context {
   req: Request;
   auth: {
-    token: string;
-    accountId: string;
+    userId: string;
+    buildingId: string;
+    residencyId: string | null;
+    residencyName: string | null;
+    permissions: string[];
   };
 }
 

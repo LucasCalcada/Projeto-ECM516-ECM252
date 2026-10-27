@@ -1,8 +1,8 @@
 import client from '@app/db/client';
 import { postRecipients, Post, posts } from '@app/db/schema/post';
-import { inArray } from 'drizzle-orm';
+import { and, eq, inArray } from 'drizzle-orm';
 
-interface PostResponse {
+export interface PostResponse {
   id: string;
   buildingId: string;
   authorUserId: string;
@@ -67,4 +67,63 @@ export function parsePostPayload(body: any): PostPayload {
     recipientUserIds,
     eventAt,
   };
+}
+
+interface CreatePostInput {
+  buildingId: string;
+  authorUserId: string;
+  title: string;
+  description: string;
+  recipientUserIds: string[];
+  eventAt: Date | null;
+  skipDuplicate?: boolean;
+}
+
+export async function createPostForRecipients(input: CreatePostInput): Promise<PostResponse> {
+  const recipientUserIds = [...new Set(input.recipientUserIds)];
+
+  if (input.skipDuplicate) {
+    const [existingPost] = await client
+      .select()
+      .from(posts)
+      .where(
+        and(
+          eq(posts.buildingId, input.buildingId),
+          eq(posts.authorUserId, input.authorUserId),
+          eq(posts.title, input.title),
+          eq(posts.description, input.description),
+        ),
+      )
+      .limit(1);
+
+    if (existingPost) {
+      const [mappedPost] = await mapPostsWithRecipients([existingPost]);
+      return mappedPost;
+    }
+  }
+
+  const post = await client.transaction(async (tx) => {
+    const [createdPost] = await tx
+      .insert(posts)
+      .values({
+        buildingId: input.buildingId,
+        authorUserId: input.authorUserId,
+        title: input.title,
+        description: input.description,
+        eventAt: input.eventAt,
+      })
+      .returning();
+
+    await tx.insert(postRecipients).values(
+      recipientUserIds.map((userId) => ({
+        postId: createdPost.id,
+        userId,
+      })),
+    );
+
+    return createdPost;
+  });
+
+  const [response] = await mapPostsWithRecipients([post]);
+  return response;
 }

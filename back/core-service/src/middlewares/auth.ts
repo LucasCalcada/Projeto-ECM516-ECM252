@@ -4,10 +4,14 @@ import config from '@app/config';
 import Unauthorized from '@app/api/error/errors/Unauthorized';
 import { AuthToken } from '@app/types/auth';
 
-export function validateAuthToken(req: Request) {
-  const token = req.headers['authorization'];
+function normalizeAuthorizationHeader(header: string | undefined): string {
+  if (!header) throw Unauthorized;
+  if (!header.startsWith('Bearer ')) throw Unauthorized;
+  return header.slice('Bearer '.length);
+}
 
-  if (!token) throw Unauthorized;
+export function validateAuthToken(req: Request) {
+  const token = normalizeAuthorizationHeader(req.headers['authorization']);
 
   //TODO: use symmetric key for jwt validation
   const result = jwt.verify(token, config.jwtSecret) as AuthToken;

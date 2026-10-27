@@ -1,10 +1,12 @@
-export type DeliveryStatus = 'waiting' | 'arrived' | 'notified' | 'delivered';
+export type DeliveryStatus = 'PENDING' | 'DELIVERED' | 'CANCELED';
+
 export default interface Package {
   id: string;
+  buildingId: string;
   residencyId: string;
+  residencyName: string;
   description: string;
   status: DeliveryStatus;
   createdAt: string;
-  updatedAt: string;
-  deliveryAt: string | null;
+  deliveredAt: string | null;
 }

@@ -16,8 +16,9 @@ export default function authMiddleware(req: Request): Context['auth'] {
   const authorization = req.headers['authorization'];
 
   if (!authorization) throw Unauthorized;
+  if (!authorization.startsWith('Bearer ')) throw Unauthorized;
 
-  const token = authorization.replace(/^Bearer\s+/i, '');
+  const token = authorization.slice('Bearer '.length);
   const result = jwt.verify(token, config.jwtSecret) as UserToken;
 
   if (result.tokenKind !== 'user' || !result.userId || !result.buildingId) throw Unauthorized;

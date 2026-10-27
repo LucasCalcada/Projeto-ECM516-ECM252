@@ -1,77 +1,45 @@
-import client from '@db/client';
+import client from '@app/db/client';
 import { buildings, groups, residencies, users } from '@app/db/schema';
 
-import { PopulateBuilding, PopulateGroup, PopulateResidency, PopulateUser } from './populateTypes';
-import populateData from './populateData';
+import { buildingData } from './buildings';
+import { groupData } from './groups';
+import { residencyData } from './residencies';
+import { userData } from './users';
+import { sql } from 'drizzle-orm';
 
-async function populateUsers(
-  data: PopulateUser,
-  residencyId: string | null,
-  buildingId: string | null,
-) {
-  const { name, permissions, active } = data;
-
-  await client.insert(users).values({
-    name,
-    permissions,
-    active,
-    residencyId,
-    buildingId,
-  });
+async function clearDb() {
+  // Clear database
+  await client.execute(sql`
+    TRUNCATE TABLE
+      users,
+      residencies,
+      groups,
+      buildings
+    CASCADE
+  `);
 }
 
-async function populateResidencies(data: PopulateResidency, groupId: string) {
-  const { code, name } = data;
+async function seed() {
+  await clearDb();
 
-  const [residencyRow] = await client
-    .insert(residencies)
-    .values({
-      groupId,
-      name,
-      code,
-    })
-    .returning();
-
-  await Promise.all(data.users.map((u) => populateUsers(u, residencyRow.id, null)));
-}
-
-async function populateGroups(data: PopulateGroup, buildingId: any) {
-  const { name } = data;
-
-  const [groupRow] = await client
-    .insert(groups)
-    .values({
-      building: buildingId,
-      name,
-    })
-    .returning();
-
-  await Promise.all(data.residencies.map((r) => populateResidencies(r, groupRow.id)));
-}
-
-async function populateBuilding(data: PopulateBuilding) {
-  const { name, active } = data;
-
-  const [buildingRow] = await client
-    .insert(buildings)
-    .values({
-      name,
-      active,
-    })
-    .returning();
-
-  await Promise.all(data.groups.map((g) => populateGroups(g, buildingRow.id)));
-  await Promise.all(data.employees.map((e) => populateUsers(e, null, buildingRow.id)));
-}
-
-async function populateDb() {
-  console.log('Clearing old data...');
-  await client.delete(users);
-  await client.delete(residencies);
-  await client.delete(groups);
-  await client.delete(buildings);
   console.log('Populating buildings...');
-  await Promise.all(populateData.map(populateBuilding));
+  await client.insert(buildings).values(buildingData);
+
+  console.log('Populating groups...');
+  await client.insert(groups).values(groupData);
+
+  console.log('Populating residencies...');
+  await client.insert(residencies).values(residencyData);
+
+  console.log('Populating users...');
+  await client.insert(users).values(userData);
+
+  console.log('Populate Finished');
 }
 
-populateDb();
+seed()
+  .then(() => process.exit(0))
+  .catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });

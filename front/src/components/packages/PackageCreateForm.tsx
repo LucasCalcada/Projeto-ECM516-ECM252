@@ -1,0 +1,169 @@
+import { type FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
+import { PackagePlus, RefreshCw } from 'lucide-react';
+import { useToast } from '../Toast';
+import useService from '../../helpers/useService';
+import { useTranslation } from 'react-i18next';
+
+interface ResidencyDetails {
+  id: string;
+  name: string | null;
+}
+
+interface ResidencyGroupDetails {
+  id: string;
+  name: string | null;
+  residencies: ResidencyDetails[];
+}
+
+interface BuildingDetailsResponse {
+  residentData: ResidencyGroupDetails[];
+}
+
+interface ResidencyOption {
+  id: string;
+  name: string;
+}
+
+interface PackageCreateFormProps {
+  buildingId: string | null;
+}
+
+const initialDescription = '';
+
+export default function PackageCreateForm({ buildingId }: PackageCreateFormProps) {
+  const { t } = useTranslation();
+  const [residencies, setResidencies] = useState<ResidencyOption[]>([]);
+  const [selectedResidencyId, setSelectedResidencyId] = useState('');
+  const [description, setDescription] = useState(initialDescription);
+  const [isLoadingResidencies, setIsLoadingResidencies] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { notifyError, notifySuccess, notifyWarning } = useToast();
+  const coreService = useService('core');
+  const deliveryService = useService('delivery');
+
+  const sortedResidencies = useMemo(
+    () => [...residencies].sort((a, b) => a.name.localeCompare(b.name)),
+    [residencies],
+  );
+
+  const fetchResidencies = useCallback(async () => {
+    if (!buildingId) {
+      notifyError(t('common:error'), t('packages:form.toast.missingBuilding'));
+      return;
+    }
+
+    setIsLoadingResidencies(true);
+    try {
+      const response = await coreService.get<BuildingDetailsResponse>(
+        `/building/${buildingId}/details`,
+      );
+
+      const options = response.data.residentData.flatMap((group) =>
+        group.residencies
+          .filter((residency): residency is { id: string; name: string } => residency.name !== null)
+          .map((residency) => ({
+            id: residency.id,
+            name: residency.name,
+          })),
+      );
+
+      setResidencies(options);
+      setSelectedResidencyId((current) => current || options[0]?.id || '');
+    } catch (error) {
+      console.error(error);
+      notifyError(t('common:error'), t('packages:form.toast.loadResidenciesError'));
+    } finally {
+      setIsLoadingResidencies(false);
+    }
+  }, [buildingId, coreService, notifyError, t]);
+
+  useEffect(() => {
+    fetchResidencies();
+  }, [fetchResidencies]);
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    if (!selectedResidencyId || !description.trim()) {
+      notifyWarning(
+        t('packages:form.toast.requiredTitle'),
+        t('packages:form.toast.requiredMessage'),
+      );
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      await deliveryService.post('/packages', {
+        residencyId: selectedResidencyId,
+        description: description.trim(),
+      });
+
+      notifySuccess(t('packages:form.toast.successTitle'), t('packages:form.toast.successMessage'));
+      setDescription(initialDescription);
+    } catch (error) {
+      console.error(error);
+      notifyError(t('common:error'), t('packages:form.toast.createError'));
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  return (
+    <section className="rounded-lg border border-neutral-800 bg-neutral-900/40 p-4">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <button
+          type="button"
+          className="ml-auto inline-flex items-center gap-2 rounded-md bg-neutral-800 px-3 py-2 text-sm font-semibold text-neutral-100 transition hover:bg-neutral-700 disabled:cursor-not-allowed disabled:opacity-60"
+          onClick={fetchResidencies}
+          disabled={isLoadingResidencies}
+        >
+          <RefreshCw size={16} />
+          {isLoadingResidencies
+            ? t('packages:list.updating')
+            : t('packages:form.refreshResidencies')}
+        </button>
+      </div>
+
+      <form className="grid grid-cols-1 gap-3 md:grid-cols-2" onSubmit={handleSubmit}>
+        <label className="block">
+          <span className="mb-1 block text-sm text-neutral-300">{t('common:residency')}</span>
+          <select
+            className="w-full rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm"
+            value={selectedResidencyId}
+            onChange={(event) => setSelectedResidencyId(event.target.value)}
+            disabled={isLoadingResidencies || sortedResidencies.length === 0}
+          >
+            {sortedResidencies.length === 0 ? (
+              <option value="">{t('packages:form.noResidencies')}</option>
+            ) : (
+              sortedResidencies.map((residency) => (
+                <option key={residency.id} value={residency.id}>
+                  {residency.name}
+                </option>
+              ))
+            )}
+          </select>
+        </label>
+
+        <label className="block">
+          <span className="mb-1 block text-sm text-neutral-300">{t('common:description')}</span>
+          <input
+            className="w-full rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm"
+            value={description}
+            onChange={(event) => setDescription(event.target.value)}
+            placeholder={t('packages:form.descriptionPlaceholder')}
+          />
+        </label>
+
+        <button
+          type="submit"
+          className="rounded-md bg-cyan-300 px-3 py-2 text-sm font-semibold text-neutral-950 transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-60 md:col-span-2"
+          disabled={isSubmitting || isLoadingResidencies || sortedResidencies.length === 0}
+        >
+          {isSubmitting ? t('packages:form.submitting') : t('packages:form.submit')}
+        </button>
+      </form>
+    </section>
+  );
+}

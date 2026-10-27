@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { ClipboardList } from 'lucide-react';
 import './styles.css';
 
 interface BuildingRulesNotificationProps {
@@ -16,7 +18,9 @@ export function BuildingRulesNotification({
   commonAreaName,
   reservationDate,
 }: BuildingRulesNotificationProps) {
+  const { i18n, t } = useTranslation();
   const [isVisible, setIsVisible] = useState(false);
+  const locale = i18n.resolvedLanguage || i18n.language;
 
   useEffect(() => {
     if (isOpen) {
@@ -32,36 +36,33 @@ export function BuildingRulesNotification({
   const rules = [
     {
       icon: '🔇',
-      title: 'Horário de Silêncio',
-      description:
-        'De segunda a sexta: turno noturno (22h às 8h). Finais de semana: todo dia até às 21h.',
+      title: t('reservations:rules.items.quietHours.title'),
+      description: t('reservations:rules.items.quietHours.description'),
     },
     {
       icon: '🧹',
-      title: 'Equipe de Limpeza',
-      description:
-        'Terças e quintas-feiras, das 8h às 11h. Permitido circulação normal nestes períodos.',
+      title: t('reservations:rules.items.cleaning.title'),
+      description: t('reservations:rules.items.cleaning.description'),
     },
     {
       icon: '📢',
-      title: 'Volume Máximo',
-      description:
-        'Respeite os vizinhos. Evite música alta, festas prolongadas e barulhos excessivos.',
+      title: t('reservations:rules.items.volume.title'),
+      description: t('reservations:rules.items.volume.description'),
     },
     {
       icon: '🚫',
-      title: 'Proibido',
-      description: 'Não é permitido bebidas alcoólicas fora do período autorizado (16h - 23h).',
+      title: t('reservations:rules.items.forbidden.title'),
+      description: t('reservations:rules.items.forbidden.description'),
     },
     {
       icon: '👥',
-      title: 'Limite de Pessoas',
-      description: `Máximo de ${50} pessoas simultâneas na área comum reservada.`,
+      title: t('reservations:rules.items.capacity.title'),
+      description: t('reservations:rules.items.capacity.description', { count: 50 }),
     },
     {
       icon: '⏰',
-      title: 'Devolução da Área',
-      description: 'A área deve ser devolvida em perfeito estado ao final do período de reserva.',
+      title: t('reservations:rules.items.returnArea.title'),
+      description: t('reservations:rules.items.returnArea.description'),
     },
   ];
 
@@ -77,7 +78,7 @@ export function BuildingRulesNotification({
         onClick={(e) => e.stopPropagation()}
       >
         <div className="rules-notification-header">
-          <h2>✅ Reserva Confirmada!</h2>
+          <h2>✅ {t('reservations:rules.title')}</h2>
           <button type="button" className="close-btn" onClick={handleClose}>
             ✕
           </button>
@@ -86,21 +87,24 @@ export function BuildingRulesNotification({
         <div className="rules-notification-content">
           <div className="reservation-details">
             <p className="detail-line">
-              <span className="label">Morador:</span>
+              <span className="label">{t('reservations:rules.resident')}</span>
               <span className="value">{residentName}</span>
             </p>
             <p className="detail-line">
-              <span className="label">Área Comum:</span>
+              <span className="label">{t('reservations:rules.commonArea')}</span>
               <span className="value">{commonAreaName}</span>
             </p>
             <p className="detail-line">
-              <span className="label">Data:</span>
-              <span className="value">{new Date(reservationDate).toLocaleDateString('pt-BR')}</span>
+              <span className="label">{t('reservations:rules.date')}</span>
+              <span className="value">{new Date(reservationDate).toLocaleDateString(locale)}</span>
             </p>
           </div>
 
           <div className="rules-section">
-            <h3>📋 Regras Importantes do Prédio:</h3>
+            <h3>
+              <ClipboardList size={18} />
+              {t('reservations:rules.importantRules')}
+            </h3>
             <div className="rules-grid">
               {rules.map((rule, index) => (
                 <div key={index} className="rule-card">
@@ -115,11 +119,9 @@ export function BuildingRulesNotification({
           </div>
 
           <div className="rules-notification-footer">
-            <p className="acknowledgment">
-              Você reconhece que leu e concorda com as regras do condomínio.
-            </p>
+            <p className="acknowledgment">{t('reservations:rules.acknowledgment')}</p>
             <button type="button" className="confirm-btn" onClick={handleClose}>
-              Entendido
+              {t('reservations:rules.understood')}
             </button>
           </div>
         </div>

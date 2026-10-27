@@ -5,6 +5,7 @@ import reservations from './reservations.json';
 import calendar from './calendar.json';
 import common from './common.json';
 import packages from './packages.json';
+import visitorAccess from './visitorAccess.json';
 
 export default {
   login,
@@ -15,6 +16,7 @@ export default {
   reservations,
   calendar,
   packages,
+  visitorAccess,
 
   common,
 };

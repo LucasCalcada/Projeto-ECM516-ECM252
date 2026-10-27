@@ -1,1 +1,18 @@
-{}
+{
+  "accessDenied": "Acesso negado",
+  "allDay": "Dia inteiro",
+  "commonArea": "Área comum",
+  "dateTime": "Data e hora",
+  "description": "Descrição",
+  "error": "Erro",
+  "loading": "Carregando",
+  "loadingEllipsis": "Carregando...",
+  "name": "Nome",
+  "refresh": "Atualizar",
+  "residency": "Residência",
+  "time": {
+    "hours": "Horas",
+    "minutes": "Minutos"
+  },
+  "updating": "Atualizando..."
+}

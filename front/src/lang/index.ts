@@ -5,9 +5,18 @@ import en from './en/';
 import es from './es/';
 
 i18n.use(initReactI18next).init({
-  lng: 'pt',
+  lng: localStorage.getItem('language') || 'pt',
 
-  ns: ['shell', 'login', 'announcements', 'reservations', 'calendar', 'packages', 'common'],
+  ns: [
+    'shell',
+    'login',
+    'announcements',
+    'reservations',
+    'calendar',
+    'packages',
+    'visitorAccess',
+    'common',
+  ],
   defaultNS: 'shell',
 
   resources: {
@@ -16,5 +25,12 @@ i18n.use(initReactI18next).init({
     es,
   },
 });
+
+i18n.on('languageChanged', (language) => {
+  localStorage.setItem('language', language);
+  document.documentElement.lang = language;
+});
+
+document.documentElement.lang = i18n.language;
 
 export default i18n;

@@ -1,8 +1,6 @@
 export interface CommonArea {
   id: string;
+  buildingId: string;
   name: string;
-  capacity: number;
-  openingHour: string;
-  closingHour: string;
-  reservationSlotMinutes: number;
+  limit: number;
 }

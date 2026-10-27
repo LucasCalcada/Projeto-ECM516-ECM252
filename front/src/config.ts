@@ -13,7 +13,7 @@ const config: AppConfig = {
   deliveryUrl: 'http://localhost:8002',
   reservationUrl: 'http://localhost:8005',
   visitorAccessUrl: 'http://localhost:8003',
-  communicationUrl: 'http://localhost:8005',
+  communicationUrl: 'http://localhost:8006',
 };
 
 export default config;

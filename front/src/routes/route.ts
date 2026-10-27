@@ -16,6 +16,7 @@ interface RouteConfigBase {
 export type VisibleRouteConfig = RouteConfigBase & {
   visible: true;
   display: RouteDisplay;
+  permissions?: string[];
 };
 
 export type RouteConfig =

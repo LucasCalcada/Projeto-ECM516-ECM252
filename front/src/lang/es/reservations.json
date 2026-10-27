@@ -1,17 +1,138 @@
 {
-  "title": "Reservas",
-  "description": "Gestione reservas de parrilla, salón de fiestas y otras áreas comunes.",
-  "upcoming": "Próximas Reservas",
+  "views": {
+    "create": {
+      "label": "Registrar",
+      "title": "Registrar reserva",
+      "description": "Elija un área común y una fecha disponible."
+    },
+    "building": {
+      "label": "Edificio",
+      "title": "Reservas del edificio",
+      "description": "Vea las reservas por área común."
+    },
+    "residency": {
+      "label": "Mi unidad",
+      "title": "Mis reservas",
+      "description": "Acompañe las próximas reservas de su unidad."
+    }
+  },
   "status": {
     "pending": "Pendiente",
     "confirmed": "Confirmada",
     "cancelled": "Cancelada"
   },
   "form": {
-    "resident": "Residente",
-    "resource": "Área Común",
-    "date": "Fecha",
-    "comment": "Observaciones",
-    "confirm": "Solicitar reserva"
+    "confirm": "Solicitar reserva",
+    "title": "Nueva reserva",
+    "selectDate": "Seleccione en el calendario",
+    "submitting": "Espere...",
+    "people_one": "{{count}} persona",
+    "people_other": "{{count}} personas",
+    "feedback": {
+      "missingFields": "Seleccione un área común y una fecha disponible.",
+      "conflict": "Este día ya fue reservado. Elija otra fecha.",
+      "createError": "No fue posible crear la reserva. Inténtelo de nuevo más tarde."
+    },
+    "toast": {
+      "successTitle": "Reserva",
+      "successMessage": "Reserva registrada correctamente."
+    },
+    "people_many": ""
+  },
+  "calendar": {
+    "title": "Calendario del área",
+    "description": "Los días marcados en rojo ya están reservados para {{areaName}}.",
+    "previousMonth": "Mes anterior",
+    "nextMonth": "Próximo mes",
+    "monthYear": "{{month}} de {{year}}",
+    "dayStatus": {
+      "past": "Fecha pasada",
+      "reserved": "Día reservado",
+      "available": "Disponible"
+    },
+    "reservationsFor": "Reservas para {{date}}",
+    "reservedDay": "Este día ya fue reservado.",
+    "weekDays": {
+      "0": "D",
+      "1": "L",
+      "2": "M",
+      "3": "M",
+      "4": "J",
+      "5": "V",
+      "6": "S"
+    },
+    "months": {
+      "0": "Enero",
+      "1": "Febrero",
+      "2": "Marzo",
+      "3": "Abril",
+      "4": "Mayo",
+      "5": "Junio",
+      "6": "Julio",
+      "7": "Agosto",
+      "8": "Septiembre",
+      "9": "Octubre",
+      "10": "Noviembre",
+      "11": "Diciembre"
+    }
+  },
+  "lists": {
+    "futureTitle": "Mis próximas reservas",
+    "emptyFuture": "Su apartamento aún no tiene reservas futuras.",
+    "emptyBuilding": "No hay reservas futuras para {{areaName}}.",
+    "loadFutureError": "No fue posible cargar sus próximas reservas.",
+    "loadBuildingError": "No fue posible cargar las reservas de esta área común."
+  },
+  "relative": {
+    "past": "Pasada",
+    "today": "Hoy",
+    "tomorrow": "Mañana",
+    "days_one": "En {{count}} día",
+    "days_other": "En {{count}} días",
+    "weeks_one": "En {{count}} semana",
+    "weeks_other": "En {{count}} semanas",
+    "months_one": "En {{count}} mes",
+    "months_other": "En {{count}} meses",
+    "days_many": "",
+    "weeks_many": "",
+    "months_many": ""
+  },
+  "rules": {
+    "title": "¡Reserva confirmada!",
+    "resident": "Residente:",
+    "commonArea": "Área común:",
+    "date": "Fecha:",
+    "importantRules": "Reglas importantes del edificio:",
+    "acknowledgment": "Usted reconoce que ha leído y acepta las reglas del condominio.",
+    "understood": "Entendido",
+    "items": {
+      "quietHours": {
+        "title": "Horario de silencio",
+        "description": "De lunes a viernes: turno nocturno (22h a 8h). Fines de semana: todo el día hasta las 21h."
+      },
+      "cleaning": {
+        "title": "Equipo de limpieza",
+        "description": "Martes y jueves, de 8h a 11h. Se permite circulación normal durante estos períodos."
+      },
+      "volume": {
+        "title": "Volumen máximo",
+        "description": "Respete a los vecinos. Evite música alta, fiestas prolongadas y ruidos excesivos."
+      },
+      "forbidden": {
+        "title": "Prohibido",
+        "description": "No se permiten bebidas alcohólicas fuera del período autorizado (16h - 23h)."
+      },
+      "capacity": {
+        "title": "Límite de personas",
+        "description": "Máximo de {{count}} personas simultáneas en el área común reservada.",
+        "description_many": "",
+        "description_one": "",
+        "description_other": ""
+      },
+      "returnArea": {
+        "title": "Devolución del área",
+        "description": "El área debe devolverse en perfecto estado al final del período de reserva."
+      }
+    }
   }
 }

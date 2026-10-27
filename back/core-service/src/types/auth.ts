@@ -7,6 +7,7 @@ export interface UserToken {
   userId: string;
   buildingId: string;
   residencyId: string;
+  residencyName: string | null;
   permissions: string[];
 }
 

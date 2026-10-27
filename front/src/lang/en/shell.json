@@ -14,22 +14,32 @@
       "logout": "Sign out"
     }
   },
+  "residents": {
+    "title": "{{buildingName}} - Residents",
+    "userEditor": {
+      "title": "Edit user",
+      "name": "Name",
+      "namePlaceholder": "Enter the name",
+      "permissions": "Permissions",
+      "permissionPlaceholder": "Enter a permission",
+      "add": "Add",
+      "cancel": "Cancel",
+      "save": "Save",
+      "saving": "Saving...",
+      "loading": "Loading user..."
+    }
+  },
   "settings": {
     "title": "Settings",
     "subtitle": "Manage your preferences and profile",
-    "profile": {
-      "title": "Profile",
-      "edit": "✏️ Edit Profile",
-      "save": "💾 Save",
-      "cancel": "✕ Cancel",
-      "email": "Email",
-      "phone": "Phone"
-    },
     "language": {
-      "title": "Language"
-    },
-    "messages": {
-      "profileUpdated": "Profile updated successfully!"
+      "title": "Language",
+      "selected": "Selected",
+      "options": {
+        "pt": "Portuguese",
+        "en": "English",
+        "es": "Spanish"
+      }
     }
   }
 }

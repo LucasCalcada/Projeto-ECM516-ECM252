@@ -5,15 +5,13 @@ import { Request } from 'express';
 import { and, eq } from 'drizzle-orm';
 import BadRequest from '@app/middlewares/error/errors/BadRequest';
 import Conflict from '@app/middlewares/error/errors/Conflict';
-import {
-  buildApartmentLabel,
-  getAccountData,
-  isValidDateString,
-  todayAsDateString,
-} from '../helpers';
+import { isValidDateString, todayAsDateString } from '../helpers';
+import { CREATE_RESERVATION_PERMISSION, requirePermission } from '@app/helpers/permissions';
 
 export default async function createReservation(req: Request, ctx: Context) {
-  const { commonAreaId, commonAreaName, reservationDate, notes } = req.body;
+  requirePermission(ctx, [CREATE_RESERVATION_PERMISSION]);
+
+  const { commonAreaId, commonAreaName, reservationDate } = req.body;
 
   if (!commonAreaId || !commonAreaName || !reservationDate || !isValidDateString(reservationDate)) {
     throw BadRequest;
@@ -23,17 +21,18 @@ export default async function createReservation(req: Request, ctx: Context) {
     throw BadRequest;
   }
 
-  const account = await getAccountData(ctx);
+  if (!ctx.auth.residencyId) {
+    throw BadRequest;
+  }
 
   const existingReservation = await client
     .select({ id: reservations.id })
     .from(reservations)
     .where(
       and(
-        eq(reservations.buildingId, account.buildingId),
+        eq(reservations.buildingId, ctx.auth.buildingId),
         eq(reservations.commonAreaId, commonAreaId),
         eq(reservations.reservationDate, reservationDate),
-        eq(reservations.status, 'CONFIRMED'),
       ),
     );
 
@@ -44,18 +43,13 @@ export default async function createReservation(req: Request, ctx: Context) {
   const [newReservation] = await client
     .insert(reservations)
     .values({
-      userId: account.userId,
-      accountId: ctx.auth.accountId,
-      residentName: account.userName,
-      residencyId: account.residencyId,
-      apartment: buildApartmentLabel(account),
-      buildingId: account.buildingId,
-      buildingName: account.buildingName,
+      userId: ctx.auth.userId,
+      residentName: ctx.auth.residencyName ?? ctx.auth.userId,
+      residencyId: ctx.auth.residencyId,
+      buildingId: ctx.auth.buildingId,
       commonAreaId,
       commonAreaName,
       reservationDate,
-      notes: typeof notes === 'string' && notes.trim() ? notes.trim() : null,
-      status: 'CONFIRMED',
     })
     .returning();
 

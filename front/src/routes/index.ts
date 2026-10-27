@@ -36,12 +36,18 @@ const routes: RouteConfig[] = [
       labelKey: 'sidebar.routes.residents',
       icon: UserRound,
     },
+    permissions: ['@core:user:manage'],
   },
   {
     path: '/reservations',
     viewComponent: Reservations,
     layout: 'sidebar',
     visible: true,
+    permissions: [
+      '@reservation:create',
+      '@reservation:view:residency',
+      '@reservation:view:building',
+    ],
     display: {
       labelKey: 'sidebar.routes.reservations',
       icon: CalendarCheck2,
@@ -52,6 +58,7 @@ const routes: RouteConfig[] = [
     viewComponent: Packages,
     layout: 'sidebar',
     visible: true,
+    permissions: ['@delivery:create', '@delivery:view:building', '@delivery:view:residency'],
     display: {
       labelKey: 'sidebar.routes.packages',
       icon: PackageIcon,
@@ -62,6 +69,7 @@ const routes: RouteConfig[] = [
     viewComponent: VisitorAccess,
     layout: 'sidebar',
     visible: true,
+    permissions: ['@visitor:view', '@visitor:create'],
     display: {
       labelKey: 'sidebar.routes.visitorAccess',
       icon: ShieldCheck,

@@ -9,7 +9,9 @@
       "placeholder": "Ingrese su contraseña"
     }
   },
+  "title": "Inicio de sesión",
   "login": "Iniciar sesión",
+  "serverError": "Error al conectar con el servidor",
   "selector": {
     "title": "Seleccione la Residencia",
     "error": {

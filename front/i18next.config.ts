@@ -1,7 +1,7 @@
 import { defineConfig } from 'i18next-cli';
 
 export default defineConfig({
-  locales: ['en', 'pt', 'es'],
+  locales: ['pt', 'en', 'es'],
   extract: {
     input: './src/**/*.{ts,tsx,js,jsx}',
     output: './src/lang/{{language}}/{{namespace}}.json',
@@ -13,7 +13,18 @@ export default defineConfig({
     defaultNS: 'shell',
     fallbackNS: 'common',
 
-    preservePatterns: ['calendar:months.*', 'reservations:status.*', 'shell:sidebar.routes.*'],
+    preservePatterns: [
+      'calendar:months.*',
+      'packages:statusValue.*',
+      'packages:views.*',
+      'reservations:calendar.*',
+      'reservations:relative.*',
+      'reservations:rules.*',
+      'reservations:status.*',
+      'reservations:views.*',
+      'shell:sidebar.routes.*',
+      'visitorAccess:views.*',
+    ],
 
     sort: false,
     acceptedAttributes: ['*'],
