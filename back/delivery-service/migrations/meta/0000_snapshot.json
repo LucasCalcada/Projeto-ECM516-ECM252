@@ -68,11 +68,7 @@
     "public.package_status": {
       "name": "package_status",
       "schema": "public",
-      "values": [
-        "PENDING",
-        "DELIVERED",
-        "CANCELED"
-      ]
+      "values": ["PENDING", "DELIVERED", "CANCELED"]
     }
   },
   "schemas": {},

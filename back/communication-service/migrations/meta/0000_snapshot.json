@@ -78,12 +78,8 @@
           "name": "post_recipients_post_id_posts_id_fk",
           "tableFrom": "post_recipients",
           "tableTo": "posts",
-          "columnsFrom": [
-            "post_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["post_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }

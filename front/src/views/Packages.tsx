@@ -11,7 +11,7 @@ function getAvailableViews() {
   const options: PackageViewOption[] = [];
 
   if (hasPermission(['@delivery:create'])) {
-    options.push({ mode: 'create'  });
+    options.push({ mode: 'create' });
   }
 
   if (hasPermission(['@delivery:view:building'])) {

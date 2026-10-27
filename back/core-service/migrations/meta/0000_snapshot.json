@@ -66,12 +66,8 @@
           "name": "groups_building_buildings_id_fk",
           "tableFrom": "groups",
           "tableTo": "buildings",
-          "columnsFrom": [
-            "building"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["building"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -118,12 +114,8 @@
           "name": "residencies_groupId_groups_id_fk",
           "tableFrom": "residencies",
           "tableTo": "groups",
-          "columnsFrom": [
-            "groupId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["groupId"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -133,10 +125,7 @@
         "residencies_groupId_code_unique": {
           "name": "residencies_groupId_code_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "groupId",
-            "code"
-          ]
+          "columns": ["groupId", "code"]
         }
       },
       "policies": {},
@@ -197,12 +186,8 @@
           "name": "users_residencyId_residencies_id_fk",
           "tableFrom": "users",
           "tableTo": "residencies",
-          "columnsFrom": [
-            "residencyId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["residencyId"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -210,12 +195,8 @@
           "name": "users_buildingId_buildings_id_fk",
           "tableFrom": "users",
           "tableTo": "buildings",
-          "columnsFrom": [
-            "buildingId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["buildingId"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }

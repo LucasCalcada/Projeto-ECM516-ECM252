@@ -48,10 +48,7 @@
         "common_areas_building_id_name_unique": {
           "name": "common_areas_building_id_name_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "building_id",
-            "name"
-          ]
+          "columns": ["building_id", "name"]
         }
       },
       "policies": {},
@@ -126,11 +123,7 @@
         "reservations_building_id_common_area_id_reservation_date_unique": {
           "name": "reservations_building_id_common_area_id_reservation_date_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "building_id",
-            "common_area_id",
-            "reservation_date"
-          ]
+          "columns": ["building_id", "common_area_id", "reservation_date"]
         }
       },
       "policies": {},
