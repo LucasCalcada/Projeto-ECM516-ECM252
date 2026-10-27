@@ -1,5 +1,5 @@
 import { type FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
-import { PackagePlus, RefreshCw } from 'lucide-react';
+import { RefreshCw } from 'lucide-react';
 import { useToast } from '../Toast';
 import useService from '../../helpers/useService';
 import { useTranslation } from 'react-i18next';

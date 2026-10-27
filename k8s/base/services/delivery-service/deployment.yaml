@@ -1,0 +1,140 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: delivery-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: delivery-service
+  template:
+    metadata:
+      labels:
+        app: delivery-service
+      annotations:
+        hiveapp/config-checksum: local-config
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: delivery-service
+          image: hiveapp/delivery-service:local
+          imagePullPolicy: IfNotPresent
+          command:
+            - node
+            - --import
+            - tsx
+            - src/index.ts
+          ports:
+            - name: http
+              containerPort: 8002
+          envFrom:
+            - configMapRef:
+                name: hiveapp-config
+            - secretRef:
+                name: hiveapp-secrets
+          env:
+            - name: PGUSER
+              valueFrom:
+                secretKeyRef:
+                  name: hiveapp-secrets
+                  key: POSTGRES_USER
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: hiveapp-secrets
+                  key: POSTGRES_PASSWORD
+            - name: PGDATABASE
+              value: deliveryDb
+            - name: DATABASE_URL
+              value: postgresql://$(PGUSER):$(PGPASSWORD)@db:5432/$(PGDATABASE)
+            - name: PORT
+              value: '8002'
+          resources: &a1
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 384Mi
+          securityContext: &a2
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+          startupProbe:
+            httpGet:
+              path: /health/live
+              port: http
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 30
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: http
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: http
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+      initContainers:
+        - name: wait-for-database
+          image: postgres:17-alpine
+          env:
+            - name: PGUSER
+              valueFrom:
+                secretKeyRef:
+                  name: hiveapp-secrets
+                  key: POSTGRES_USER
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: hiveapp-secrets
+                  key: POSTGRES_PASSWORD
+            - name: PGDATABASE
+              value: deliveryDb
+            - name: DATABASE_URL
+              value: postgresql://$(PGUSER):$(PGPASSWORD)@db:5432/$(PGDATABASE)
+            - name: PGHOST
+              value: db
+          command:
+            - sh
+            - -ec
+            - until psql -w -c "SELECT 1" >/dev/null 2>&1; do echo "Waiting for database"; sleep 3; done
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              cpu: 100m
+              memory: 64Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            runAsNonRoot: true
+            runAsUser: 999
+        - name: wait-for-event-bus
+          image: hiveapp/delivery-service:local
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: hiveapp-config
+          command:
+            - node
+            - -e
+            - (async()=>{for(;;){try{const r=await fetch(process.env.EVENT_BUS_URL+'/health',{signal:AbortSignal.timeout(2000)});if(r.ok)process.exit(0)}catch{} console.log('Waiting for event bus');await new Promise(r=>setTimeout(r,3000));}})()
+          resources: *a1
+          securityContext: *a2

@@ -1,0 +1,103 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: migrate-visitor-service
+  labels:
+    hiveapp/task: migrate
+    hiveapp/service: visitor-service
+spec:
+  backoffLimit: 0
+  activeDeadlineSeconds: 180
+  ttlSecondsAfterFinished: 3600
+  template:
+    metadata:
+      labels:
+        hiveapp/task: migrate
+    spec:
+      restartPolicy: Never
+      automountServiceAccountToken: false
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      initContainers:
+        - name: wait-for-database
+          image: postgres:17-alpine
+          env:
+            - name: PGUSER
+              valueFrom:
+                secretKeyRef:
+                  name: hiveapp-secrets
+                  key: POSTGRES_USER
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: hiveapp-secrets
+                  key: POSTGRES_PASSWORD
+            - name: PGDATABASE
+              value: visitorDb
+            - name: DATABASE_URL
+              value: postgresql://$(PGUSER):$(PGPASSWORD)@db:5432/$(PGDATABASE)
+            - name: PGHOST
+              value: db
+          command:
+            - sh
+            - -ec
+            - until psql -w -c "SELECT 1" >/dev/null 2>&1; do echo "Waiting for database"; sleep 3; done
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              cpu: 100m
+              memory: 64Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            runAsNonRoot: true
+            runAsUser: 999
+      containers:
+        - name: migrate
+          image: hiveapp/visitor-service:local
+          imagePullPolicy: IfNotPresent
+          command:
+            - node
+            - /app/node_modules/drizzle-kit/bin.cjs
+            - migrate
+            - --config=drizzle.k8s.config.ts
+          envFrom:
+            - configMapRef:
+                name: hiveapp-config
+            - secretRef:
+                name: hiveapp-secrets
+          env:
+            - name: PGUSER
+              valueFrom:
+                secretKeyRef:
+                  name: hiveapp-secrets
+                  key: POSTGRES_USER
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: hiveapp-secrets
+                  key: POSTGRES_PASSWORD
+            - name: PGDATABASE
+              value: visitorDb
+            - name: DATABASE_URL
+              value: postgresql://$(PGUSER):$(PGPASSWORD)@db:5432/$(PGDATABASE)
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 384Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000

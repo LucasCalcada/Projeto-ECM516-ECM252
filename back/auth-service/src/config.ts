@@ -5,9 +5,10 @@ interface AppConfig {
 }
 
 const config: AppConfig = {
-  port: 8001,
-  dbConnectionString: 'postgresql://admin:adminPasswd@localhost:5432/authDb',
-  jwtToken: 'test-token',
+  port: Number(process.env.PORT ?? 8001),
+  dbConnectionString:
+    process.env.DATABASE_URL ?? 'postgresql://admin:adminPasswd@localhost:5432/authDb',
+  jwtToken: process.env.JWT_SECRET ?? 'test-token',
 };
 
 export default config;

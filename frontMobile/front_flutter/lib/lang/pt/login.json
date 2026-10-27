@@ -1,0 +1,28 @@
+{
+  "title": "Login",
+  "login": "Entrar",
+  "loading": "Entrando...",
+  "showPassword": "Mostrar senha",
+  "hidePassword": "Ocultar senha",
+  "signOut": "Sair",
+  "signingOut": "Saindo...",
+  "fields": {
+    "email": { "label": "Email", "placeholder": "Digite seu email" },
+    "password": { "label": "Senha", "placeholder": "Digite sua senha" }
+  },
+  "validation": {
+    "emailRequired": "Informe seu email.",
+    "passwordRequired": "Informe sua senha."
+  },
+  "errors": {
+    "invalidCredentials": "Email ou senha incorretos.",
+    "invalidRequest": "Confira o email e a senha informados.",
+    "server": "O servidor está indisponível. Tente novamente.",
+    "network": "Erro ao conectar com o servidor. Verifique sua conexão.",
+    "timeout": "O servidor demorou para responder. Tente novamente.",
+    "invalidResponse": "Não foi possível confirmar o login. Tente novamente.",
+    "storage": "Não foi possível atualizar a sessão neste dispositivo. Tente novamente.",
+    "unexpected": "Não foi possível entrar. Tente novamente."
+  },
+  "success": { "title": "Login realizado", "message": "Você entrou na sua conta." }
+}

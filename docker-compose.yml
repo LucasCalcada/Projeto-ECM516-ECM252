@@ -7,8 +7,6 @@ x-backend: &backend
       restart: true
     db:
       condition: service_healthy
-    db-init:
-      condition: service_completed_successfully
 
 x-backend-environment: &backend-environment
   JWT_SECRET: ${JWT_SECRET:-test-token}
@@ -34,22 +32,6 @@ services:
       timeout: 5s
       retries: 20
       start_period: 10s
-
-  db-init:
-    image: postgres:17-alpine
-    restart: 'no'
-    environment:
-      PGHOST: db
-      PGPORT: 5432
-      PGUSER: admin
-      PGPASSWORD: adminPasswd
-      PGDATABASE: postgres
-    volumes:
-      - ./back/init-dbs.sql:/init-dbs.sql:ro
-    command: ['psql', '--no-psqlrc', '--set=ON_ERROR_STOP=1', '--file=/init-dbs.sql']
-    depends_on:
-      db:
-        condition: service_healthy
 
   db-dashboard:
     image: dpage/pgadmin4:9
@@ -161,26 +143,6 @@ services:
     ports:
       - '8006:8006'
 
-  complaint-service:
-    restart: unless-stopped
-    init: true
-    build:
-      context: .
-      dockerfile: back/complaint-service/docker/Dockerfile
-    environment:
-      PORT: 8007
-      HOST: 0.0.0.0
-      DATABASE_URL: postgresql://admin:adminPasswd@db:5432/complaintDb
-      DATABASE_SSL_MODE: disable
-      JWT_SECRET: ${JWT_SECRET:-test-token}
-    ports:
-      - '8007:8007'
-    depends_on:
-      db:
-        condition: service_healthy
-      db-init:
-        condition: service_completed_successfully
-
   front:
     build:
       context: .
@@ -200,8 +162,6 @@ services:
       reservation-service:
         condition: service_started
       communication-service:
-        condition: service_started
-      complaint-service:
         condition: service_started
 
 volumes:
