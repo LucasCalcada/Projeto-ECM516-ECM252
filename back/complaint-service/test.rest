@@ -1,0 +1,57 @@
+@baseUrl = http://localhost:8007
+@residentToken = COLE_O_JWT_DE_USUARIO_MORADOR
+@adminToken = COLE_O_JWT_DE_USUARIO_COM_PERMISSAO_COMPLAINT_MANAGE
+@complaintId = COLE_O_ID_DA_RECLAMACAO
+
+### Saúde do serviço (pública)
+GET {{baseUrl}}/health
+
+### RF01/RF02: registrar como morador
+POST {{baseUrl}}/complaints
+Authorization: Bearer {{residentToken}}
+Content-Type: application/json
+
+{
+  "title": "Barulho depois do horário permitido",
+  "category": "barulho",
+  "description": "Música alta na área comum após as 22h."
+}
+
+### RF03/RF06: minhas reclamações com filtros e paginação
+GET {{baseUrl}}/complaints/mine?status=aberta&category=barulho&limit=20&offset=0
+Authorization: Bearer {{residentToken}}
+
+### RF05: reclamações do condomínio (administração)
+GET {{baseUrl}}/complaints?limit=20&offset=0
+Authorization: Bearer {{adminToken}}
+
+### RF04/RF10: detalhes, respostas e histórico (autor)
+GET {{baseUrl}}/complaints/{{complaintId}}
+Authorization: Bearer {{residentToken}}
+
+### RF08: iniciar análise (administração)
+PATCH {{baseUrl}}/complaints/{{complaintId}}/status
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "status": "em_analise"
+}
+
+### RF07: responder antes do encerramento (administração)
+POST {{baseUrl}}/complaints/{{complaintId}}/responses
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "message": "A administração entrou em contato com os responsáveis e reforçou as regras de silêncio."
+}
+
+### RF09: encerrar após ao menos uma resposta (administração)
+PATCH {{baseUrl}}/complaints/{{complaintId}}/status
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "status": "encerrada"
+}
