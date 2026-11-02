@@ -66,11 +66,14 @@ class ComplaintAccess {
       expiresAt != null && !expiresAt!.isAfter(DateTime.now());
 
   bool get canManage =>
-      isSignedIn && !isExpired && permissions.contains('@complaint:manage');
+      canRead &&
+      (permissions.contains('@complaint:manage') ||
+          permissions.contains('@core:admin'));
 
-  bool get canRead => isSignedIn && !isExpired && (residentAccess || canManage);
+  bool get canRead =>
+      isSignedIn && !isExpired && userId.isNotEmpty && buildingId.isNotEmpty;
 
-  bool get canCreate => canRead && residentAccess && !canManage;
+  bool get canCreate => canRead && residentAccess;
 
   ComplaintScope get scope =>
       canManage ? ComplaintScope.building : ComplaintScope.mine;

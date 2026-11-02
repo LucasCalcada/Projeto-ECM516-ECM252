@@ -3,6 +3,8 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:http/http.dart' as http;
 
 import 'config.dart';
+import 'features/complaints/complaints.dart';
+import 'theme/app_theme.dart';
 import 'helpers/api_client.dart';
 import 'helpers/auth_service.dart';
 import 'helpers/communication_service.dart';
@@ -31,6 +33,7 @@ class HiveApp extends StatefulWidget {
     this.communicationService,
     this.client,
     this.locale,
+    this.complaintsRepositoryFactory,
   });
 
   final AuthService? authService;
@@ -40,6 +43,7 @@ class HiveApp extends StatefulWidget {
   final CommunicationService? communicationService;
   final http.Client? client;
   final Locale? locale;
+  final ComplaintsRepository Function(UserSession)? complaintsRepositoryFactory;
 
   @override
   State<HiveApp> createState() => _HiveAppState();
@@ -181,6 +185,15 @@ class _HiveAppState extends State<HiveApp> {
       }
     }
     final session = _session;
+    final complaintsKey = GlobalKey<ComplaintsScreenState>();
+    final complaintsRepository =
+        route == AppRoutes.complaints && session != null
+        ? widget.complaintsRepositoryFactory?.call(session) ??
+              HttpComplaintsRepository(
+                ApiClient(client: _client, baseUrl: AppConfig.complaintUrl),
+                token: session.token,
+              )
+        : null;
     return MaterialPageRoute<void>(
       settings: RouteSettings(name: route),
       builder: (_) {
@@ -193,13 +206,34 @@ class _HiveAppState extends State<HiveApp> {
             onSessionExpired: _expireSession,
           );
         }
-        if (route == AppRoutes.home || route == AppRoutes.settings) {
+        if (route == AppRoutes.home ||
+            route == AppRoutes.settings ||
+            route == AppRoutes.complaints) {
           return AppShell(
             session: session!,
             route: route,
             onSignOut: _signOut,
             onSessionExpired: _expireSession,
-            child: route == AppRoutes.settings
+            onBeforeNavigate: route == AppRoutes.complaints
+                ? () =>
+                      complaintsKey.currentState?.confirmLeave() ??
+                      Future.value(true)
+                : null,
+            child: route == AppRoutes.complaints
+                ? ComplaintsScreen(
+                    key: complaintsKey,
+                    access: ComplaintAccess.fromSession(
+                      userId: session.userId,
+                      buildingId: session.buildingId,
+                      permissions: session.permissions,
+                      expiresAt: session.expiresAt,
+                      residentAccess: session.residencyId?.isNotEmpty == true,
+                    ),
+                    repository: complaintsRepository!,
+                    buildingName: session.buildingName,
+                    onSessionExpired: _expireSession,
+                  )
+                : route == AppRoutes.settings
                 ? SettingsScreen(onLanguageChanged: _changeLanguage)
                 : HomeScreen(
                     service: _communicationService,
@@ -219,13 +253,6 @@ class _HiveAppState extends State<HiveApp> {
 
   @override
   Widget build(BuildContext context) {
-    const foreground = Color(0xFFF5F5F5);
-    const background = Color(0xFF262626);
-    const blue = Color(0xFF2563EB);
-    final border = OutlineInputBorder(
-      borderRadius: BorderRadius.circular(6),
-      borderSide: const BorderSide(color: foreground),
-    );
     return MaterialApp(
       title: 'HiveApp',
       debugShowCheckedModeBanner: false,
@@ -245,76 +272,7 @@ class _HiveAppState extends State<HiveApp> {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      theme: ThemeData(
-        brightness: Brightness.dark,
-        disabledColor: const Color(0xFFA3A3A3),
-        scaffoldBackgroundColor: background,
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Color(0xFF171717),
-          foregroundColor: foreground,
-        ),
-        drawerTheme: const DrawerThemeData(backgroundColor: Color(0xFF171717)),
-        cardTheme: CardThemeData(
-          color: const Color(0xFF171717),
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-            side: const BorderSide(color: Color(0xFF404040)),
-          ),
-        ),
-        colorScheme: const ColorScheme.dark(
-          primary: Color(0xFF60A5FA),
-          surface: background,
-          onSurface: foreground,
-          onPrimary: Color(0xFF0A0A0A),
-          error: Color(0xFFF87171),
-        ),
-        textTheme: const TextTheme(
-          bodyMedium: TextStyle(fontSize: 16, color: foreground),
-          titleMedium: TextStyle(fontSize: 16, color: foreground),
-          headlineSmall: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: foreground,
-          ),
-        ),
-        inputDecorationTheme: InputDecorationTheme(
-          contentPadding: const EdgeInsets.all(12),
-          hintStyle: const TextStyle(color: Color(0xFFA3A3A3)),
-          border: border,
-          enabledBorder: border,
-          disabledBorder: border.copyWith(
-            borderSide: const BorderSide(color: Color(0xFF737373)),
-          ),
-          focusedBorder: border.copyWith(
-            borderSide: const BorderSide(color: Color(0xFF3B82F6), width: 2),
-          ),
-          errorBorder: border.copyWith(
-            borderSide: const BorderSide(color: Color(0xFFF87171)),
-          ),
-          focusedErrorBorder: border.copyWith(
-            borderSide: const BorderSide(color: Color(0xFFF87171), width: 2),
-          ),
-        ),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: blue,
-            foregroundColor: Colors.white,
-            disabledBackgroundColor: const Color(0xFF1E40AF),
-            disabledForegroundColor: Colors.white,
-            minimumSize: const Size.fromHeight(48),
-            padding: const EdgeInsets.all(12),
-            elevation: 0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(6),
-            ),
-            textStyle: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-      ),
+      theme: HiveTheme.apply(ThemeData.dark(useMaterial3: true)),
     );
   }
 }

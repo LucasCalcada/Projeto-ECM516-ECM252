@@ -34,7 +34,7 @@ As rotas de reclamações exigem um JWT HS256 emitido com o mesmo `JWT_SECRET` d
 
 O header aceita `Authorization: Bearer <JWT>` e o formato já utilizado pelos outros serviços, `Authorization: <JWT>`.
 
-O morador usa seu token de usuário com vínculo de residência (`residencyId`) para registrar reclamações. A administração precisa da permissão **`@complaint:manage`**, armazenada no array `users.permissions` do banco `coreDb`. Para habilitar um administrador, acrescente essa permissão ao usuário administrativo do condomínio, preservando as permissões existentes. Depois, obtenha um novo token de usuário pelo Core: `GET http://localhost:8000/auth?userId=<UUID_DO_USUARIO>`. Tokens emitidos antes da concessão continuam sem a nova permissão até serem renovados.
+O morador usa seu token de usuário com vínculo de residência (`residencyId`) para registrar reclamações. A administração aceita **`@complaint:manage` ou `@core:admin`** no array `users.permissions` do banco `coreDb`. `@core:admin` representa o administrador do prédio e concede as operações de gestão dentro do condomínio presente no JWT; não permite consultar ou alterar outro condomínio. Usuários que já possuem essa permissão não precisam receber também `@complaint:manage`. Para conceder uma permissão, preserve as existentes e obtenha um novo token de usuário pelo Core: `GET http://localhost:8000/auth?userId=<UUID_DO_USUARIO>`. Tokens emitidos antes da concessão continuam sem a nova permissão até serem renovados.
 
 O serviço deriva `userId` e `buildingId` exclusivamente do JWT; esses valores não são escolhidos no corpo ou nos filtros. Consultar um registro de outro morador sem permissão administrativa, ou de outro condomínio, retorna `404`.
 

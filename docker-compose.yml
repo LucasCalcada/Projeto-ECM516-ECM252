@@ -48,6 +48,18 @@ services:
       db:
         condition: service_healthy
 
+  db-init:
+    image: postgres:17-alpine
+    restart: 'no'
+    environment:
+      PGPASSWORD: adminPasswd
+    volumes:
+      - ./back/init-dbs.sql:/init-dbs.sql:ro
+    command: ['psql', '-h', 'db', '-U', 'admin', '-d', 'postgres', '-v', 'ON_ERROR_STOP=1', '-f', '/init-dbs.sql']
+    depends_on:
+      db:
+        condition: service_healthy
+
   event-bus:
     build:
       context: .
@@ -143,6 +155,26 @@ services:
     ports:
       - '8006:8006'
 
+  complaint-service:
+    build:
+      context: .
+      dockerfile: back/complaint-service/docker/Dockerfile
+    restart: unless-stopped
+    init: true
+    environment:
+      PORT: 8007
+      HOST: 0.0.0.0
+      JWT_SECRET: ${JWT_SECRET:-test-token}
+      DATABASE_URL: postgresql://admin:adminPasswd@db:5432/complaintDb
+      DATABASE_SSL_MODE: disable
+    ports:
+      - '8007:8007'
+    depends_on:
+      db:
+        condition: service_healthy
+      db-init:
+        condition: service_completed_successfully
+
   front:
     build:
       context: .
@@ -162,6 +194,8 @@ services:
       reservation-service:
         condition: service_started
       communication-service:
+        condition: service_started
+      complaint-service:
         condition: service_started
 
 volumes:

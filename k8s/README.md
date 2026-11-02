@@ -22,7 +22,7 @@ kind create cluster --name hiveapp --kubeconfig ./k8s/.local/kubeconfig --wait 1
 ```
 
 Se kind não estiver no PATH, use o caminho do executável no comando de criação e
-o parâmetro `-KindPath` no build. O build reutiliza os oito Dockerfiles existentes
+o parâmetro `-KindPath` no build. O build reutiliza os nove Dockerfiles existentes
 e carrega as imagens no kind, sem exigir um registry. Em outro cluster, publique
 as imagens num registry acessível e use os mesmos `-ImagePrefix` e `-ImageTag`
 nos scripts de build e deploy. O script de build não faz push ao registry.
@@ -39,11 +39,12 @@ A implantação segue esta sequência e interrompe em caso de erro:
 
 1. Aplica namespace, configurações, Secret, PostgreSQL e event bus.
 2. Aguarda banco e event bus ficarem prontos.
-3. Cria seis Jobs de migração e aguarda todos terminarem.
-4. Aplica as seis APIs e o frontend; aguarda os oito Deployments.
+3. Cria sete Jobs de migração e aguarda todos terminarem.
+4. Aplica as sete APIs e o frontend; aguarda os nove Deployments, incluindo event bus.
 
-Cada backend também possui init containers que verificam o banco e o endpoint
-`/health` do event bus antes de iniciar a API. Não há população automática.
+Cada backend possui init container que verifica seu banco antes de iniciar a API.
+As seis APIs TypeScript também aguardam o endpoint `/health` do event bus; o serviço
+Dart de reclamações não depende desse bus. Não há população automática.
 Execute somente um deploy por vez no namespace para evitar migrações concorrentes.
 
 ## Acessar e verificar
@@ -54,7 +55,7 @@ kubectl --kubeconfig ./k8s/.local/kubeconfig --context kind-hiveapp -n hiveapp p
 
 Mantenha esse terminal aberto e acesse http://localhost:5173. Se a porta estiver
 ocupada pelo Compose, use `5174:80`. O Nginx encaminha `/api/auth`, `/api/core`,
-`/api/delivery`, `/api/visitor`, `/api/reservation` e `/api/communication` aos
+`/api/delivery`, `/api/visitor`, `/api/reservation`, `/api/communication` e `/api/complaint` aos
 Services internos. Atualizar uma rota do React diretamente continua funcionando.
 Banco, APIs e event bus não são publicados em portas do host. O pgAdmin não faz
 parte desta implantação; permanece disponível pelo Compose quando necessário.
@@ -70,13 +71,19 @@ Invoke-RestMethod http://localhost:5173/api/delivery/health/ready
 Invoke-RestMethod http://localhost:5173/api/visitor/health/ready
 Invoke-RestMethod http://localhost:5173/api/reservation/health/ready
 Invoke-RestMethod http://localhost:5173/api/communication/health/ready
+Invoke-RestMethod http://localhost:5173/api/complaint/health
 kubectl --kubeconfig ./k8s/.local/kubeconfig --context kind-hiveapp -n hiveapp logs deployment/communication-service --tail=50
 ```
 
-As seis APIs respondem `200 {"status":"ok"}` em `/health/live` e
+As seis APIs TypeScript respondem `200 {"status":"ok"}` em `/health/live` e
 `200 {"status":"ready"}` em `/health/ready` quando seu banco responde a `SELECT 1`.
 Se o banco falhar, readiness retorna 503; liveness continua independente do banco.
 Readiness não certifica todas as funcionalidades nem verifica o event bus.
+
+O serviço Dart de reclamações usa `/health` para readiness e retorna
+`200 {"status":"ok"}` quando seu banco está acessível, ou 503 em falha de banco.
+Startup e liveness verificam a porta TCP 8007, sem depender da disponibilidade do
+banco. Não existem rotas `/health/live` ou `/health/ready` nessa API.
 
 ## Popular os bancos de desenvolvimento
 
@@ -109,19 +116,31 @@ regras de autenticação.
 
 O PostgreSQL 17 usa um StatefulSet de uma réplica e o PVC `postgres-data-db-0`
 de 2 GiB, provisionado pela StorageClass padrão. A primeira inicialização cria os
-seis bancos. `base/postgres/init.yaml` contém o mesmo SQL de `back/init-dbs.sql`;
+sete bancos. `base/postgres/init.yaml` contém o mesmo SQL de `back/init-dbs.sql`;
 ao adicionar um banco, mantenha ambos sincronizados. Reiniciar ou substituir um
 Pod não apaga o PVC. Não há replicação do banco nem backup automático nesta versão.
 Os dados do Compose não são importados automaticamente.
 
+O init container do Job `migrate-complaint-service` também executa esse SQL antes
+da migração: cria somente bancos ausentes, inclusive `complaintDb` em PVCs antigos,
+sem remover bancos ou dados existentes. O SQL usa lock consultivo para serializar
+execuções concorrentes. Não é necessário recriar o volume nem executar população.
+
 ## Migrações e atualização de imagens
 
 Kubernetes sobrescreve o comando das imagens para iniciar apenas a API. O Compose
-mantém seu comportamento atual de executar `drizzle-kit push` no startup.
-Os Jobs Kubernetes usam `drizzle.k8s.config.ts` e o diretório `migrations/`,
+mantém seu comportamento de inicialização de cada serviço. Os Jobs das seis APIs
+TypeScript usam `drizzle.k8s.config.ts` e o diretório `migrations/`,
 separados do histórico local ignorado em `drizzle/`. A migração inicial corresponde
 ao schema existente e se destina a bancos novos; não a aplique diretamente sobre
 uma base criada por `push` sem antes reconciliar seu histórico.
+
+Reclamações usa a imagem `hiveapp/complaint-service:local` (ou prefixo/tag dos
+scripts), com o binário `/app/bin/server`. Seu Job executa `/app/bin/migrate`,
+reutilizando o SQL versionado do serviço e a configuração/Secret existentes.
+O Deployment não repete a migração no startup. O Service `complaint-service:8007`
+também fornece o DNS esperado pelo novo proxy Nginx; use o fluxo completo de build
+e deploy para atualizar o frontend e a API de reclamações juntos.
 
 Para uma futura alteração de schema, gere e revise uma migração no serviço afetado:
 

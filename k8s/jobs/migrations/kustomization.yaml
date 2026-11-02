@@ -4,6 +4,7 @@ namespace: hiveapp
 resources:
   - auth-service.yaml
   - communication-service.yaml
+  - complaint-service.yaml
   - core-service.yaml
   - delivery-service.yaml
   - reservation-service.yaml

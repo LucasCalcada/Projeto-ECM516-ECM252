@@ -5,6 +5,7 @@ import {
   UserRound,
   Settings as SettingsIcon,
   PackageIcon,
+  MessageSquareWarning,
 } from 'lucide-react';
 import Home from '../views/Home';
 import Residents from '../views/Residents';
@@ -13,6 +14,7 @@ import Reservations from '../views/Reservations';
 import Settings from '../views/Settings';
 import Packages from '../views/Packages';
 import VisitorAccess from '../views/VisitorAccess';
+import Complaints from '../views/Complaints';
 import BuildingSelector from '../views/BuildingSelector.tsx';
 import type { RouteConfig } from './route';
 
@@ -84,6 +86,13 @@ const routes: RouteConfig[] = [
       labelKey: 'sidebar.routes.settings',
       icon: SettingsIcon,
     },
+  },
+  {
+    path: '/complaints',
+    viewComponent: Complaints,
+    layout: 'sidebar',
+    visible: true,
+    display: { labelKey: 'sidebar.routes.complaints', icon: MessageSquareWarning },
   },
   {
     path: '/login',

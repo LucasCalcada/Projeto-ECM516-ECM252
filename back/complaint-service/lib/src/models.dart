@@ -20,7 +20,9 @@ class AuthContext {
   final String buildingId;
   final String? residencyId;
   final List<String> permissions;
-  bool get canManage => permissions.contains(manageComplaintsPermission);
+  bool get canManage =>
+      permissions.contains(manageComplaintsPermission) ||
+      permissions.contains('@core:admin');
 }
 
 class ComplaintResponse {

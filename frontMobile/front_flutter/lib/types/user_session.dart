@@ -9,6 +9,7 @@ class UserSession {
     required this.permissions,
     required this.expiresAt,
     this.residencyName,
+    this.residencyId,
   });
 
   final String token;
@@ -16,6 +17,7 @@ class UserSession {
   final String buildingId;
   final String buildingName;
   final String? residencyName;
+  final String? residencyId;
   final List<String> permissions;
   final DateTime expiresAt;
 
@@ -53,6 +55,7 @@ class UserSession {
       buildingId: data['buildingId'] as String,
       buildingName: data['buildingName'] as String? ?? '',
       residencyName: data['residencyName'] as String?,
+      residencyId: data['residencyId'] as String?,
       permissions: List<String>.unmodifiable(data['permissions'] as List),
       expiresAt: DateTime.fromMillisecondsSinceEpoch(
         (data['exp'] as int) * 1000,
