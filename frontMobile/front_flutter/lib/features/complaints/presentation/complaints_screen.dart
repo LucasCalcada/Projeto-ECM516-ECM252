@@ -51,6 +51,7 @@ class ComplaintsScreenState extends State<ComplaintsScreen> {
       repository: widget.repository,
       access: widget.access,
     )..addListener(_changed);
+    _showCreate = widget.access.canCreate && !widget.access.canRead;
     _scheduleExpiry();
     unawaited(_controller.load());
   }
@@ -180,7 +181,7 @@ class ComplaintsScreenState extends State<ComplaintsScreen> {
         animation: _controller,
         builder: (context, _) {
           final strings = _strings;
-          if (!_controller.access.canRead || _controller.sessionExpired) {
+          if (!_controller.access.canAccess || _controller.sessionExpired) {
             final prefix = _controller.sessionExpired
                 ? 'expired'
                 : _controller.access.isSignedIn
@@ -233,12 +234,17 @@ class ComplaintsScreenState extends State<ComplaintsScreen> {
                             onCreated: () {
                               if (!mounted) return;
                               setState(() {
-                                _showCreate = false;
-                                _showDetail = true;
+                                _showCreate = !_controller.access.canRead;
+                                _showDetail = _controller.access.canRead;
                                 _dirty = false;
                               });
                               _notify(strings.text('successCreate'));
                             },
+                          )
+                        else if (!_controller.access.canRead)
+                          _empty(
+                            strings.text('deniedTitle'),
+                            strings.text('deniedBody'),
                           )
                         else ...[
                           _filters(strings),
@@ -310,8 +316,13 @@ class ComplaintsScreenState extends State<ComplaintsScreen> {
           spacing: 8,
           runSpacing: 8,
           children: [
-            if (_controller.access.canManage)
-              for (final scope in ComplaintScope.values)
+            if (ComplaintScope.values
+                    .where(_controller.access.canReadScope)
+                    .length >
+                1)
+              for (final scope in ComplaintScope.values.where(
+                _controller.access.canReadScope,
+              ))
                 FilledButton.tonal(
                   onPressed: _controller.isSubmitting
                       ? null
@@ -341,8 +352,7 @@ class ComplaintsScreenState extends State<ComplaintsScreen> {
                     child: Text(strings.text(scope.name)),
                   ),
                 ),
-            if (_controller.scope == ComplaintScope.mine &&
-                _controller.access.canCreate)
+            if (_controller.access.canCreate)
               FilledButton.icon(
                 key: const ValueKey('new-complaint'),
                 onPressed: _controller.isSubmitting
@@ -368,14 +378,6 @@ class ComplaintsScreenState extends State<ComplaintsScreen> {
             ),
           ],
         ),
-        if (_controller.scope == ComplaintScope.mine &&
-            !_controller.access.canCreate) ...[
-          const SizedBox(height: 12),
-          Text(
-            strings.text('noResidency'),
-            style: const TextStyle(color: HiveColors.secondary),
-          ),
-        ],
       ],
     ],
   );
@@ -752,6 +754,14 @@ class _ComplaintDetailState extends State<_ComplaintDetail> {
           const SizedBox(height: 12),
           if (item.responses.isEmpty) Text(strings.text('noResponses')),
           for (final response in item.responses) ...[
+            Text(
+              strings.text(
+                response.isAdministrative
+                    ? 'responseFromBuilding'
+                    : 'responseFromResidency',
+              ),
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
             SelectableText(response.message),
             const SizedBox(height: 4),
             Text(
@@ -787,40 +797,45 @@ class _ComplaintDetailState extends State<_ComplaintDetail> {
           ],
           if (controller.canAct) ...[
             const SizedBox(height: 24),
-            Form(
-              key: _form,
-              child: TextFormField(
-                key: const ValueKey('complaint-response'),
-                controller: _reply,
-                focusNode: _replyFocus,
-                enabled: !busy,
-                minLines: 4,
-                maxLines: 10,
-                maxLength: 5000,
-                onChanged: (value) => widget.onDirty(value.isNotEmpty),
-                decoration: InputDecoration(
-                  labelText: strings.text('replyLabel'),
-                  alignLabelWithHint: true,
+            if (controller.canRespond)
+              Form(
+                key: _form,
+                child: TextFormField(
+                  key: const ValueKey('complaint-response'),
+                  controller: _reply,
+                  focusNode: _replyFocus,
+                  enabled: !busy,
+                  minLines: 4,
+                  maxLines: 10,
+                  maxLength: 5000,
+                  onChanged: (value) => widget.onDirty(value.isNotEmpty),
+                  decoration: InputDecoration(
+                    labelText: strings.text('replyLabel'),
+                    alignLabelWithHint: true,
+                  ),
+                  validator: (value) => value == null || value.trim().isEmpty
+                      ? strings.text('requiredResponse')
+                      : value.trim().length > 5000 || value.contains('\u0000')
+                      ? strings.text('limitResponse')
+                      : null,
                 ),
-                validator: (value) => value == null || value.trim().isEmpty
-                    ? strings.text('requiredResponse')
-                    : value.trim().length > 5000 || value.contains('\u0000')
-                    ? strings.text('limitResponse')
-                    : null,
               ),
-            ),
             const SizedBox(height: 16),
             Wrap(
               spacing: 12,
               runSpacing: 8,
               children: [
-                FilledButton.icon(
-                  key: const ValueKey('send-response'),
-                  onPressed: busy ? null : _respond,
-                  icon: const Icon(Icons.send_outlined, size: 16),
-                  label: Text(strings.text(busy ? 'sending' : 'sendResponse')),
-                ),
-                if (item.status == ComplaintStatus.open)
+                if (controller.canRespond)
+                  FilledButton.icon(
+                    key: const ValueKey('send-response'),
+                    onPressed: busy ? null : _respond,
+                    icon: const Icon(Icons.send_outlined, size: 16),
+                    label: Text(
+                      strings.text(busy ? 'sending' : 'sendResponse'),
+                    ),
+                  ),
+                if (controller.canChangeStatus &&
+                    item.status == ComplaintStatus.open)
                   TextButton(
                     onPressed: busy
                         ? null
@@ -834,15 +849,25 @@ class _ComplaintDetailState extends State<_ComplaintDetail> {
                           },
                     child: Text(strings.text('markInAnalysis')),
                   ),
-                TextButton.icon(
-                  key: const ValueKey('close-complaint'),
-                  onPressed: busy || item.responses.isEmpty ? null : _close,
-                  icon: const Icon(Icons.check, size: 16),
-                  label: Text(strings.text('closeComplaint')),
-                ),
+                if (controller.canChangeStatus)
+                  TextButton.icon(
+                    key: const ValueKey('close-complaint'),
+                    onPressed:
+                        busy ||
+                            !item.responses.any(
+                              (response) => response.isAdministrative,
+                            )
+                        ? null
+                        : _close,
+                    icon: const Icon(Icons.check, size: 16),
+                    label: Text(strings.text('closeComplaint')),
+                  ),
               ],
             ),
-            if (item.responses.isEmpty) ...[
+            if (controller.canChangeStatus &&
+                !item.responses.any(
+                  (response) => response.isAdministrative,
+                )) ...[
               const SizedBox(height: 8),
               Text(strings.text('responseRequired')),
             ],
@@ -913,7 +938,14 @@ class _CreateFormState extends State<_CreateForm> {
     );
     if (!mounted) return;
     setState(() => _busy = false);
-    if (success) widget.onCreated();
+    if (success) {
+      _form.currentState?.reset();
+      _title.clear();
+      _description.clear();
+      setState(() => _category = null);
+      widget.onDirty(false);
+      widget.onCreated();
+    }
   }
 
   @override
@@ -1106,7 +1138,7 @@ Future<bool> _confirm(
           builder: (context, _) {
             final valid =
                 !controller.sessionExpired &&
-                controller.access.canRead &&
+                controller.access.canAccess &&
                 controller.access.sessionIdentity == identity &&
                 (complaintId == null || controller.selected?.id == complaintId);
             if (!valid && !closing) {

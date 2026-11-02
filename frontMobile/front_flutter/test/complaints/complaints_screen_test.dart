@@ -21,6 +21,7 @@ Complaint _report({
   String title = 'Iluminação da garagem',
 }) => Complaint(
   id: id,
+  residencyId: 'selected-residence',
   title: title,
   description: 'A luz próxima à rampa está apagada e o trecho fica escuro.',
   createdAt: DateTime(2026, 10, 23, 19, 10),
@@ -29,13 +30,17 @@ Complaint _report({
 
 ComplaintAccess _access({
   bool resident = true,
-  List<String> permissions = const [],
+  List<String> permissions = const [
+    '@complaint:create',
+    '@complaint:view:residency',
+  ],
 }) => ComplaintAccess.fromSession(
   userId: 'selected-user',
   buildingId: 'selected-building',
   permissions: permissions,
   expiresAt: DateTime.utc(2100),
   residentAccess: resident,
+  residencyId: resident ? 'selected-residence' : null,
 );
 
 class _FakeRepository implements ComplaintsRepository {
@@ -44,6 +49,7 @@ class _FakeRepository implements ComplaintsRepository {
     List<Complaint>? building,
     this.listFailures = 0,
     this.createFailures = 0,
+    this.administrativeReplies = true,
   }) : mine = List.of(mine ?? [_report()]),
        building = List.of(building ?? mine ?? [_report()]);
 
@@ -52,6 +58,7 @@ class _FakeRepository implements ComplaintsRepository {
   final List<ComplaintScope> requestedScopes = [];
   int listFailures;
   int createFailures;
+  final bool administrativeReplies;
   int createCalls = 0;
   int respondCalls = 0;
   int closeCalls = 0;
@@ -118,6 +125,7 @@ class _FakeRepository implements ComplaintsRepository {
         ...existing.responses,
         ComplaintResponse(
           message: message,
+          isAdministrative: administrativeReplies,
           createdAt: DateTime(2026, 10, 25, 14, 35),
         ),
       ],
@@ -225,6 +233,137 @@ Future<void> _finish(WidgetTester tester) async {
 }
 
 void main() {
+  testWidgets('sem permissao nao consulta nem cadastra reclamacoes', (
+    tester,
+  ) async {
+    final repository = _FakeRepository();
+    await _mount(
+      tester,
+      repository: repository,
+      access: _access(permissions: []),
+    );
+    expect(repository.requestedScopes, isEmpty);
+    expect(find.byKey(_newComplaint), findsNothing);
+    expect(find.byKey(_complaintList), findsNothing);
+    expect(find.text(_strings.text('deniedTitle')), findsOneWidget);
+    await _finish(tester);
+  });
+
+  testWidgets('view residencia nao concede criar responder ou alterar status', (
+    tester,
+  ) async {
+    await _mount(
+      tester,
+      repository: _FakeRepository(),
+      access: _access(permissions: ['@complaint:view:residency']),
+    );
+    expect(find.byKey(_newComplaint), findsNothing);
+    await _selectReport(tester, _report().title);
+    expect(find.byKey(_responseField), findsNothing);
+    expect(find.byKey(_closeComplaint), findsNothing);
+    await _finish(tester);
+  });
+
+  testWidgets(
+    'morador com respond residencia responde sem acoes administrativas',
+    (tester) async {
+      final repository = _FakeRepository(administrativeReplies: false);
+      await _mount(
+        tester,
+        repository: repository,
+        access: _access(
+          permissions: [
+            '@complaint:view:residency',
+            '@complaint:respond:residency',
+          ],
+        ),
+      );
+      await _selectReport(tester, _report().title);
+      await tester.ensureVisible(find.byKey(_responseField));
+      await tester.enterText(
+        find.byKey(_responseField),
+        'Complemento da residencia',
+      );
+      tester.testTextInput.hide();
+      await _tapVisible(tester, find.byKey(_sendResponse));
+      expect(repository.respondCalls, 1);
+      expect(repository.mine.first.responses.single.isAdministrative, isFalse);
+      expect(find.byKey(_newComplaint), findsNothing);
+      expect(find.byKey(_closeComplaint), findsNothing);
+      expect(find.text(_strings.text('responseFromResidency')), findsOneWidget);
+      await _finish(tester);
+    },
+  );
+
+  testWidgets(
+    'update status nao concede responder nem aceita resposta de morador para encerrar',
+    (tester) async {
+      final report = _report().copyWith(
+        responses: [
+          ComplaintResponse(
+            message: 'Complemento',
+            createdAt: DateTime.utc(2026),
+            isAdministrative: false,
+          ),
+        ],
+      );
+      await _mount(
+        tester,
+        repository: _FakeRepository(building: [report]),
+        access: _access(
+          resident: false,
+          permissions: ['@complaint:view:building', '@complaint:update:status'],
+        ),
+      );
+      await _selectReport(tester, report.title);
+      expect(find.byKey(_responseField), findsNothing);
+      expect(find.byKey(_newComplaint), findsNothing);
+      expect(
+        tester.widget<TextButton>(find.byKey(_closeComplaint)).onPressed,
+        isNull,
+      );
+      expect(find.text(_strings.text('markInAnalysis')), findsOneWidget);
+      await _finish(tester);
+    },
+  );
+
+  testWidgets(
+    'create com building sem residencia ou view abre apenas formulario',
+    (tester) async {
+      final repository = _FakeRepository();
+      await _mount(
+        tester,
+        repository: repository,
+        access: _access(resident: false, permissions: ['@complaint:create']),
+      );
+      expect(repository.requestedScopes, isEmpty);
+      expect(find.byKey(_subjectField), findsOneWidget);
+      expect(find.byKey(_complaintList), findsNothing);
+      await tester.enterText(find.byKey(_subjectField), 'Registro do predio');
+      await tester.enterText(
+        find.byKey(_descriptionField),
+        'Criacao autorizada pelo building do token.',
+      );
+      tester.testTextInput.hide();
+      await _tapVisible(
+        tester,
+        find.byKey(const ValueKey('complaint-category')),
+      );
+      await _tapVisible(tester, find.text('Outros').last);
+      await _tapVisible(tester, find.byKey(_submitComplaint));
+      expect(repository.createCalls, 1);
+      expect(repository.requestedScopes, isEmpty);
+      expect(
+        tester
+            .widget<TextFormField>(find.byKey(_subjectField))
+            .controller!
+            .text,
+        isEmpty,
+      );
+      await _finish(tester);
+    },
+  );
+
   testWidgets('morador consulta próprias, cria e não recebe ações de gestão', (
     tester,
   ) async {
@@ -270,7 +409,14 @@ void main() {
     await _mount(
       tester,
       repository: repository,
-      access: _access(resident: false, permissions: ['@complaint:manage']),
+      access: _access(
+        resident: false,
+        permissions: [
+          '@complaint:view:building',
+          '@complaint:respond:building',
+          '@complaint:update:status',
+        ],
+      ),
     );
     expect(repository.requestedScopes, [ComplaintScope.building]);
     expect(find.text(_strings.text('title')), findsOneWidget);
@@ -504,7 +650,11 @@ void main() {
         await _mount(
           tester,
           repository: repository,
-          access: _access(permissions: manager ? ['@core:admin'] : []),
+          access: _access(
+            permissions: manager
+                ? ['@core:admin']
+                : ['@complaint:create', '@complaint:view:residency'],
+          ),
           size: Size(width, 900),
         );
         final list = find.byKey(_complaintList);
@@ -561,27 +711,40 @@ void main() {
 
   for (final width in [320.0, 1280.0]) {
     for (final manager in [false, true]) {
-      testWidgets('cadastro substitui a lista e cancelar retorna: '
+      testWidgets('cadastro independe da visao e cancelar retorna: '
           'largura=$width gestão=$manager', (tester) async {
         await _mount(
           tester,
           repository: _FakeRepository(),
-          access: _access(permissions: manager ? ['@core:admin'] : []),
+          access: _access(
+            permissions: manager
+                ? ['@core:admin']
+                : ['@complaint:create', '@complaint:view:residency'],
+          ),
           size: Size(width, 900),
         );
-        if (manager) {
-          await _tapVisible(tester, find.text(_strings.text('mine')));
+        final scopes = manager
+            ? [ComplaintScope.building, ComplaintScope.mine]
+            : [ComplaintScope.mine];
+        for (final scope in scopes) {
+          if (manager) {
+            await _tapVisible(tester, find.text(_strings.text(scope.name)));
+          }
+          expect(
+            tester.widget<FilledButton>(find.byKey(_newComplaint)).onPressed,
+            isNotNull,
+          );
+          await _tapVisible(tester, find.byKey(_newComplaint));
+          expect(find.byKey(_subjectField), findsOneWidget);
+          expect(find.byKey(_descriptionField), findsOneWidget);
+          expect(find.byKey(_complaintList), findsNothing);
+          expect(find.byKey(const ValueKey('status-null')), findsNothing);
+          expect(find.text(_strings.text('building')), findsNothing);
+          expect(find.text(_strings.text('refresh')), findsNothing);
+          await _tapVisible(tester, find.text(_strings.text('cancel')));
+          expect(find.byKey(_complaintList), findsOneWidget);
+          expect(find.byKey(_subjectField), findsNothing);
         }
-        await _tapVisible(tester, find.byKey(_newComplaint));
-        expect(find.byKey(_subjectField), findsOneWidget);
-        expect(find.byKey(_descriptionField), findsOneWidget);
-        expect(find.byKey(_complaintList), findsNothing);
-        expect(find.byKey(const ValueKey('status-null')), findsNothing);
-        expect(find.text(_strings.text('building')), findsNothing);
-        expect(find.text(_strings.text('refresh')), findsNothing);
-        await _tapVisible(tester, find.text(_strings.text('cancel')));
-        expect(find.byKey(_complaintList), findsOneWidget);
-        expect(find.byKey(_subjectField), findsNothing);
         expect(tester.takeException(), isNull);
         await _finish(tester);
       });
@@ -651,7 +814,14 @@ void main() {
               tester,
               repository: repository,
               access: manager
-                  ? _access(resident: false, permissions: ['@complaint:manage'])
+                  ? _access(
+                      resident: false,
+                      permissions: [
+                        '@complaint:view:building',
+                        '@complaint:respond:building',
+                        '@complaint:update:status',
+                      ],
+                    )
                   : _access(),
               size: size,
               brightness: brightness,

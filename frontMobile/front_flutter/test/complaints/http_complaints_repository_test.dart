@@ -59,7 +59,7 @@ void main() {
     () async {
       final repository = _repository((request) async {
         expect(request.method, 'GET');
-        expect(request.url.path, '/complaints/mine');
+        expect(request.url.path, '/complaints/residency');
         expect(request.headers['Authorization'], 'Bearer selected-user-token');
         expect(request.url.queryParameters, {
           'status': 'em_analise',

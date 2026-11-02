@@ -17,7 +17,10 @@ class ComplaintService {
   static const _uuid = Uuid();
 
   Future<Complaint> create(AuthContext auth, Map<String, Object?> body) async {
-    if (auth.residencyId == null) throw ApiException.forbidden;
+    if (!_uuidPattern.hasMatch(auth.buildingId)) {
+      throw ApiException.unauthorized;
+    }
+    _require(auth, createComplaintPermission);
     _onlyFields(body, {'title', 'category', 'description'});
     final title = _text(body, 'title', 200);
     final description = _text(body, 'description', 10000);
@@ -27,6 +30,7 @@ class ComplaintService {
       id: _uuid.v4(),
       buildingId: auth.buildingId,
       residentUserId: auth.userId,
+      residencyId: auth.residencyId,
       title: title,
       category: category,
       description: description,
@@ -52,7 +56,11 @@ class ComplaintService {
     Map<String, String> query, {
     bool mine = false,
   }) async {
-    if (!mine) _requireAdmin(auth);
+    if (mine) {
+      if (!auth.canViewResidency) throw ApiException.forbidden;
+    } else {
+      _require(auth, viewBuildingComplaintsPermission);
+    }
     if (query.keys.any(
       (key) => !{'status', 'category', 'limit', 'offset'}.contains(key),
     )) {
@@ -67,7 +75,7 @@ class ComplaintService {
     return repository.list(
       ComplaintQuery(
         buildingId: auth.buildingId,
-        residentUserId: mine ? auth.userId : null,
+        residencyId: mine ? auth.residencyId : null,
         status: status,
         category: category,
         limit: _integer(query['limit'], 20, 1, 100, 'limit'),
@@ -77,9 +85,12 @@ class ComplaintService {
   }
 
   Future<Complaint> detail(AuthContext auth, String id) async {
+    if (!auth.canViewBuilding && !auth.canViewResidency) {
+      throw ApiException.forbidden;
+    }
     final complaint = await repository.find(_id(id), auth.buildingId);
     if (complaint == null ||
-        (!auth.canManage && complaint.residentUserId != auth.userId)) {
+        (!auth.canViewBuilding && complaint.residencyId != auth.residencyId)) {
       throw ApiException.notFound;
     }
     return complaint;
@@ -90,10 +101,15 @@ class ComplaintService {
     String id,
     Map<String, Object?> body,
   ) async {
-    _requireAdmin(auth);
+    if (!auth.canRespondBuilding && !auth.canRespondResidency) {
+      throw ApiException.forbidden;
+    }
     _onlyFields(body, {'message'});
     final message = _text(body, 'message', 5000);
     return repository.update(_id(id), auth.buildingId, (current) {
+      if (!auth.canRespondBuilding && current.residencyId != auth.residencyId) {
+        throw ApiException.notFound;
+      }
       _requireOpen(current);
       final now = _now().toUtc();
       return current.copyWith(
@@ -105,6 +121,7 @@ class ComplaintService {
             authorUserId: auth.userId,
             message: message,
             createdAt: now,
+            isAdministrative: auth.canRespondBuilding,
           ),
         ],
       );
@@ -116,7 +133,7 @@ class ComplaintService {
     String id,
     Map<String, Object?> body,
   ) async {
-    _requireAdmin(auth);
+    _require(auth, updateComplaintStatusPermission);
     _onlyFields(body, {'status'});
     final status = _choice(body['status'], complaintStatuses, 'status');
     return repository.update(_id(id), auth.buildingId, (current) {
@@ -128,11 +145,12 @@ class ComplaintService {
           'Transição de status não permitida.',
         );
       }
-      if (status == 'encerrada' && current.responses.isEmpty) {
+      if (status == 'encerrada' &&
+          !current.responses.any((response) => response.isAdministrative)) {
         throw const ApiException(
           409,
           'response_required',
-          'Registre uma resposta antes de encerrar a reclamação.',
+          'Registre uma resposta administrativa antes de encerrar a reclamação.',
         );
       }
       final now = _now().toUtc();
@@ -154,8 +172,8 @@ class ComplaintService {
     });
   }
 
-  void _requireAdmin(AuthContext auth) {
-    if (!auth.canManage) throw ApiException.forbidden;
+  void _require(AuthContext auth, String permission) {
+    if (!auth.allows(permission)) throw ApiException.forbidden;
   }
 
   void _requireOpen(Complaint complaint) {

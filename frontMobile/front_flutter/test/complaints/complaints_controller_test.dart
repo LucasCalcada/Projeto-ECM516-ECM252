@@ -9,7 +9,10 @@ import 'package:front_flutter/features/complaints/domain/complaints_repository.d
 ComplaintAccess _access({
   String userId = 'resident-a',
   String buildingId = 'building-a',
-  List<String> permissions = const [],
+  List<String> permissions = const [
+    '@complaint:create',
+    '@complaint:view:residency',
+  ],
   bool residentAccess = true,
   DateTime? expiresAt,
 }) => ComplaintAccess.fromSession(
@@ -17,6 +20,7 @@ ComplaintAccess _access({
   buildingId: buildingId,
   permissions: permissions,
   residentAccess: residentAccess,
+  residencyId: residentAccess ? 'residence-a' : null,
   expiresAt: expiresAt ?? DateTime.now().add(const Duration(hours: 1)),
 );
 
@@ -25,6 +29,7 @@ Complaint _complaint({
   ComplaintStatus status = ComplaintStatus.open,
 }) => Complaint(
   id: id,
+  residencyId: 'residence-a',
   title: 'Iluminação da garagem',
   description: 'As lâmpadas do corredor estão apagadas.',
   createdAt: DateTime.utc(2026, 10, 25, 12),
@@ -33,36 +38,89 @@ Complaint _complaint({
 
 void main() {
   group('presentation access', () {
+    test('each grant authorizes only its own action and residence replies check the record', () {
+      for (final permission in complaintPermissions) {
+        final access = _access(permissions: [permission]);
+        expect(access.canCreate, permission == '@complaint:create');
+        expect(
+          access.canViewBuilding,
+          permission == '@complaint:view:building',
+        );
+        expect(
+          access.canViewResidency,
+          permission == '@complaint:view:residency',
+        );
+        expect(
+          access.canChangeStatus,
+          permission == '@complaint:update:status',
+        );
+        expect(
+          access.canRespondTo(_complaint()),
+          permission == '@complaint:respond:residency' ||
+              permission == '@complaint:respond:building',
+        );
+      }
+      final reply = _access(permissions: ['@complaint:respond:residency']);
+      final foreign = Complaint(
+        id: 'foreign',
+        residencyId: 'other-residence',
+        title: 'Outro',
+        description: 'Texto',
+        createdAt: DateTime.utc(2026),
+        status: ComplaintStatus.open,
+      );
+      expect(reply.canRespondTo(foreign), isFalse);
+      expect(_access(permissions: ['@complaint:manage']).canAccess, isFalse);
+      expect(
+        _access(
+          permissions: ['@complaint:create'],
+          residentAccess: false,
+        ).canCreate,
+        isTrue,
+      );
+    });
+
     test('resident reads and creates only in the personal scope', () {
       final access = _access();
       expect(access.isSignedIn, isTrue);
       expect(access.canRead, isTrue);
       expect(access.canCreate, isTrue);
-      expect(access.canManage, isFalse);
+      expect(access.canChangeStatus, isFalse);
       expect(access.scope, ComplaintScope.mine);
     });
 
-    test('complaint manage and core admin enable building management', () {
-      final manager = _access(
-        permissions: ['@complaint:manage'],
-        residentAccess: false,
-      );
-      final coreAdmin = _access(
-        permissions: ['@core:admin'],
-        residentAccess: false,
-      );
-      expect(manager.canRead, isTrue);
-      expect(manager.canManage, isTrue);
-      expect(manager.canCreate, isFalse);
-      expect(manager.scope, ComplaintScope.building);
-      expect(_access(permissions: ['@complaint:manage']).canCreate, isTrue);
-      expect(coreAdmin.canRead, isTrue);
-      expect(coreAdmin.canManage, isTrue);
-    });
+    test(
+      'building grants are independent and core admin grants every action',
+      () {
+        final manager = _access(
+          permissions: [
+            '@complaint:view:building',
+            '@complaint:respond:building',
+            '@complaint:update:status',
+          ],
+          residentAccess: false,
+        );
+        final coreAdmin = _access(
+          permissions: ['@core:admin'],
+          residentAccess: false,
+        );
+        expect(manager.canRead, isTrue);
+        expect(manager.canChangeStatus, isTrue);
+        expect(manager.canCreate, isFalse);
+        expect(manager.scope, ComplaintScope.building);
+        expect(
+          _access(permissions: ['@complaint:view:building']).canCreate,
+          isFalse,
+        );
+        expect(coreAdmin.canRead, isTrue);
+        expect(coreAdmin.canChangeStatus, isTrue);
+        expect(coreAdmin.canCreate, isTrue);
+      },
+    );
 
     test('missing and expired sessions never grant actions', () {
       final expired = _access(
-        permissions: ['@complaint:manage'],
+        permissions: ['@core:admin'],
         expiresAt: DateTime.now().subtract(const Duration(minutes: 1)),
       );
       for (final access in [
@@ -74,7 +132,7 @@ void main() {
       ]) {
         expect(access.canRead, isFalse);
         expect(access.canCreate, isFalse);
-        expect(access.canManage, isFalse);
+        expect(access.canChangeStatus, isFalse);
       }
       expect(expired.isExpired, isTrue);
       expect(const ComplaintAccess.denied().isSignedIn, isTrue);
@@ -85,8 +143,8 @@ void main() {
       final expiry = DateTime.utc(2030);
       final access = _access(permissions: permissions, expiresAt: expiry);
       final originalIdentity = access.sessionIdentity;
-      permissions.add('@complaint:manage');
-      expect(access.canManage, isFalse);
+      permissions.add('@core:admin');
+      expect(access.canChangeStatus, isFalse);
       expect(access.sessionIdentity, originalIdentity);
       expect(
         _access(userId: 'resident-b', expiresAt: expiry).sessionIdentity,
@@ -115,7 +173,7 @@ void main() {
       () async {
         await controller.load();
         expect(repository.lastScope, ComplaintScope.mine);
-        controller.updateAccess(_access(permissions: ['@complaint:manage']));
+        controller.updateAccess(_access(permissions: ['@core:admin']));
         expect(controller.items, isEmpty);
         expect(repository.listCalls, 1);
         await controller.load();
@@ -180,7 +238,7 @@ void main() {
     test(
       'manager can respond and then close but cannot change closed items',
       () async {
-        controller.updateAccess(_access(permissions: ['@complaint:manage']));
+        controller.updateAccess(_access(permissions: ['@core:admin']));
         await controller.load();
         await controller.select('complaint-1');
         expect(await controller.respond('  Será verificado.  '), isTrue);
@@ -225,7 +283,7 @@ void main() {
     );
 
     test('failed mutation keeps selected data and permits a retry', () async {
-      controller.updateAccess(_access(permissions: ['@complaint:manage']));
+      controller.updateAccess(_access(permissions: ['@core:admin']));
       await controller.load();
       await controller.select('complaint-1');
       repository.onRespond = () => Future.error(StateError('unavailable'));

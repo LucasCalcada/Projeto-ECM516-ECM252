@@ -25,7 +25,15 @@ String _token({String? permission, String building = _building}) => JWT({
   'userId': permission == null ? _resident : _administrator,
   'buildingId': building,
   if (permission == null) 'residencyId': _residency,
-  'permissions': [?permission],
+  'permissions': permission == null
+      ? ['@complaint:create', '@complaint:view:residency']
+      : permission == 'granular'
+      ? [
+          '@complaint:view:building',
+          '@complaint:update:status',
+          '@complaint:respond:building',
+        ]
+      : [permission],
 }).sign(SecretKey(_secret), expiresIn: const Duration(hours: 1));
 
 Future<dynamic> _json(Response response) async =>
@@ -64,7 +72,7 @@ void main() {
     ),
   );
 
-  for (final permission in ['@core:admin', '@complaint:manage']) {
+  for (final permission in ['@core:admin', 'granular']) {
     group('$permission management', () {
       test('supports the complete administrative lifecycle', () async {
         final created = await send('POST', '/complaints', body: _complaint);

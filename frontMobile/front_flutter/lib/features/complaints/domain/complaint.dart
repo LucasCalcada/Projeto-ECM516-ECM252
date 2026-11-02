@@ -25,10 +25,15 @@ const complaintCategories = [
 enum ComplaintScope { mine, building }
 
 class ComplaintResponse {
-  const ComplaintResponse({required this.message, required this.createdAt});
+  const ComplaintResponse({
+    required this.message,
+    required this.createdAt,
+    this.isAdministrative = true,
+  });
 
   final String message;
   final DateTime createdAt;
+  final bool isAdministrative;
 }
 
 class ComplaintStatusChange {
@@ -55,9 +60,11 @@ class Complaint {
     DateTime? updatedAt,
     this.closedAt,
     this.hasDetails = true,
+    this.residencyId,
   }) : updatedAt = updatedAt ?? createdAt;
 
   final String id;
+  final String? residencyId;
   final String title;
   final String category;
   final String description;
@@ -98,6 +105,7 @@ class Complaint {
 
     return Complaint(
       id: text('id'),
+      residencyId: value['residencyId'] as String?,
       title: text('title'),
       category: category,
       description: text('description'),
@@ -113,6 +121,7 @@ class Complaint {
         return ComplaintResponse(
           message: item['message'] as String,
           createdAt: DateTime.parse(item['createdAt'] as String),
+          isAdministrative: item['isAdministrative'] == true,
         );
       }),
       history: collection('history', (item) {
@@ -139,6 +148,7 @@ class Complaint {
     bool? hasDetails,
   }) => Complaint(
     id: id,
+    residencyId: residencyId,
     title: title,
     category: category,
     description: description,

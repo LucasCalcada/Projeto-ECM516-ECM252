@@ -61,14 +61,14 @@ class ComplaintsController extends ChangeNotifier {
       _expire();
       return false;
     }
-    return _access.canRead;
+    return _access.canAccess;
   }
 
   void updateAccess(ComplaintAccess access) {
     if (_disposed) return;
     final changed = _access.sessionIdentity != access.sessionIdentity;
     _access = access;
-    if (changed || !access.canRead || access.isExpired) {
+    if (changed || !access.canAccess || access.isExpired) {
       _sessionGeneration++;
       _invalidate();
       _items = const [];
@@ -88,7 +88,7 @@ class ComplaintsController extends ChangeNotifier {
   Future<void> setScope(ComplaintScope scope) async {
     if (!_readable() ||
         _isSubmitting ||
-        (scope == ComplaintScope.building && !access.canManage) ||
+        !access.canReadScope(scope) ||
         _scope == scope) {
       return;
     }
@@ -114,6 +114,7 @@ class ComplaintsController extends ChangeNotifier {
 
   Future<void> load({bool more = false, bool afterMutation = false}) async {
     if (!_readable() ||
+        !access.canReadScope(_scope) ||
         (_isSubmitting && !afterMutation) ||
         _isLoading ||
         _isLoadingMore ||
@@ -168,7 +169,9 @@ class ComplaintsController extends ChangeNotifier {
     bool preserveMutationFailure = false,
     bool afterMutation = false,
   }) async {
-    if (!_readable() || (_isSubmitting && !afterMutation)) return;
+    if (!_readable() || !access.canRead || (_isSubmitting && !afterMutation)) {
+      return;
+    }
     _selectedId = id;
     if (_detail?.id != id) _detail = null;
     detailFailure = null;
@@ -220,10 +223,7 @@ class ComplaintsController extends ChangeNotifier {
     String description, {
     String category = 'outros',
   }) async {
-    if (!_readable() ||
-        !access.canCreate ||
-        _scope != ComplaintScope.mine ||
-        _isSubmitting) {
+    if (!_readable() || !access.canCreate || _isSubmitting) {
       return false;
     }
     if (!_valid(title, 200) ||
@@ -244,15 +244,20 @@ class ComplaintsController extends ChangeNotifier {
       text.trim().isNotEmpty &&
       text.trim().length <= maximum &&
       !text.contains('\u0000');
-  bool get canAct =>
-      access.canManage &&
+  bool get _openSelection =>
       selected?.hasDetails == true &&
       !_isDetailLoading &&
       selected?.status != ComplaintStatus.closed &&
       selected?.status != ComplaintStatus.unknown;
+  bool get canRespond => _openSelection && access.canRespondTo(selected!);
+  bool get canChangeStatus => _openSelection && access.canChangeStatus;
+  bool get canAct => canRespond || canChangeStatus;
 
   Future<bool> respond(String message) async {
-    if (!_readable() || !canAct || _isSubmitting || !_valid(message, 5000)) {
+    if (!_readable() ||
+        !canRespond ||
+        _isSubmitting ||
+        !_valid(message, 5000)) {
       return false;
     }
     final id = selected!.id;
@@ -262,13 +267,14 @@ class ComplaintsController extends ChangeNotifier {
   }
 
   Future<bool> changeStatus(ComplaintStatus status) async {
-    if (!_readable() || !canAct || _isSubmitting) return false;
+    if (!_readable() || !canChangeStatus || _isSubmitting) return false;
     final item = selected!;
     if (status == ComplaintStatus.inAnalysis &&
         item.status != ComplaintStatus.open) {
       return false;
     }
-    if (status == ComplaintStatus.closed && item.responses.isEmpty) {
+    if (status == ComplaintStatus.closed &&
+        !item.responses.any((response) => response.isAdministrative)) {
       return false;
     }
     if (status != ComplaintStatus.inAnalysis &&

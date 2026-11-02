@@ -13,7 +13,9 @@ export default function ComplaintStatusBadge({ status }: { status: ComplaintStat
           ? CheckCheck
           : CircleHelp;
   return (
-    <span className={`complaint-status complaint-status-${status}`}>
+    <span
+      className={`inline-flex items-center gap-1 rounded-md py-1 text-xs font-semibold ${status === 'aberta' ? 'text-cyan-300' : status === 'em_analise' ? 'text-yellow-400' : 'text-neutral-300'}`}
+    >
       <Icon size={14} aria-hidden="true" />
       {t(`status.${status}`)}
     </span>

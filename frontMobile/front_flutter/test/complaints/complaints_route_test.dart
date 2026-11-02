@@ -29,7 +29,7 @@ String _token({bool manager = false, bool resident = true}) {
     'buildingId': 'building-1',
     'buildingName': 'Condomínio QA',
     if (resident) 'residencyId': 'residence-1',
-    'permissions': manager ? ['@core:admin'] : <String>[],
+    'permissions': manager ? ['@core:admin'] : ['@complaint:create', '@complaint:view:residency'],
     'exp': DateTime.utc(2100).millisecondsSinceEpoch ~/ 1000,
   })}.synthetic-signature';
 }
@@ -40,6 +40,7 @@ class _Api {
   final List<http.Request> requests = [];
   final Map<String, Object?> item = {
     'id': 'complaint-1',
+    'residencyId': 'residence-1',
     'title': 'Iluminação QA',
     'category': 'areas_comuns',
     'description': 'O corredor de acesso está sem iluminação.',
@@ -69,7 +70,7 @@ class _Api {
       'Bearer ${_token(manager: manager, resident: resident)}',
     );
     if (request.method == 'GET' &&
-        ['/complaints', '/complaints/mine'].contains(path)) {
+        ['/complaints', '/complaints/residency'].contains(path)) {
       return json([
         {
           for (final entry in item.entries)
@@ -92,6 +93,7 @@ class _Api {
       (item['responses'] as List).add({
         'id': 'response-1',
         'authorUserId': 'internal-identity',
+        'isAdministrative': true,
         'message': body['message'],
         'createdAt': '2026-11-01T12:10:00Z',
       });
@@ -191,7 +193,9 @@ void main() {
       final api = _Api();
       await _launch(tester, api);
       expect(
-        api.requests.where((request) => request.url.path == '/complaints/mine'),
+        api.requests.where(
+          (request) => request.url.path == '/complaints/residency',
+        ),
         isNotEmpty,
       );
       await _captureImage(tester, 'flutter-complaints-route-list');
@@ -241,7 +245,7 @@ void main() {
         api.requests.where((request) => request.url.path == '/complaints'),
         isNotEmpty,
       );
-      expect(find.byKey(const ValueKey('new-complaint')), findsNothing);
+      expect(find.byKey(const ValueKey('new-complaint')), findsOneWidget);
       await _tap(tester, find.text('Iluminação QA'));
       expect(
         tester

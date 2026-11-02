@@ -9,8 +9,17 @@ export const complaintCategories = [
 export type ComplaintCategory = (typeof complaintCategories)[number];
 export type ComplaintStatus = 'aberta' | 'em_analise' | 'encerrada' | 'unknown';
 export type ComplaintScope = 'mine' | 'building';
+export const complaintPermissions = [
+  '@complaint:create',
+  '@complaint:view:residency',
+  '@complaint:view:building',
+  '@complaint:update:status',
+  '@complaint:respond:residency',
+  '@complaint:respond:building',
+] as const;
 export interface ComplaintSummary {
   id: string;
+  residencyId: string | null;
   title: string;
   category: ComplaintCategory | 'unknown';
   description: string;
@@ -23,6 +32,7 @@ export interface ComplaintResponse {
   id: string;
   message: string;
   createdAt: string;
+  isAdministrative: boolean;
 }
 export interface ComplaintHistory {
   id: string;

@@ -71,6 +71,14 @@ class MenuDestination {
       'menu.complaints',
       Icons.chat_bubble_outline,
       available: true,
+      permissions: [
+        '@complaint:create',
+        '@complaint:view:residency',
+        '@complaint:view:building',
+        '@complaint:update:status',
+        '@complaint:respond:residency',
+        '@complaint:respond:building',
+      ],
     ),
   ];
 }

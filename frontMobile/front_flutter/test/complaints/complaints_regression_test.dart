@@ -8,6 +8,7 @@ import 'package:front_flutter/features/complaints/domain/complaints_repository.d
 
 Complaint _item(String id, {bool details = true}) => Complaint(
   id: id,
+  residencyId: 'residence',
   title: 'Título $id',
   category: 'barulho',
   description: 'Descrição $id',
@@ -19,12 +20,16 @@ Complaint _item(String id, {bool details = true}) => Complaint(
 ComplaintAccess _access({
   String user = 'user',
   bool resident = true,
-  List<String> permissions = const [],
+  List<String> permissions = const [
+    '@complaint:create',
+    '@complaint:view:residency',
+  ],
 }) => ComplaintAccess.fromSession(
   userId: user,
   buildingId: 'building',
   permissions: permissions,
   residentAccess: resident,
+  residencyId: resident ? 'residence' : null,
   expiresAt: DateTime.utc(2100),
 );
 
@@ -183,7 +188,7 @@ void main() {
   });
 
   test(
-    'a manager with residence creates only after choosing personal scope',
+    'creation permission is independent from the currently selected view',
     () async {
       final repository = _Repository();
       final controller = ComplaintsController(
@@ -193,28 +198,34 @@ void main() {
       addTearDown(controller.dispose);
       expect(controller.access.canCreate, isTrue);
       expect(controller.scope, ComplaintScope.building);
-      expect(await controller.create('Título', 'Descrição'), isFalse);
+      expect(await controller.create('Título', 'Descrição'), isTrue);
       await controller.setScope(ComplaintScope.mine);
       expect(
         await controller.create('Título', 'Descrição', category: 'barulho'),
         isTrue,
       );
-      expect(repository.creates, 1);
+      expect(repository.creates, 2);
     },
   );
 
-  test('readers without residence retain personal consultation', () async {
-    final repository = _Repository();
-    final controller = ComplaintsController(
-      repository: repository,
-      access: _access(resident: false),
-    );
-    addTearDown(controller.dispose);
-    await controller.load();
-    expect(repository.scopes, [ComplaintScope.mine]);
-    expect(controller.items, isNotEmpty);
-    expect(await controller.create('Título', 'Descrição'), isFalse);
-  });
+  test(
+    'residence view permission requires a residence and grants no creation',
+    () async {
+      final repository = _Repository();
+      final controller = ComplaintsController(
+        repository: repository,
+        access: _access(
+          resident: false,
+          permissions: ['@complaint:view:residency'],
+        ),
+      );
+      addTearDown(controller.dispose);
+      await controller.load();
+      expect(repository.scopes, isEmpty);
+      expect(controller.items, isEmpty);
+      expect(await controller.create('Título', 'Descrição'), isFalse);
+    },
+  );
 
   test(
     'conflict reconciliation keeps navigation locked until data is current',

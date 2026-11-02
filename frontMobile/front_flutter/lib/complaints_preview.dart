@@ -38,7 +38,10 @@ class _ComplaintsPreviewState extends State<ComplaintsPreview> {
       _ => ComplaintAccess.fromSession(
         userId: 'preview-$_profile',
         buildingId: 'preview-building',
-        permissions: _profile == 'manager' ? ['@complaint:manage'] : const [],
+        permissions: _profile == 'manager'
+            ? ['@core:admin']
+            : const ['@complaint:create', '@complaint:view:residency'],
+        residencyId: 'preview-residence',
         expiresAt: DateTime.now().add(const Duration(hours: 1)),
       ),
     };

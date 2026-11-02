@@ -158,3 +158,9 @@ para que as imagens usem uma fonte legível em vez da fonte de teste Ahem.
 As imagens usam dados simulados. A validação com credenciais reais exige uma
 instância acessível da API e uma conta de teste; a validação Android exige um
 emulador configurado ou um aparelho conectado.
+
+Reclamações usa as seis permissões independentes documentadas na
+[matriz de acesso](../../audit/permissoes-reclamacoes.md), derivadas do `UserSession`
+já carregado. Visualização/resposta residencial usa `residencyId` e `buildingId`;
+criação exige condomínio e aceita residência opcional. `@core:admin` concede todas
+as ações dentro do condomínio; leitura não concede resposta ou alteração de status.

@@ -9,21 +9,31 @@ const resident = AuthContext(
   userId: '11111111-1111-4111-8111-111111111111',
   buildingId: '22222222-2222-4222-8222-222222222222',
   residencyId: '33333333-3333-4333-8333-333333333333',
+  permissions: [createComplaintPermission, viewResidencyComplaintsPermission],
 );
 const neighbor = AuthContext(
   userId: '44444444-4444-4444-8444-444444444444',
   buildingId: '22222222-2222-4222-8222-222222222222',
   residencyId: '55555555-5555-4555-8555-555555555555',
+  permissions: [createComplaintPermission, viewResidencyComplaintsPermission],
 );
 const admin = AuthContext(
   userId: '66666666-6666-4666-8666-666666666666',
   buildingId: '22222222-2222-4222-8222-222222222222',
-  permissions: [manageComplaintsPermission],
+  permissions: [
+    viewBuildingComplaintsPermission,
+    updateComplaintStatusPermission,
+    respondBuildingComplaintPermission,
+  ],
 );
 const otherAdmin = AuthContext(
   userId: '77777777-7777-4777-8777-777777777777',
   buildingId: '88888888-8888-4888-8888-888888888888',
-  permissions: [manageComplaintsPermission],
+  permissions: [
+    viewBuildingComplaintsPermission,
+    updateComplaintStatusPermission,
+    respondBuildingComplaintPermission,
+  ],
 );
 const payload = <String, Object?>{
   'title': ' Barulho após as 22h ',

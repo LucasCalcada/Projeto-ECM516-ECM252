@@ -40,7 +40,7 @@ class HttpComplaintsRepository implements ComplaintsRepository {
     int offset = 0,
   }) => _read(() async {
     final value = await client.get(
-      scope == ComplaintScope.mine ? '/complaints/mine' : '/complaints',
+      scope == ComplaintScope.mine ? '/complaints/residency' : '/complaints',
       token: token,
       query: {
         if (status != null) 'status': status.apiValue,

@@ -13,16 +13,16 @@ export default function SidebarLayout() {
     drawer.current?.close();
   }, [location.key]);
   return (
-    <div className="app-shell">
-      <aside className="app-desktop-sidebar">
+    <div className="flex h-dvh w-full min-w-0 [&_a]:focus-visible:outline-2 [&_a]:focus-visible:outline-offset-2 [&_a]:focus-visible:outline-cyan-300 [&_nav_button]:focus-visible:outline-2 [&_nav_button]:focus-visible:outline-offset-2 [&_nav_button]:focus-visible:outline-cyan-300">
+      <aside className="hidden h-full w-56 shrink-0 md:block">
         <Sidebar />
       </aside>
-      <div className="app-content-frame">
-        <header className="app-mobile-header">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+        <header className="flex shrink-0 items-center gap-3 bg-neutral-900 px-3 py-1 font-semibold md:hidden">
           <button
             ref={trigger}
             type="button"
-            className="app-navigation-button"
+            className="inline-flex min-h-11 min-w-11 cursor-pointer items-center justify-center rounded-md text-neutral-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
             aria-label={t('sidebar.openMenu')}
             aria-haspopup="dialog"
             onClick={() => drawer.current?.showModal()}
@@ -31,13 +31,13 @@ export default function SidebarLayout() {
           </button>
           <span>HiveApp</span>
         </header>
-        <main className="app-content">
+        <main className="@container/app-content min-h-0 w-full min-w-0 flex-1 overflow-auto">
           <Outlet />
         </main>
       </div>
       <dialog
         ref={drawer}
-        className="app-mobile-drawer"
+        className="m-0 h-dvh max-h-dvh w-[88vw] max-w-70 border-0 bg-neutral-900 pt-11 text-neutral-300 backdrop:bg-black/60"
         aria-label={t('sidebar.navigation')}
         onClose={() => trigger.current?.focus()}
         onClick={(event) => {
@@ -46,7 +46,7 @@ export default function SidebarLayout() {
       >
         <button
           type="button"
-          className="app-navigation-button app-drawer-close"
+          className="absolute top-0 right-0 inline-flex min-h-11 min-w-11 cursor-pointer items-center justify-center rounded-md text-neutral-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
           aria-label={t('sidebar.closeMenu')}
           onClick={() => drawer.current?.close()}
         >

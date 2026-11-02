@@ -17,6 +17,7 @@ import VisitorAccess from '../views/VisitorAccess';
 import Complaints from '../views/Complaints';
 import BuildingSelector from '../views/BuildingSelector.tsx';
 import type { RouteConfig } from './route';
+import { complaintPermissions } from '../types/Complaint';
 
 const routes: RouteConfig[] = [
   {
@@ -89,6 +90,7 @@ const routes: RouteConfig[] = [
   },
   {
     path: '/complaints',
+    permissions: [...complaintPermissions],
     viewComponent: Complaints,
     layout: 'sidebar',
     visible: true,

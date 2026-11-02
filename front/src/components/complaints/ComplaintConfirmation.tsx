@@ -29,7 +29,7 @@ export default function ComplaintConfirmation({
   return (
     <dialog
       ref={dialog}
-      className="complaint-dialog"
+      className="m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-xl overflow-auto rounded-lg border-0 bg-neutral-800 p-6 text-neutral-300 backdrop:bg-black/60"
       aria-labelledby={`${id}-title`}
       aria-describedby={`${id}-message`}
       onCancel={(event) => {
@@ -37,13 +37,17 @@ export default function ComplaintConfirmation({
         if (!pending) onCancel();
       }}
     >
-      <h2 id={`${id}-title`}>{title}</h2>
-      <p id={`${id}-message`}>{message}</p>
-      <div className="complaint-actions">
+      <h2 id={`${id}-title`} className="text-xl font-semibold wrap-anywhere text-neutral-100">
+        {title}
+      </h2>
+      <p id={`${id}-message`} className="mt-4 wrap-anywhere">
+        {message}
+      </p>
+      <div className="mt-4 flex flex-wrap gap-2">
         <button
           type="button"
           autoFocus
-          className="complaint-button complaint-secondary"
+          className="inline-flex min-h-11 min-w-11 cursor-pointer items-center justify-center gap-2 rounded-md bg-neutral-800 px-3 py-2 text-sm font-semibold text-neutral-100 transition-colors hover:bg-neutral-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300 disabled:cursor-not-allowed disabled:opacity-60 motion-reduce:transition-none"
           disabled={pending}
           onClick={onCancel}
         >
@@ -51,7 +55,7 @@ export default function ComplaintConfirmation({
         </button>
         <button
           type="button"
-          className="complaint-button complaint-primary"
+          className="inline-flex min-h-11 min-w-11 cursor-pointer items-center justify-center gap-2 rounded-md bg-cyan-300 px-3 py-2 text-sm font-semibold text-neutral-950 transition-colors hover:bg-cyan-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300 disabled:cursor-not-allowed disabled:opacity-60 motion-reduce:transition-none"
           disabled={pending}
           onClick={onConfirm}
         >

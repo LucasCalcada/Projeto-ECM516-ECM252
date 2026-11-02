@@ -228,6 +228,7 @@ class _HiveAppState extends State<HiveApp> {
                       permissions: session.permissions,
                       expiresAt: session.expiresAt,
                       residentAccess: session.residencyId?.isNotEmpty == true,
+                      residencyId: session.residencyId,
                     ),
                     repository: complaintsRepository!,
                     buildingName: session.buildingName,
