@@ -1,7 +1,7 @@
 # HiveApp — Flutter
 
 Aplicativo Flutter com login, seleção de condomínio, menu lateral, Home com
-avisos e eventos e configurações de idioma.
+avisos e eventos, reclamações integradas à API e configurações de idioma.
 O código Dart fica em `lib`, com arquivos em `snake_case`.
 
 ## Estrutura
@@ -10,14 +10,16 @@ O código Dart fica em `lib`, com arquivos em `snake_case`.
 lib/
 ├── main.dart                    # Inicialização do Flutter
 ├── app.dart                     # Tema, idiomas, dependências e navegação
-├── config.dart                  # AUTH_URL, CORE_URL, COMMUNICATION_URL e APP_LANGUAGE
+├── config.dart                  # AUTH_URL, CORE_URL, COMMUNICATION_URL, COMPLAINT_URL e APP_LANGUAGE
+├── features/complaints/         # Domínio, controller, adaptador HTTP e interface
+├── theme/app_theme.dart         # Tokens compartilhados do design system
 ├── components/login_box/        # Logo, campos e botão
 ├── components/navigation/       # Menu lateral e identificação do condomínio
 ├── components/home/             # Seções, conteúdo expansível e data dos eventos
 ├── components/shared/           # Feedback de erro, estado vazio e tentativa
 ├── helpers/
 │   ├── auth_service.dart        # Requisição HTTP e classificação de erros
-│   ├── api_client.dart          # GET autenticado, timeout e falhas HTTP
+│   ├── api_client.dart          # GET/POST/PATCH autenticados, timeout e falhas HTTP
 │   ├── core_service.dart        # Listagem e seleção dos vínculos
 │   ├── communication_service.dart # Avisos e eventos do usuário
 │   ├── preferences_storage.dart # Idioma persistido
@@ -51,13 +53,14 @@ flutter pub get
 flutter run -d chrome
 ```
 
-Os serviços de autenticação, core e comunicação precisam estar em execução.
-As portas padrão são 8001, 8000 e 8006, respectivamente. O host é `localhost`;
+Os serviços de autenticação, core e comunicação precisam estar em execução;
+reclamações usa também o serviço na porta 8007. As demais portas padrão são
+8001, 8000 e 8006, respectivamente. O host é `localhost`;
 no emulador Android, `10.0.2.2`. Em um celular físico, configure URLs acessíveis
 pelo dispositivo:
 
 ```sh
-flutter run --dart-define=AUTH_URL=https://seu-servidor.example/api/auth --dart-define=CORE_URL=https://seu-servidor.example/api/core --dart-define=COMMUNICATION_URL=https://seu-servidor.example/api/communication
+flutter run --dart-define=AUTH_URL=https://seu-servidor.example/api/auth --dart-define=CORE_URL=https://seu-servidor.example/api/core --dart-define=COMMUNICATION_URL=https://seu-servidor.example/api/communication --dart-define=COMPLAINT_URL=https://seu-servidor.example/api/complaint
 ```
 
 As variáveis são URLs base. O aplicativo acrescenta `/auth/login` ao serviço
@@ -105,7 +108,7 @@ a autorização das operações são responsabilidade dos serviços.
 - Atualização por gesto ou botão, carregamento, listas vazias e falhas com nova
   tentativa têm estados próprios. Uma atualização que falha preserva os posts.
 - O menu identifica o condomínio e destaca a página ativa.
-- Home e Configurações estão disponíveis. Moradores, Reservas, Encomendas e
+- Home, Configurações e Reclamações estão disponíveis. Moradores, Reservas, Encomendas e
   Acessos aparecem indisponíveis até a migração dessas telas.
 - A regra de permissão aceita qualquer permissão exigida ou `@core:admin`,
   como no web. Itens sem permissão mostram cadeado e explicação.
@@ -155,3 +158,9 @@ para que as imagens usem uma fonte legível em vez da fonte de teste Ahem.
 As imagens usam dados simulados. A validação com credenciais reais exige uma
 instância acessível da API e uma conta de teste; a validação Android exige um
 emulador configurado ou um aparelho conectado.
+
+Reclamações usa as seis permissões independentes documentadas na
+[matriz de acesso](../../audit/permissoes-reclamacoes.md), derivadas do `UserSession`
+já carregado. Visualização/resposta residencial usa `residencyId` e `buildingId`;
+criação exige condomínio e aceita residência opcional. `@core:admin` concede todas
+as ações dentro do condomínio; leitura não concede resposta ou alteração de status.

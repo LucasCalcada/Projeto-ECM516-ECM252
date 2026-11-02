@@ -31,12 +31,22 @@ void main() {
                 Platform.environment['TEST_DATABASE_SSL_MODE'] ?? 'disable',
           }),
         );
-        final migration = await File('migrations/001_initial.sql')
-            .readAsString();
+        final migrations =
+            Directory('migrations')
+                .listSync()
+                .whereType<File>()
+                .where((file) => file.path.endsWith('.sql'))
+                .toList()
+              ..sort((a, b) => a.path.compareTo(b.path));
         // Applying twice verifies that startup migration is safely repeatable.
         for (var i = 0; i < 2; i++) {
           await pool.runTx((session) async {
-            await session.execute(migration, queryMode: QueryMode.simple);
+            for (final file in migrations) {
+              await session.execute(
+                await file.readAsString(),
+                queryMode: QueryMode.simple,
+              );
+            }
           });
         }
         repository = PostgresComplaintRepository(pool);
@@ -48,11 +58,19 @@ void main() {
           userId: uuid.v4(),
           buildingId: uuid.v4(),
           residencyId: uuid.v4(),
+          permissions: const [
+            createComplaintPermission,
+            viewResidencyComplaintsPermission,
+          ],
         );
         administrator = AuthContext(
           userId: uuid.v4(),
           buildingId: resident.buildingId,
-          permissions: const [manageComplaintsPermission],
+          permissions: const [
+            viewBuildingComplaintsPermission,
+            updateComplaintStatusPermission,
+            respondBuildingComplaintPermission,
+          ],
         );
         otherBuildingId = uuid.v4();
       });
@@ -88,6 +106,98 @@ void main() {
       });
 
       tearDownAll(() => repository.close());
+
+      test(
+        'shares a residence across users and persists reply authority',
+        () async {
+          final created = await service.create(resident, {
+            'title': 'Residencia compartilhada',
+            'category': 'outros',
+            'description': 'Registro para os moradores da mesma residencia.',
+          });
+          final coResident = AuthContext(
+            userId: uuid.v4(),
+            buildingId: resident.buildingId,
+            residencyId: resident.residencyId,
+            permissions: const [
+              viewResidencyComplaintsPermission,
+              respondResidencyComplaintPermission,
+            ],
+          );
+          final neighbor = AuthContext(
+            userId: uuid.v4(),
+            buildingId: resident.buildingId,
+            residencyId: uuid.v4(),
+            permissions: const [
+              viewResidencyComplaintsPermission,
+              respondResidencyComplaintPermission,
+            ],
+          );
+          expect(
+            (await service.list(coResident, {}, mine: true)).single.id,
+            created.id,
+          );
+          expect(await service.list(neighbor, {}, mine: true), isEmpty);
+          await expectLater(
+            service.detail(neighbor, created.id),
+            throwsA(
+              isA<ApiException>().having((e) => e.statusCode, 'status', 404),
+            ),
+          );
+          await service.respond(coResident, created.id, {
+            'message': 'Complemento de outro morador',
+          });
+          await service.respond(administrator, created.id, {
+            'message': 'Resposta da administracao',
+          });
+          final loaded = (await repository.find(
+            created.id,
+            resident.buildingId,
+          ))!;
+          expect(loaded.residencyId, resident.residencyId);
+          expect(loaded.responses.map((reply) => reply.isAdministrative), [
+            false,
+            true,
+          ]);
+          await service.changeStatus(administrator, created.id, {
+            'status': 'encerrada',
+          });
+        },
+      );
+
+      test(
+        'residence stays attached to the record when its author moves',
+        () async {
+          final created = await service.create(resident, {
+            'title': 'Residencia original',
+            'category': 'outros',
+            'description': 'O vinculo do registro nao acompanha a mudanca de residencia do autor.',
+          });
+          final moved = AuthContext(
+            userId: resident.userId,
+            buildingId: resident.buildingId,
+            residencyId: uuid.v4(),
+            permissions: const [viewResidencyComplaintsPermission],
+          );
+          final remaining = AuthContext(
+            userId: uuid.v4(),
+            buildingId: resident.buildingId,
+            residencyId: resident.residencyId,
+            permissions: const [viewResidencyComplaintsPermission],
+          );
+          expect(await service.list(moved, {}, mine: true), isEmpty);
+          expect(
+            (await service.list(remaining, {}, mine: true)).single.id,
+            created.id,
+          );
+          await expectLater(
+            service.detail(moved, created.id),
+            throwsA(
+              isA<ApiException>().having((e) => e.statusCode, 'status', 404),
+            ),
+          );
+        },
+      );
 
       test(
         'persists initial history and keeps building scope private',
@@ -131,6 +241,7 @@ void main() {
             userId: uuid.v4(),
             buildingId: otherBuildingId,
             residencyId: uuid.v4(),
+            permissions: const [createComplaintPermission],
           ),
           {
             'title': 'Outro condomínio',

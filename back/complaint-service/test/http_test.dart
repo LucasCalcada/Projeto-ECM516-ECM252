@@ -25,7 +25,13 @@ String _token({bool admin = false, String building = _building}) => JWT({
   'userId': admin ? _admin : _resident,
   'buildingId': building,
   'residencyId': admin ? null : _residency,
-  'permissions': admin ? [manageComplaintsPermission] : <String>[],
+  'permissions': admin
+      ? [
+          viewBuildingComplaintsPermission,
+          updateComplaintStatusPermission,
+          respondBuildingComplaintPermission,
+        ]
+      : [createComplaintPermission, viewResidencyComplaintsPermission],
 }).sign(SecretKey(_secret), expiresIn: const Duration(hours: 1));
 
 Future<dynamic> _json(Response response) async =>

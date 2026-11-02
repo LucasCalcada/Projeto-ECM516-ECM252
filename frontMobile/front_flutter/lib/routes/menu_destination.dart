@@ -66,5 +66,19 @@ class MenuDestination {
       Icons.settings_outlined,
       available: true,
     ),
+    MenuDestination(
+      AppRoutes.complaints,
+      'menu.complaints',
+      Icons.chat_bubble_outline,
+      available: true,
+      permissions: [
+        '@complaint:create',
+        '@complaint:view:residency',
+        '@complaint:view:building',
+        '@complaint:update:status',
+        '@complaint:respond:residency',
+        '@complaint:respond:building',
+      ],
+    ),
   ];
 }

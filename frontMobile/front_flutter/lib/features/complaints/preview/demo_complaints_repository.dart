@@ -17,19 +17,17 @@ class DemoComplaintsRepository implements ComplaintsRepository {
   static List<Complaint> _fixtures() => [
     Complaint(
       id: 'demo-1',
-      protocol: 'RCL-2026-024',
-      subject: 'Ruído após o horário de silêncio',
+      title: 'Ruído após o horário de silêncio',
       description: 'Houve ruído elevado na área de convivência após as 22h nos últimos dois dias. Gostaria de orientação sobre o cumprimento do horário de silêncio.',
       createdAt: DateTime(2026, 10, 24),
       status: ComplaintStatus.open,
     ),
     Complaint(
       id: 'demo-2',
-      protocol: 'RCL-2026-021',
-      subject: 'Iluminação da garagem',
+      title: 'Iluminação da garagem',
       description: 'Algumas luminárias próximas ao acesso de pedestres estão apagadas, dificultando a circulação à noite.',
       createdAt: DateTime(2026, 10, 22),
-      status: ComplaintStatus.answered,
+      status: ComplaintStatus.inAnalysis,
       responses: [
         ComplaintResponse(
           message: 'A manutenção foi acionada para verificar as luminárias. A atualização do atendimento ficará disponível aqui.',
@@ -39,8 +37,7 @@ class DemoComplaintsRepository implements ComplaintsRepository {
     ),
     Complaint(
       id: 'demo-3',
-      protocol: 'RCL-2026-018',
-      subject: 'Limpeza da área de convivência',
+      title: 'Limpeza da área de convivência',
       description: 'A área de convivência precisava de limpeza após a utilização no fim de semana.',
       createdAt: DateTime(2026, 10, 18),
       status: ComplaintStatus.closed,
@@ -55,25 +52,47 @@ class DemoComplaintsRepository implements ComplaintsRepository {
   ];
 
   @override
-  Future<List<Complaint>> list({required ComplaintScope scope}) async {
+  Future<List<Complaint>> list({
+    required ComplaintScope scope,
+    ComplaintStatus? status,
+    String? category,
+    int limit = 20,
+    int offset = 0,
+  }) async {
     if (failNextRead) {
       failNextRead = false;
       throw StateError('Simulated read failure');
     }
     // The explicit preview has one isolated data set per selected profile.
-    return List<Complaint>.unmodifiable(_items);
+    return List<Complaint>.unmodifiable(
+      _items
+          .where(
+            (item) =>
+                (status == null || item.status == status) &&
+                (category == null || item.category == category),
+          )
+          .skip(offset)
+          .take(limit)
+          .map((item) => item.copyWith(hasDetails: false)),
+    );
+  }
+
+  @override
+  Future<Complaint> getDetail(String id) async {
+    return _items.firstWhere((item) => item.id == id);
   }
 
   @override
   Future<Complaint> create({
-    required String subject,
+    required String title,
+    required String category,
     required String description,
   }) async {
     final now = DateTime.now();
     final item = Complaint(
       id: 'demo-${now.microsecondsSinceEpoch}',
-      protocol: 'RCL-DEMO-${_items.length + 1}',
-      subject: subject,
+      title: title,
+      category: category,
       description: description,
       createdAt: now,
       status: ComplaintStatus.open,
@@ -90,7 +109,6 @@ class DemoComplaintsRepository implements ComplaintsRepository {
     final index = _items.indexWhere((item) => item.id == complaintId);
     final item = _items[index];
     final updated = item.copyWith(
-      status: ComplaintStatus.answered,
       responses: [
         ...item.responses,
         ComplaintResponse(message: message, createdAt: DateTime.now()),
@@ -101,9 +119,36 @@ class DemoComplaintsRepository implements ComplaintsRepository {
   }
 
   @override
-  Future<Complaint> close({required String complaintId}) async {
+  Future<Complaint> close({required String complaintId}) =>
+      changeStatus(complaintId: complaintId, status: ComplaintStatus.closed);
+
+  @override
+  Future<Complaint> changeStatus({
+    required String complaintId,
+    required ComplaintStatus status,
+  }) async {
     final index = _items.indexWhere((item) => item.id == complaintId);
-    final updated = _items[index].copyWith(status: ComplaintStatus.closed);
+    final item = _items[index];
+    if (item.status == ComplaintStatus.closed ||
+        (status == ComplaintStatus.closed && item.responses.isEmpty) ||
+        (status == ComplaintStatus.inAnalysis &&
+            item.status != ComplaintStatus.open)) {
+      throw const ComplaintException(ComplaintFailure.conflict);
+    }
+    final now = DateTime.now();
+    final updated = item.copyWith(
+      status: status,
+      updatedAt: now,
+      closedAt: status == ComplaintStatus.closed ? now : null,
+      history: [
+        ...item.history,
+        ComplaintStatusChange(
+          status: status,
+          previousStatus: item.status,
+          createdAt: now,
+        ),
+      ],
+    );
     _items[index] = updated;
     return updated;
   }

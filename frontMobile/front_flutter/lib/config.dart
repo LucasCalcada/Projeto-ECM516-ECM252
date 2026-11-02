@@ -22,6 +22,11 @@ abstract final class AppConfig {
     return configured.isNotEmpty ? configured : 'http://$_host:8006';
   }
 
+  static String get complaintUrl {
+    const configured = String.fromEnvironment('COMPLAINT_URL');
+    return configured.isNotEmpty ? configured : 'http://$_host:8007';
+  }
+
   static String get _host =>
       !kIsWeb && defaultTargetPlatform == TargetPlatform.android
       ? '10.0.2.2'

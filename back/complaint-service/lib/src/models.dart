@@ -1,4 +1,9 @@
-const manageComplaintsPermission = '@complaint:manage';
+const createComplaintPermission = '@complaint:create';
+const viewResidencyComplaintsPermission = '@complaint:view:residency';
+const viewBuildingComplaintsPermission = '@complaint:view:building';
+const updateComplaintStatusPermission = '@complaint:update:status';
+const respondResidencyComplaintPermission = '@complaint:respond:residency';
+const respondBuildingComplaintPermission = '@complaint:respond:building';
 const complaintStatuses = {'aberta', 'em_analise', 'encerrada'};
 const complaintCategories = {
   'barulho',
@@ -20,7 +25,15 @@ class AuthContext {
   final String buildingId;
   final String? residencyId;
   final List<String> permissions;
-  bool get canManage => permissions.contains(manageComplaintsPermission);
+  bool allows(String permission) =>
+      permissions.contains('@core:admin') || permissions.contains(permission);
+
+  bool get canViewBuilding => allows(viewBuildingComplaintsPermission);
+  bool get canViewResidency =>
+      residencyId != null && allows(viewResidencyComplaintsPermission);
+  bool get canRespondBuilding => allows(respondBuildingComplaintPermission);
+  bool get canRespondResidency =>
+      residencyId != null && allows(respondResidencyComplaintPermission);
 }
 
 class ComplaintResponse {
@@ -29,16 +42,19 @@ class ComplaintResponse {
     required this.authorUserId,
     required this.message,
     required this.createdAt,
+    this.isAdministrative = true,
   });
   final String id;
   final String authorUserId;
   final String message;
   final DateTime createdAt;
+  final bool isAdministrative;
   Map<String, Object?> toJson() => {
     'id': id,
     'authorUserId': authorUserId,
     'message': message,
     'createdAt': createdAt.toUtc().toIso8601String(),
+    'isAdministrative': isAdministrative,
   };
 }
 
@@ -75,6 +91,7 @@ class Complaint {
     required this.status,
     required this.createdAt,
     required this.updatedAt,
+    this.residencyId,
     this.closedAt,
     List<ComplaintResponse> responses = const [],
     List<StatusChange> history = const [],
@@ -83,6 +100,7 @@ class Complaint {
   final String id;
   final String buildingId;
   final String residentUserId;
+  final String? residencyId;
   final String title;
   final String category;
   final String description;
@@ -103,6 +121,7 @@ class Complaint {
     id: id,
     buildingId: buildingId,
     residentUserId: residentUserId,
+    residencyId: residencyId,
     title: title,
     category: category,
     description: description,
@@ -118,6 +137,7 @@ class Complaint {
     'id': id,
     'buildingId': buildingId,
     'residentUserId': residentUserId,
+    'residencyId': residencyId,
     'title': title,
     'category': category,
     'description': description,
@@ -134,6 +154,7 @@ class ComplaintQuery {
   const ComplaintQuery({
     required this.buildingId,
     this.residentUserId,
+    this.residencyId,
     this.status,
     this.category,
     this.limit = 20,
@@ -141,6 +162,7 @@ class ComplaintQuery {
   });
   final String buildingId;
   final String? residentUserId;
+  final String? residencyId;
   final String? status;
   final String? category;
   final int limit;

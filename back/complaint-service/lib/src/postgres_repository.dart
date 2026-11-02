@@ -15,10 +15,10 @@ class PostgresComplaintRepository implements ComplaintRepository {
     await session.execute(
       Sql.named('''
         INSERT INTO complaints (
-          id, building_id, resident_user_id, title, category, description,
+          id, building_id, resident_user_id, residency_id, title, category, description,
           status, created_at, updated_at, closed_at
         ) VALUES (
-          @id, @buildingId, @residentUserId, @title, @category, @description,
+          @id, @buildingId, @residentUserId, @residencyId, @title, @category, @description,
           @status, @createdAt, @updatedAt, @closedAt
         )
       '''),
@@ -26,6 +26,7 @@ class PostgresComplaintRepository implements ComplaintRepository {
         'id': complaint.id,
         'buildingId': complaint.buildingId,
         'residentUserId': complaint.residentUserId,
+        'residencyId': complaint.residencyId,
         'title': complaint.title,
         'category': complaint.category,
         'description': complaint.description,
@@ -59,6 +60,10 @@ class PostgresComplaintRepository implements ComplaintRepository {
     if (query.residentUserId != null) {
       conditions.add('resident_user_id = @residentUserId');
       parameters['residentUserId'] = query.residentUserId;
+    }
+    if (query.residencyId != null) {
+      conditions.add('residency_id = @residencyId');
+      parameters['residencyId'] = query.residencyId;
     }
     if (query.status != null) {
       conditions.add('status = @status');
@@ -153,6 +158,7 @@ class PostgresComplaintRepository implements ComplaintRepository {
           authorUserId: data['author_user_id'] as String,
           message: data['message'] as String,
           createdAt: (data['created_at'] as DateTime).toUtc(),
+          isAdministrative: data['is_administrative'] as bool,
         );
       }).toList(),
       history: history.map((row) {
@@ -176,6 +182,7 @@ class PostgresComplaintRepository implements ComplaintRepository {
     id: data['id'] as String,
     buildingId: data['building_id'] as String,
     residentUserId: data['resident_user_id'] as String,
+    residencyId: data['residency_id'] as String?,
     title: data['title'] as String,
     category: data['category'] as String,
     description: data['description'] as String,
@@ -196,14 +203,15 @@ class PostgresComplaintRepository implements ComplaintRepository {
       await session.execute(
         Sql.named('''
           INSERT INTO complaint_responses (
-            id, complaint_id, author_user_id, message, created_at
-          ) VALUES (@id, @complaintId, @authorUserId, @message, @createdAt)
+            id, complaint_id, author_user_id, message, created_at, is_administrative
+          ) VALUES (@id, @complaintId, @authorUserId, @message, @createdAt, @isAdministrative)
         '''),
         parameters: {
           'id': response.id,
           'complaintId': complaintId,
           'authorUserId': response.authorUserId,
           'message': response.message,
+          'isAdministrative': response.isAdministrative,
           'createdAt': response.createdAt.toUtc(),
         },
       );
@@ -240,6 +248,7 @@ class PostgresComplaintRepository implements ComplaintRepository {
     if (current.id != updated.id ||
         current.buildingId != updated.buildingId ||
         current.residentUserId != updated.residentUserId ||
+        current.residencyId != updated.residencyId ||
         current.title != updated.title ||
         current.category != updated.category ||
         current.description != updated.description ||
@@ -254,6 +263,7 @@ class PostgresComplaintRepository implements ComplaintRepository {
       if (before.id != after.id ||
           before.authorUserId != after.authorUserId ||
           before.message != after.message ||
+          before.isAdministrative != after.isAdministrative ||
           before.createdAt != after.createdAt) {
         throw StateError('Existing responses are immutable.');
       }

@@ -8,4 +8,5 @@ resources:
   - ../services/visitor-service
   - ../services/reservation-service
   - ../services/communication-service
+  - ../services/complaint-service
   - ../front
