@@ -11,6 +11,7 @@ import 'helpers/communication_service.dart';
 import 'helpers/core_service.dart';
 import 'helpers/preferences_storage.dart';
 import 'helpers/session_storage.dart';
+import 'helpers/user_data_storage.dart';
 import 'lang/app_localizations.dart';
 import 'lang/login_localizations.dart';
 import 'layouts/app_shell.dart';
@@ -19,6 +20,7 @@ import 'routes/menu_destination.dart';
 import 'types/api_failure.dart';
 import 'types/user_session.dart';
 import 'views/building_selector.dart';
+import 'views/complaints.dart';
 import 'views/home.dart';
 import 'views/login.dart';
 import 'views/settings.dart';
@@ -28,6 +30,7 @@ class HiveApp extends StatefulWidget {
     super.key,
     this.authService,
     this.sessionStorage,
+    this.userDataStorage,
     this.preferencesStorage,
     this.coreService,
     this.communicationService,
@@ -38,6 +41,7 @@ class HiveApp extends StatefulWidget {
 
   final AuthService? authService;
   final SessionStorage? sessionStorage;
+  final UserDataStorage? userDataStorage;
   final PreferencesStorage? preferencesStorage;
   final CoreService? coreService;
   final CommunicationService? communicationService;
@@ -57,6 +61,7 @@ class _HiveAppState extends State<HiveApp> {
   late final CoreService _coreService;
   late final CommunicationService _communicationService;
   late final SessionStorage _sessionStorage;
+  late final UserDataStorage _userDataStorage;
   late final PreferencesStorage _preferencesStorage;
   late Locale _locale;
   bool _authenticated = false;
@@ -72,6 +77,7 @@ class _HiveAppState extends State<HiveApp> {
         widget.authService ??
         AuthService(client: _client, baseUrl: AppConfig.authUrl);
     _sessionStorage = widget.sessionStorage ?? const SecureSessionStorage();
+    _userDataStorage = widget.userDataStorage ?? LocalUserDataStorage();
     _preferencesStorage =
         widget.preferencesStorage ?? const SecurePreferencesStorage();
     _coreService =
@@ -122,7 +128,7 @@ class _HiveAppState extends State<HiveApp> {
   }
 
   Future<void> _signOut() async {
-    await _sessionStorage.clearSession();
+    await _clearStoredSession();
     if (!mounted) return;
     _authenticated = false;
     _session = null;
@@ -131,6 +137,11 @@ class _HiveAppState extends State<HiveApp> {
       (_) => false,
     );
   }
+
+  Future<void> _clearStoredSession() => Future.wait<void>([
+    _sessionStorage.clearSession(),
+    _userDataStorage.clearUserData(),
+  ]);
 
   void _onSelected(UserSession session) {
     if (session.isExpired) {
@@ -151,7 +162,7 @@ class _HiveAppState extends State<HiveApp> {
     _session = null;
     var failure = ApiFailure.unauthorized;
     try {
-      await _sessionStorage.clearSession();
+      await _clearStoredSession();
     } catch (_) {
       failure = ApiFailure.storage;
     }
@@ -167,6 +178,39 @@ class _HiveAppState extends State<HiveApp> {
       );
     }
     _expiring = false;
+  }
+
+  AppShellView _buildView(String route, UserSession session) {
+    if (route == AppRoutes.complaints) {
+      final screenKey = GlobalKey<ComplaintsScreenState>();
+      final repository =
+          widget.complaintsRepositoryFactory?.call(session) ??
+          HttpComplaintsRepository(
+            ApiClient(client: _client, baseUrl: AppConfig.complaintUrl),
+            token: session.token,
+          );
+      return AppShellView(
+        child: ComplaintsView(
+          session: session,
+          repository: repository,
+          screenKey: screenKey,
+          onSessionExpired: _expireSession,
+        ),
+        onBeforeLeave: () =>
+            screenKey.currentState?.confirmLeave() ?? Future.value(true),
+        onBack: () =>
+            screenKey.currentState?.handleShellBack() ?? Future.value(false),
+      );
+    }
+    return AppShellView(
+      child: route == AppRoutes.settings
+          ? SettingsScreen(onLanguageChanged: _changeLanguage)
+          : HomeScreen(
+              service: _communicationService,
+              session: session,
+              onSessionExpired: _expireSession,
+            ),
+    );
   }
 
   Route<void> _route(RouteSettings settings) {
@@ -185,15 +229,6 @@ class _HiveAppState extends State<HiveApp> {
       }
     }
     final session = _session;
-    final complaintsKey = GlobalKey<ComplaintsScreenState>();
-    final complaintsRepository =
-        route == AppRoutes.complaints && session != null
-        ? widget.complaintsRepositoryFactory?.call(session) ??
-              HttpComplaintsRepository(
-                ApiClient(client: _client, baseUrl: AppConfig.complaintUrl),
-                token: session.token,
-              )
-        : null;
     return MaterialPageRoute<void>(
       settings: RouteSettings(name: route),
       builder: (_) {
@@ -201,6 +236,7 @@ class _HiveAppState extends State<HiveApp> {
           return BuildingSelector(
             coreService: _coreService,
             sessionStorage: _sessionStorage,
+            userDataStorage: _userDataStorage,
             onSelected: _onSelected,
             onSignOut: _signOut,
             onSessionExpired: _expireSession,
@@ -211,41 +247,16 @@ class _HiveAppState extends State<HiveApp> {
             route == AppRoutes.complaints) {
           return AppShell(
             session: session!,
-            route: route,
+            initialRoute: route,
+            viewBuilder: (destination) => _buildView(destination, session),
             onSignOut: _signOut,
             onSessionExpired: _expireSession,
-            onBeforeNavigate: route == AppRoutes.complaints
-                ? () =>
-                      complaintsKey.currentState?.confirmLeave() ??
-                      Future.value(true)
-                : null,
-            child: route == AppRoutes.complaints
-                ? ComplaintsScreen(
-                    key: complaintsKey,
-                    access: ComplaintAccess.fromSession(
-                      userId: session.userId,
-                      buildingId: session.buildingId,
-                      permissions: session.permissions,
-                      expiresAt: session.expiresAt,
-                      residentAccess: session.residencyId?.isNotEmpty == true,
-                      residencyId: session.residencyId,
-                    ),
-                    repository: complaintsRepository!,
-                    buildingName: session.buildingName,
-                    onSessionExpired: _expireSession,
-                  )
-                : route == AppRoutes.settings
-                ? SettingsScreen(onLanguageChanged: _changeLanguage)
-                : HomeScreen(
-                    service: _communicationService,
-                    session: session,
-                    onSessionExpired: _expireSession,
-                  ),
           );
         }
         return Login(
           authService: _authService,
           sessionStorage: _sessionStorage,
+          userDataStorage: _userDataStorage,
           onAuthenticated: _onAuthenticated,
         );
       },

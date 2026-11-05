@@ -5,6 +5,7 @@ import '../components/login_box/login_button.dart';
 import '../components/login_box/login_text_field.dart';
 import '../helpers/auth_service.dart';
 import '../helpers/session_storage.dart';
+import '../helpers/user_data_storage.dart';
 import '../lang/login_localizations.dart';
 import '../layouts/auth_layout.dart';
 import '../types/auth_result.dart';
@@ -14,11 +15,13 @@ class Login extends StatefulWidget {
     super.key,
     required this.authService,
     required this.sessionStorage,
+    required this.userDataStorage,
     required this.onAuthenticated,
   });
 
   final AuthService authService;
   final SessionStorage sessionStorage;
+  final UserDataStorage userDataStorage;
   final VoidCallback onAuthenticated;
 
   @override
@@ -54,6 +57,7 @@ class _LoginState extends State<Login> {
       );
       if (!mounted) return;
       try {
+        await widget.userDataStorage.clearUserData();
         await widget.sessionStorage.saveAccountToken(result.token);
       } catch (_) {
         throw const AuthException(AuthFailure.storage);

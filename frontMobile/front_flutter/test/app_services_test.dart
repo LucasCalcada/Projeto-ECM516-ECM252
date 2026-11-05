@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:front_flutter/helpers/api_client.dart';
 import 'package:front_flutter/helpers/communication_service.dart';
 import 'package:front_flutter/helpers/core_service.dart';
+import 'package:front_flutter/helpers/load_user_data.dart';
 import 'package:front_flutter/types/account_user.dart';
 import 'package:front_flutter/types/api_failure.dart';
 import 'package:front_flutter/types/user_session.dart';
@@ -41,7 +42,17 @@ void main() {
         }),
       );
       final users = await core.listUsers('account-token');
-      final session = await core.selectUser('account-token', users.single);
+      final selectedToken = await core.selectUser(
+        'account-token',
+        users.single,
+      );
+      final data = FakeUserDataStorage();
+      final session = await loadUserData(
+        selectedToken,
+        selectedUser: users.single,
+        sessionStorage: FakeSessionStorage(),
+        userDataStorage: data,
+      );
       expect(requests.map((r) => r.url.path), ['/account', '/auth']);
       expect(
         requests.every(
@@ -53,6 +64,7 @@ void main() {
       expect(session.token, token);
       expect(session.buildingName, accountUsers.single['buildingName']);
       expect(session.residencyName, 'Apartamento 204');
+      expect(data.data?['permissions'], session.permissions);
     },
   );
 
@@ -73,9 +85,14 @@ void main() {
           api((_) async => http.Response(jsonEncode({'token': token}), 200)),
         );
         await expectLater(
-          service.selectUser(
-            'account-token',
-            AccountUser.fromJson(accountUsers.single),
+          loadUserData(
+            await service.selectUser(
+              'account-token',
+              AccountUser.fromJson(accountUsers.single),
+            ),
+            selectedUser: AccountUser.fromJson(accountUsers.single),
+            sessionStorage: FakeSessionStorage(),
+            userDataStorage: FakeUserDataStorage(),
           ),
           failsWith(failure),
         );

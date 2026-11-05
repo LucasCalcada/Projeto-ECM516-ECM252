@@ -5,6 +5,7 @@ abstract interface class SessionStorage {
   Future<String?> readAccountToken();
   Future<void> saveUserToken(String token);
   Future<String?> readUserToken();
+  Future<void> clearUserToken();
   Future<void> clearSession();
 }
 
@@ -30,6 +31,9 @@ class SecureSessionStorage implements SessionStorage {
 
   @override
   Future<String?> readUserToken() => _storage.read(key: _userTokenKey);
+
+  @override
+  Future<void> clearUserToken() => _storage.delete(key: _userTokenKey);
 
   @override
   Future<void> clearSession() async {

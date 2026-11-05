@@ -57,20 +57,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
               'es': 'Español',
             }.entries)
               Card(
-                child: ListTile(
-                  key: ValueKey('language-${entry.key}'),
-                  contentPadding: const EdgeInsets.all(16),
-                  leading: const Icon(Icons.language),
-                  title: Text(entry.value),
-                  subtitle: language == entry.key
-                      ? Text(strings.text('settings.selected'))
-                      : null,
-                  trailing: language == entry.key
-                      ? const Icon(Icons.check_circle)
-                      : null,
-                  selected: language == entry.key,
-                  enabled: !_saving,
-                  onTap: () => _select(entry.key),
+                child: LayoutBuilder(
+                  builder: (context, constraints) => ListTile(
+                    key: ValueKey('language-${entry.key}'),
+                    contentPadding: const EdgeInsets.all(16),
+                    leading: constraints.maxWidth >= 320
+                        ? const Icon(Icons.language)
+                        : null,
+                    title: Text(entry.value),
+                    subtitle: language == entry.key
+                        ? Text(strings.text('settings.selected'))
+                        : null,
+                    trailing:
+                        language == entry.key && constraints.maxWidth >= 320
+                        ? const Icon(Icons.check_circle)
+                        : null,
+                    selected: language == entry.key,
+                    enabled: !_saving,
+                    onTap: () => _select(entry.key),
+                  ),
                 ),
               ),
           ],

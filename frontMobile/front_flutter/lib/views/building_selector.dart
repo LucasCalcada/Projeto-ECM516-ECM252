@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../components/shared/request_feedback.dart';
 import '../helpers/core_service.dart';
 import '../helpers/session_storage.dart';
+import '../helpers/load_user_data.dart';
+import '../helpers/user_data_storage.dart';
 import '../lang/app_localizations.dart';
 import '../types/account_user.dart';
 import '../types/api_failure.dart';
@@ -13,6 +15,7 @@ class BuildingSelector extends StatefulWidget {
     super.key,
     required this.coreService,
     required this.sessionStorage,
+    required this.userDataStorage,
     required this.onSelected,
     required this.onSignOut,
     required this.onSessionExpired,
@@ -20,6 +23,7 @@ class BuildingSelector extends StatefulWidget {
 
   final CoreService coreService;
   final SessionStorage sessionStorage;
+  final UserDataStorage userDataStorage;
   final ValueChanged<UserSession> onSelected;
   final Future<void> Function() onSignOut;
   final VoidCallback onSessionExpired;
@@ -88,16 +92,17 @@ class _BuildingSelectorState extends State<BuildingSelector> {
       _error = null;
     });
     try {
-      final session = await widget.coreService.selectUser(
+      final token = await widget.coreService.selectUser(
         await _accountToken(),
         user,
       );
       if (!mounted) return;
-      try {
-        await widget.sessionStorage.saveUserToken(session.token);
-      } catch (_) {
-        throw const ApiException(ApiFailure.storage);
-      }
+      final session = await loadUserData(
+        token,
+        selectedUser: user,
+        sessionStorage: widget.sessionStorage,
+        userDataStorage: widget.userDataStorage,
+      );
       if (mounted) widget.onSelected(session);
     } catch (error) {
       _handleError(error);

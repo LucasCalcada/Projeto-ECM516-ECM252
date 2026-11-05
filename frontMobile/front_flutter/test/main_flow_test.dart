@@ -9,6 +9,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:front_flutter/app.dart';
+import 'package:front_flutter/layouts/app_shell.dart';
+import 'package:front_flutter/helpers/api_client.dart';
+import 'package:front_flutter/helpers/communication_service.dart';
+import 'package:front_flutter/lang/app_localizations.dart';
+import 'package:front_flutter/theme/app_theme.dart';
+import 'package:front_flutter/types/user_session.dart';
 import 'package:front_flutter/routes/app_routes.dart';
 import 'package:front_flutter/views/building_selector.dart';
 import 'package:front_flutter/views/home.dart';
@@ -31,6 +37,7 @@ http.Response jsonResponse(Object value, [int status = 200]) => http.Response(
 Future<void> launch(
   WidgetTester tester, {
   FakeSessionStorage? storage,
+  FakeUserDataStorage? userData,
   FakePreferencesStorage? preferences,
   Future<http.Response> Function(http.Request)? handler,
   String? language = 'pt',
@@ -61,6 +68,7 @@ Future<void> launch(
         child: HiveApp(
           client: client,
           sessionStorage: storage ?? FakeSessionStorage(),
+          userDataStorage: userData ?? FakeUserDataStorage(),
           preferencesStorage: preferences ?? FakePreferencesStorage(),
           locale: language == null ? null : Locale(language),
         ),
@@ -93,8 +101,8 @@ Future<void> selectBuilding(WidgetTester tester) async {
 }
 
 Future<void> openMenu(WidgetTester tester) async {
-  await tester.tap(find.byIcon(Icons.menu));
-  await tester.pumpAndSettle();
+  expect(find.byKey(const Key('app-sidebar')), findsOneWidget);
+  expect(find.byIcon(Icons.menu), findsNothing);
 }
 
 Future<void> openSettings(WidgetTester tester) async {
@@ -161,13 +169,22 @@ void main() {
       mobileSize(tester, const Size(390, 844));
       final storage = FakeSessionStorage();
       final preferences = FakePreferencesStorage();
-      await launch(tester, storage: storage, preferences: preferences);
+      final userData = FakeUserDataStorage()..data = {'userId': 'old-user'};
+      await launch(
+        tester,
+        storage: storage,
+        userData: userData,
+        preferences: preferences,
+      );
       await login(tester);
+      expect(userData.data, isNull);
       expect(find.byType(BuildingSelector), findsOneWidget);
       await preview(tester, 'building-selector');
       await selectBuilding(tester);
       expect(find.byType(HomeScreen), findsOneWidget);
       expect(storage.userToken, isNotNull);
+      expect(userData.data?['userId'], 'user-1');
+      expect(userData.data?['permissions'], ['@reservation:create']);
       expect(find.text('Manutenção dos elevadores'), findsOneWidget);
       expect(
         Navigator.of(tester.element(find.byType(HomeScreen))).canPop(),
@@ -176,30 +193,16 @@ void main() {
       await preview(tester, 'home');
 
       await openMenu(tester);
-      final residents = tester.widget<ListTile>(
+      final residents = tester.widget<Semantics>(
         find.byKey(const ValueKey('menu-/residents')),
       );
-      final reservations = tester.widget<ListTile>(
+      final reservations = tester.widget<Semantics>(
         find.byKey(const ValueKey('menu-/reservations')),
       );
-      expect(residents.enabled, isFalse);
-      expect(
-        residents.subtitle,
-        isA<Text>().having(
-          (text) => text.data,
-          'permission',
-          contains('permissão'),
-        ),
-      );
-      expect(reservations.enabled, isFalse);
-      expect(
-        reservations.subtitle,
-        isA<Text>().having(
-          (text) => text.data,
-          'availability',
-          contains('Em breve'),
-        ),
-      );
+      expect(residents.properties.enabled, isFalse);
+      expect(residents.properties.label, contains('permissão'));
+      expect(reservations.properties.enabled, isFalse);
+      expect(reservations.properties.label, contains('Em breve'));
       await preview(tester, 'menu');
       await tester.ensureVisible(find.byKey(const ValueKey('menu-/settings')));
       await tester.tap(find.byKey(const ValueKey('menu-/settings')));
@@ -212,7 +215,7 @@ void main() {
       expect(find.text('Settings'), findsOneWidget);
       await preview(tester, 'settings');
 
-      Navigator.of(tester.element(find.byType(SettingsScreen))).pop();
+      await tester.binding.handlePopRoute();
       await tester.pumpAndSettle();
       expect(find.text('Home'), findsOneWidget);
       await openMenu(tester);
@@ -222,6 +225,7 @@ void main() {
       expect(find.byType(Login), findsOneWidget);
       expect(storage.token, isNull);
       expect(storage.userToken, isNull);
+      expect(userData.data, isNull);
       expect(preferences.language, 'en');
       expect(
         Navigator.of(tester.element(find.byType(Login))).canPop(),
@@ -243,14 +247,16 @@ void main() {
   );
 
   testWidgets(
-    'selection prevents duplicates and waits for user-token persistence',
+    'selection prevents duplicates and waits for token and local-data persistence',
     (tester) async {
       final storage = FakeSessionStorage()
         ..pendingUserWrite = Completer<void>();
+      final userData = FakeUserDataStorage()..pendingWrite = Completer<void>();
       var selections = 0;
       await launch(
         tester,
         storage: storage,
+        userData: userData,
         handler: (request) async {
           if (request.url.path == '/auth/login') {
             return jsonResponse({'token': 'account-token'});
@@ -272,6 +278,13 @@ void main() {
       expect(selections, 1);
       expect(find.byType(HomeScreen), findsNothing);
       storage.pendingUserWrite!.complete();
+      await tester.pump();
+      expect(storage.userToken, isNotNull);
+      expect(find.byType(HomeScreen), findsNothing);
+      await tester.tap(item);
+      await tester.pump();
+      expect(selections, 1);
+      userData.pendingWrite!.complete();
       await tester.pumpAndSettle();
       expect(find.byType(HomeScreen), findsOneWidget);
       await tester.pumpWidget(const SizedBox());
@@ -293,6 +306,66 @@ void main() {
       await tester.pumpWidget(const SizedBox());
     },
   );
+
+  testWidgets('local-data write failure prevents home and permits retry', (
+    tester,
+  ) async {
+    final storage = FakeSessionStorage();
+    final userData = FakeUserDataStorage()..failWrite = true;
+    await launch(tester, storage: storage, userData: userData);
+    await login(tester);
+    await selectBuilding(tester);
+    expect(find.byType(BuildingSelector), findsOneWidget);
+    expect(find.byType(HomeScreen), findsNothing);
+    expect(find.textContaining('Não foi possível salvar'), findsOneWidget);
+    expect(storage.token, 'account-token');
+    expect(storage.userToken, isNull);
+    expect(userData.data, isNull);
+    userData.failWrite = false;
+    await selectBuilding(tester);
+    expect(find.byType(HomeScreen), findsOneWidget);
+    expect(userData.data?['userId'], 'user-1');
+  });
+
+  testWidgets(
+    'persisted tokens and local claims do not bypass login after restart',
+    (tester) async {
+      final storage = FakeSessionStorage();
+      final userData = FakeUserDataStorage();
+      await launch(tester, storage: storage, userData: userData);
+      await login(tester);
+      await selectBuilding(tester);
+      expect(userData.data, isNotNull);
+      await tester.pumpWidget(const SizedBox());
+      await launch(tester, storage: storage, userData: userData);
+      expect(find.byType(Login), findsOneWidget);
+      expect(find.byType(HomeScreen), findsNothing);
+      expect(storage.userToken, isNotNull);
+      expect(userData.data, isNotNull);
+      await login(tester);
+      expect(userData.data, isNull);
+      expect(storage.userToken, isNull);
+      expect(find.byType(BuildingSelector), findsOneWidget);
+    },
+  );
+
+  testWidgets('failed local cleanup blocks a new login until retry succeeds', (
+    tester,
+  ) async {
+    final storage = FakeSessionStorage();
+    final userData = FakeUserDataStorage()
+      ..data = {'userId': 'old-user'}
+      ..failClear = true;
+    await launch(tester, storage: storage, userData: userData);
+    await login(tester);
+    expect(find.byType(Login), findsOneWidget);
+    expect(storage.token, isNull);
+    expect(find.byType(BuildingSelector), findsNothing);
+    userData.failClear = false;
+    await login(tester);
+    expect(userData.data, isNull);
+    expect(find.byType(BuildingSelector), findsOneWidget);
+  });
 
   testWidgets('protected routes cannot bypass login or membership selection', (
     tester,
@@ -352,9 +425,11 @@ void main() {
       tester,
     ) async {
       final storage = FakeSessionStorage();
+      final userData = FakeUserDataStorage();
       await launch(
         tester,
         storage: storage,
+        userData: userData,
         handler: (request) async {
           if (request.url.path == endpoint) return jsonResponse({}, 401);
           if (request.url.path == '/auth/login') {
@@ -369,6 +444,7 @@ void main() {
       expect(find.byType(Login), findsOneWidget);
       expect(storage.token, isNull);
       expect(storage.userToken, isNull);
+      expect(userData.data, isNull);
       expect(find.text('Sua sessão expirou. Entre novamente.'), findsOneWidget);
     });
   }
@@ -430,6 +506,218 @@ void main() {
     expect(preferences.language, isNull);
     await tester.pumpWidget(const SizedBox());
   });
+
+  testWidgets('sidebar visual previews with system typography', (tester) async {
+    mobileSize(tester, const Size(390, 844));
+    final client = MockClient((_) async => jsonResponse(posts));
+    addTearDown(client.close);
+    final session = UserSession.fromToken(userToken());
+    final service = CommunicationService(
+      ApiClient(client: client, baseUrl: 'https://preview.invalid'),
+    );
+    final theme = HiveTheme.apply(ThemeData.dark(useMaterial3: true));
+    await tester.pumpWidget(
+      RepaintBoundary(
+        key: _previewKey,
+        child: MaterialApp(
+          debugShowCheckedModeBanner: false,
+          locale: const Locale('pt'),
+          supportedLocales: const [Locale('pt')],
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          // Use the loaded system font instead of the widget-test fallback.
+          theme: theme.copyWith(
+            textTheme: theme.textTheme.apply(fontFamily: 'Roboto'),
+            textButtonTheme: TextButtonThemeData(
+              style: theme.textButtonTheme.style!.copyWith(
+                textStyle: WidgetStatePropertyAll(
+                  theme.textTheme.labelLarge!.copyWith(fontFamily: 'Roboto'),
+                ),
+              ),
+            ),
+          ),
+          home: AppShell(
+            session: session,
+            initialRoute: AppRoutes.home,
+            viewBuilder: (route) => AppShellView(
+              child: route == AppRoutes.settings
+                  ? SettingsScreen(onLanguageChanged: (_) async {})
+                  : HomeScreen(
+                      service: service,
+                      session: session,
+                      onSessionExpired: () {},
+                    ),
+            ),
+            onSignOut: () async {},
+            onSessionExpired: () {},
+          ),
+        ),
+      ),
+    );
+    // Let asynchronous localization finish before capturing the first frame.
+    await tester.runAsync(() async => tester.pump());
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('app-sidebar')), findsOneWidget);
+    for (final width in [320.0, 390.0, 1024.0, 1440.0]) {
+      tester.view.physicalSize = Size(width, 900);
+      await tester.pumpAndSettle();
+      await preview(tester, 'sidebar-preview-${width.toInt()}');
+    }
+    tester.view.physicalSize = const Size(320, 568);
+    tester.platformDispatcher.textScaleFactorTestValue = 2;
+    await tester.pumpAndSettle();
+    await preview(tester, 'sidebar-preview-text-200');
+    await openSettings(tester);
+    await preview(tester, 'sidebar-preview-settings-200');
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox());
+  }, skip: !_capturePreviews || !Platform.isWindows);
+
+  testWidgets('sidebar resizes without recreating the active view', (
+    tester,
+  ) async {
+    mobileSize(tester, const Size(390, 844));
+    await launch(tester);
+    await login(tester);
+    await selectBuilding(tester);
+    final homeState = tester.state(find.byType(HomeScreen));
+    final shellState = tester.state(find.byType(AppShell));
+    for (final width in [320.0, 390.0, 768.0, 1024.0, 1440.0]) {
+      tester.view.physicalSize = Size(width, 900);
+      await tester.pumpAndSettle();
+      final sidebar = find.byKey(const Key('app-sidebar'));
+      final box = find.byKey(const Key('main-box'));
+      expect(tester.getSize(sidebar).width, width >= 1024 ? 240 : 64);
+      expect(tester.getRect(sidebar).right, tester.getRect(box).left);
+      expect(tester.getRect(box).top, 0);
+      expect(tester.getRect(box).right, width);
+      expect(tester.getRect(box).bottom, 900);
+      expect(
+        find.descendant(
+          of: find.byType(AppShell),
+          matching: find.byType(Divider),
+        ),
+        findsNothing,
+      );
+      expect(tester.state(find.byType(HomeScreen)), same(homeState));
+      expect(tester.state(find.byType(AppShell)), same(shellState));
+      expect(find.byType(Drawer), findsNothing);
+      expect(tester.takeException(), isNull);
+      await preview(tester, 'sidebar-${width.toInt()}');
+    }
+    await openSettings(tester);
+    final settingsState = tester.state(find.byType(SettingsScreen));
+    await tester.tap(find.byKey(const ValueKey('language-en')));
+    await tester.runAsync(() async => tester.pump());
+    await tester.pumpAndSettle();
+    expect(tester.state(find.byType(SettingsScreen)), same(settingsState));
+    expect(tester.state(find.byType(AppShell)), same(shellState));
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('sidebar reloads reopened views without stacking routes', (
+    tester,
+  ) async {
+    mobileSize(tester, const Size(390, 844));
+    var reads = 0;
+    await launch(
+      tester,
+      handler: (request) async {
+        switch (request.url.path) {
+          case '/auth/login':
+            return jsonResponse({'token': 'account-token'});
+          case '/account':
+            return jsonResponse(accountUsers);
+          case '/auth':
+            return jsonResponse({'token': userToken()});
+          case '/posts':
+            reads++;
+            return jsonResponse(posts);
+          default:
+            return jsonResponse({}, 404);
+        }
+      },
+    );
+    await login(tester);
+    await selectBuilding(tester);
+    final state = tester.state(find.byType(HomeScreen));
+    await tester.tap(find.byKey(const ValueKey('menu-/home')));
+    await tester.pumpAndSettle();
+    expect(reads, 1);
+    expect(tester.state(find.byType(HomeScreen)), same(state));
+    await tester.tap(find.byKey(const ValueKey('menu-/residents')));
+    await tester.pumpAndSettle();
+    expect(tester.state(find.byType(HomeScreen)), same(state));
+    await openSettings(tester);
+    expect(
+      Navigator.of(tester.element(find.byType(SettingsScreen))).canPop(),
+      isFalse,
+    );
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    expect(find.byType(HomeScreen), findsOneWidget);
+    expect(tester.state(find.byType(HomeScreen)), isNot(same(state)));
+    expect(reads, 2);
+    expect(find.byType(AppShell), findsOneWidget);
+    expect(
+      tester
+          .widget<Semantics>(find.byKey(const ValueKey('menu-/home')))
+          .properties
+          .selected,
+      isTrue,
+    );
+  });
+
+  testWidgets(
+    'compact navigation supports keyboard, semantics and short height',
+    (tester) async {
+      mobileSize(tester, const Size(390, 844));
+      final semantics = tester.ensureSemantics();
+      await launch(tester);
+      await login(tester);
+      await selectBuilding(tester);
+      final settings = find.byKey(const ValueKey('menu-/settings'));
+      expect(
+        tester.getSemantics(settings),
+        matchesSemantics(
+          label: 'Configurações',
+          isButton: true,
+          hasEnabledState: true,
+          isEnabled: true,
+          hasSelectedState: true,
+          hasTapAction: true,
+        ),
+      );
+      final button = find.descendant(
+        of: settings,
+        matching: find.byType(TextButton),
+      );
+      Focus.of(
+        tester.element(
+          find.descendant(of: button, matching: find.byType(Icon)),
+        ),
+      ).requestFocus();
+      await tester.pump();
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pumpAndSettle();
+      expect(find.byType(SettingsScreen), findsOneWidget);
+      tester.view.viewInsets = const FakeViewPadding(bottom: 500);
+      addTearDown(tester.view.resetViewInsets);
+      await tester.pumpAndSettle();
+      final signOut = find.byKey(const Key('menu-sign-out'));
+      await tester.ensureVisible(signOut);
+      await tester.pumpAndSettle();
+      expect(tester.getSize(signOut).height, greaterThanOrEqualTo(48));
+      expect(tester.getSize(signOut).width, greaterThanOrEqualTo(48));
+      expect(signOut.hitTestable(), findsOneWidget);
+      expect(tester.takeException(), isNull);
+      semantics.dispose();
+    },
+  );
 
   for (final language in ['pt', 'en', 'es']) {
     testWidgets('$language main flow fits 320px with double text size', (

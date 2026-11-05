@@ -52,6 +52,7 @@ Future<void> mount(
           baseUrl: 'https://example.test',
         ),
         sessionStorage: storage,
+        userDataStorage: FakeUserDataStorage(),
         coreService: CoreService(
           ApiClient(client: coreClient, baseUrl: 'https://core.example.test'),
         ),

@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:front_flutter/helpers/preferences_storage.dart';
 import 'package:front_flutter/helpers/session_storage.dart';
+import 'package:front_flutter/helpers/user_data_storage.dart';
 
 class FakeSessionStorage implements SessionStorage {
   String? token;
@@ -39,10 +40,41 @@ class FakeSessionStorage implements SessionStorage {
   Future<String?> readUserToken() async => userToken;
 
   @override
+  Future<void> clearUserToken() async {
+    if (failClear) throw StateError('storage unavailable');
+    userToken = null;
+  }
+
+  @override
   Future<void> clearSession() async {
     if (failClear) throw StateError('storage unavailable');
     token = null;
     userToken = null;
+  }
+}
+
+class FakeUserDataStorage implements UserDataStorage {
+  Map<String, dynamic>? data;
+  bool failWrite = false;
+  bool failClear = false;
+  int writes = 0;
+  Completer<void>? pendingWrite;
+
+  @override
+  Future<Map<String, dynamic>?> readUserData() async => data;
+
+  @override
+  Future<void> saveUserData(Map<String, dynamic> value) async {
+    writes++;
+    if (pendingWrite != null) await pendingWrite!.future;
+    if (failWrite) throw StateError('storage unavailable');
+    data = jsonDecode(jsonEncode(value)) as Map<String, dynamic>;
+  }
+
+  @override
+  Future<void> clearUserData() async {
+    if (failClear) throw StateError('storage unavailable');
+    data = null;
   }
 }
 

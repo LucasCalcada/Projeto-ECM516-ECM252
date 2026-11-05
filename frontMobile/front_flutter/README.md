@@ -23,6 +23,8 @@ lib/
 │   ├── core_service.dart        # Listagem e seleção dos vínculos
 │   ├── communication_service.dart # Avisos e eventos do usuário
 │   ├── preferences_storage.dart # Idioma persistido
+│   ├── load_user_data.dart      # Decodificação, validação e persistência do vínculo
+│   ├── user_data_storage.dart   # Dados locais de apresentação em JSON
 │   └── session_storage.dart     # Tokens da conta e do vínculo
 ├── lang/
 │   ├── login_localizations.dart # Delegate de localização
@@ -31,7 +33,7 @@ lib/
 │   ├── en/
 │   └── es/
 ├── layouts/auth_layout.dart     # Layout adaptável e rolagem com teclado
-├── layouts/app_shell.dart       # Barra superior, drawer e expiração da sessão
+├── layouts/app_shell.dart       # Sidebar permanente, view ativa e expiração da sessão
 ├── routes/app_routes.dart       # Nomes das rotas
 ├── routes/menu_destination.dart # Destinos, disponibilidade e permissões
 ├── types/                       # Conta, sessão, posts e falhas tipadas
@@ -85,16 +87,31 @@ flutter run -d chrome --dart-define=APP_LANGUAGE=es
 - Salva o token da conta em `accountToken`, usando `flutter_secure_storage`.
 - Aguarda a gravação antes de listar os vínculos por `GET /account`.
 - Seleciona o vínculo por `GET /auth?userId=...`, usando o token de conta,
-  valida o formato e a identidade das claims recebidas e salva o `userToken`.
-- Só abre a Home depois de persistir o token de usuário. A identidade do
-  condomínio, a residência e as permissões são derivadas desse token.
-- A opção Sair remove os dois tokens e limpa a pilha de navegação.
+  e passa o JWT retornado ao helper `loadUserData`. Ele decodifica uma vez,
+  valida identidade, condomínio e expiração, salva `userToken` no armazenamento
+  protegido e os dados de apresentação no armazenamento local.
+- Só abre a Home depois de concluir ambas as gravações. Em caso de falha, tenta
+  remover o token de vínculo e os dados locais parciais; mantém `accountToken`
+  para permitir nova tentativa na seleção.
+- A opção Sair remove os dois tokens, os dados locais do usuário e a pilha de navegação.
 - A senha não é persistida pelo aplicativo. O gerenciador de senhas do sistema pode oferecer autofill.
 - A navegação protege seleção, Home e Configurações contra acesso direto.
 - O aplicativo começa no login; ainda não há restauração automática ou renovação
-  de sessão. Um novo login descarta o token de vínculo anterior.
+  de sessão. Um novo login bem-sucedido descarta o token de vínculo e os dados locais anteriores.
 - HTTP 401, expiração do token durante o uso e retomada do aplicativo com token
   expirado retornam ao login. HTTP 403 apresenta uma mensagem de falta de acesso.
+
+O JSON fica na chave `hive.userData`, via `SharedPreferencesAsync`: `localStorage`
+no Flutter web e armazenamento de preferências da plataforma nos aplicativos
+nativos. Contém `userId`, `buildingId`, `buildingName`, `residencyId`,
+`residencyName`, `permissions`, `tokenKind`, `iat` e `exp`, quando presentes no JWT.
+Nulos, listas e números são preservados; os tokens não são duplicados nesse JSON.
+Uma seleção substitui o objeto inteiro e a expiração também o remove. O idioma
+fica separado e sobrevive ao logout.
+
+As views recebem `UserSession` em memória para acesso imediato aos dados tipados,
+sem ler o armazenamento ou decodificar o token durante `build`. O JSON persistido
+não restaura uma sessão ao reabrir o aplicativo e não é fonte de autorização.
 
 As claims do JWT são usadas para apresentação. A verificação da assinatura e
 a autorização das operações são responsabilidade dos serviços.
@@ -107,11 +124,25 @@ a autorização das operações são responsabilidade dos serviços.
 - Uma única rolagem contém as duas seções. Os textos podem ser expandidos.
 - Atualização por gesto ou botão, carregamento, listas vazias e falhas com nova
   tentativa têm estados próprios. Uma atualização que falha preserva os posts.
-- O menu identifica o condomínio e destaca a página ativa.
+- A sidebar permanece visível: 240 unidades lógicas com ícones e textos em
+  janelas a partir de 1024; abaixo disso, 64 com ícones, tooltips e rótulos
+  acessíveis. Identifica o condomínio e destaca a view ativa.
+- O `AppShell` mantém a navegação e troca apenas a view da main box, sem empilhar
+  seções. Sidebar e conteúdo compartilham a mesma superfície contínua, sem margem
+  externa, contorno, recorte arredondado ou linhas divisórias no shell. O padding
+  interno das views, a área segura e o ajuste ao teclado são preservados.
+  Login e seleção de condomínio ficam fora do shell.
+- Reabrir uma seção recria a view e consulta os dados novamente; selecionar a
+  seção atual, redimensionar ou trocar o idioma preserva a instância ativa.
+- Voltar fecha primeiro formulário/detalhe de Reclamações, depois retorna à Home.
+  Na Home, segue a saída normal da plataforma. Rascunhos exigem confirmação ao
+  sair e envios em andamento bloqueiam a navegação. Mensagens locais ficam
+  dentro do painel, mantendo a sidebar acessível.
 - Home, Configurações e Reclamações estão disponíveis. Moradores, Reservas, Encomendas e
   Acessos aparecem indisponíveis até a migração dessas telas.
 - A regra de permissão aceita qualquer permissão exigida ou `@core:admin`,
-  como no web. Itens sem permissão mostram cadeado e explicação.
+  como no web. Itens sem permissão ficam desabilitados e explicam o motivo no
+  texto, tooltip e rótulo acessível.
 
 ## Plataformas
 
@@ -128,7 +159,8 @@ a autorização das operações são responsabilidade dos serviços.
 - Linux: consulte os pré-requisitos de libsecret do plugin antes do build nativo.
 
 Documentação das dependências: [HTTP](https://pub.dev/packages/http),
-[armazenamento](https://pub.dev/packages/flutter_secure_storage) e
+[tokens](https://pub.dev/packages/flutter_secure_storage),
+[preferências locais](https://pub.dev/packages/shared_preferences) e
 [localização](https://docs.flutter.dev/ui/internationalization).
 
 ## Verificar
@@ -144,7 +176,10 @@ Os testes usam respostas HTTP simuladas e armazenamento em memória. Eles cobrem
 validação, contrato da API, falhas, prevenção de envios duplicados, gravação antes
 da navegação, saída, descarte da tela durante uma requisição, proteção das rotas,
 permissões, classificação dos posts, expiração, atualização com falha e idioma
-persistido. Os layouts são exercitados em telas de 320 pixels com texto ampliado
+persistido. `user_data_storage_test.dart` cobre JSON, isolamento da chave,
+substituição do vínculo, rejeição de tokens inválidos e limpeza após gravações
+parciais. Os testes de fluxo cobrem a espera pelas duas gravações e a ausência
+de restauração automática. Os layouts são exercitados em telas de 320 pixels com texto ampliado
 nos três idiomas.
 
 Para gerar imagens locais de inspeção a partir dos testes de widgets:

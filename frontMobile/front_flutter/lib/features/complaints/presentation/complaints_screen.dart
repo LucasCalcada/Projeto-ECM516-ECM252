@@ -17,6 +17,7 @@ class ComplaintsScreen extends StatefulWidget {
     this.languageCode,
     this.onSessionExpired,
     this.onSignIn,
+    this.shellManaged = false,
     super.key,
   });
   final ComplaintAccess access;
@@ -25,6 +26,7 @@ class ComplaintsScreen extends StatefulWidget {
   final String? languageCode;
   final VoidCallback? onSessionExpired;
   final VoidCallback? onSignIn;
+  final bool shellManaged;
 
   @override
   State<ComplaintsScreen> createState() => ComplaintsScreenState();
@@ -37,6 +39,7 @@ class ComplaintsScreenState extends State<ComplaintsScreen> {
   bool _showCreate = false;
   bool _dirty = false;
   bool _expiryNotified = false;
+  Future<bool>? _leaveRequest;
   ComplaintStrings get _strings =>
       ComplaintStrings.of(context, previewLanguage: widget.languageCode);
 
@@ -103,6 +106,17 @@ class ComplaintsScreenState extends State<ComplaintsScreen> {
   }
 
   Future<bool> confirmLeave() async {
+    if (_leaveRequest != null) return _leaveRequest!;
+    final request = _confirmLeave();
+    _leaveRequest = request;
+    try {
+      return await request;
+    } finally {
+      _leaveRequest = null;
+    }
+  }
+
+  Future<bool> _confirmLeave() async {
     if (_controller.isSubmitting) return false;
     if (!_dirty) return true;
     final strings = _strings;
@@ -126,6 +140,14 @@ class ComplaintsScreenState extends State<ComplaintsScreen> {
       _showDetail = false;
     });
     _controller.clearSelection();
+  }
+
+  /// Returns Home only after local form/detail navigation has finished.
+  Future<bool> handleShellBack() async {
+    if (_controller.isSubmitting) return true;
+    if (!_showCreate && !_showDetail && !_dirty) return false;
+    await _back();
+    return true;
   }
 
   Future<void> _select(Complaint complaint) async {
@@ -200,18 +222,21 @@ class ComplaintsScreenState extends State<ComplaintsScreen> {
           }
           return PopScope(
             canPop:
-                !_showDetail &&
-                !_showCreate &&
-                !_dirty &&
-                !_controller.isSubmitting,
+                widget.shellManaged ||
+                (!_showDetail &&
+                    !_showCreate &&
+                    !_dirty &&
+                    !_controller.isSubmitting),
             onPopInvokedWithResult: (didPop, result) {
-              if (!didPop) unawaited(_back());
+              if (!didPop && !widget.shellManaged) unawaited(_back());
             },
             child: LayoutBuilder(
               builder: (context, constraints) {
                 final gutter = constraints.maxWidth < 768 ? 16.0 : 32.0;
                 return ColoredBox(
-                  color: HiveColors.canvas,
+                  color: widget.shellManaged
+                      ? HiveColors.surface
+                      : HiveColors.canvas,
                   child: SingleChildScrollView(
                     key: PageStorageKey(
                       'complaints-${widget.access.sessionIdentity}',
@@ -470,8 +495,12 @@ class ComplaintsScreenState extends State<ComplaintsScreen> {
         for (final item in _controller.items) ...[
           Material(
             key: ValueKey('complaint-item-${item.id}'),
-            color: HiveColors.surface,
-            borderRadius: BorderRadius.circular(8),
+            color: HiveColors.canvas,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+              side: const BorderSide(color: HiveColors.raised),
+            ),
+            clipBehavior: Clip.antiAlias,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -533,11 +562,20 @@ class ComplaintsScreenState extends State<ComplaintsScreen> {
                     ),
                   ),
                 ),
-                if (_showDetail && _controller.selected?.id == item.id)
+                if (_showDetail && _controller.selected?.id == item.id) ...[
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: Divider(
+                      height: 1,
+                      thickness: 1,
+                      color: HiveColors.raised,
+                    ),
+                  ),
                   KeyedSubtree(
                     key: ValueKey('complaint-expanded-${item.id}'),
                     child: _detail(context, strings),
                   ),
+                ],
               ],
             ),
           ),
@@ -565,6 +603,7 @@ class ComplaintsScreenState extends State<ComplaintsScreen> {
       return _feedback(
         strings.failure(_controller.detailFailure),
         error: true,
+        backgroundColor: Colors.transparent,
         action: selected == null
             ? null
             : TextButton(
@@ -708,8 +747,9 @@ class _ComplaintDetailState extends State<_ComplaintDetail> {
     final controller = widget.controller;
     final strings = widget.strings;
     final busy = controller.isSubmitting || controller.isDetailLoading;
-    return _panel(
-      Column(
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           if (controller.isDetailLoading) const LinearProgressIndicator(),
@@ -739,14 +779,14 @@ class _ComplaintDetailState extends State<_ComplaintDetail> {
           Text(
             '${strings.text('updatedAt')} ${strings.date(item.updatedAt, context: context)}',
           ),
-          const SizedBox(height: 24),
+          _detailDivider,
           Text(
             strings.text('report'),
             style: Theme.of(context).textTheme.titleLarge,
           ),
           const SizedBox(height: 12),
           SelectableText(item.description),
-          const SizedBox(height: 24),
+          _detailDivider,
           Text(
             strings.text('responseTitle'),
             style: Theme.of(context).textTheme.titleLarge,
@@ -770,7 +810,7 @@ class _ComplaintDetailState extends State<_ComplaintDetail> {
             ),
             const SizedBox(height: 16),
           ],
-          const SizedBox(height: 24),
+          _detailDivider,
           Text(
             strings.text('history'),
             style: Theme.of(context).textTheme.titleLarge,
@@ -789,14 +829,21 @@ class _ComplaintDetailState extends State<_ComplaintDetail> {
             ),
           if (item.status == ComplaintStatus.closed) ...[
             const SizedBox(height: 24),
-            _feedback(strings.text('closedMessage')),
+            _feedback(
+              strings.text('closedMessage'),
+              backgroundColor: Colors.transparent,
+            ),
           ],
           if (controller.mutationFailed) ...[
             const SizedBox(height: 16),
-            _feedback(strings.failure(controller.mutationFailure), error: true),
+            _feedback(
+              strings.failure(controller.mutationFailure),
+              error: true,
+              backgroundColor: Colors.transparent,
+            ),
           ],
           if (controller.canAct) ...[
-            const SizedBox(height: 24),
+            _detailDivider,
             if (controller.canRespond)
               Form(
                 key: _form,
@@ -1058,13 +1105,20 @@ class _CreateFormState extends State<_CreateForm> {
   }
 }
 
-Widget _panel(Widget child) => DecoratedBox(
-  decoration: BoxDecoration(
-    color: HiveColors.surface,
-    borderRadius: BorderRadius.circular(8),
-  ),
-  child: Padding(padding: const EdgeInsets.all(16), child: child),
+const _detailDivider = Divider(
+  height: 33,
+  thickness: 1,
+  color: HiveColors.raised,
 );
+
+Widget _panel(Widget child, {Color backgroundColor = HiveColors.surface}) =>
+    DecoratedBox(
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Padding(padding: const EdgeInsets.all(16), child: child),
+    );
 Widget _empty(
   String title,
   String body, {
@@ -1086,37 +1140,42 @@ Widget _empty(
     ],
   ),
 );
-Widget _feedback(String message, {bool error = false, Widget? action}) =>
-    Semantics(
-      liveRegion: true,
-      child: _panel(
-        Column(
+Widget _feedback(
+  String message, {
+  bool error = false,
+  Widget? action,
+  Color backgroundColor = HiveColors.surface,
+}) => Semantics(
+  liveRegion: true,
+  child: _panel(
+    backgroundColor: backgroundColor,
+    Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Icon(
-                  error ? Icons.error_outline : Icons.info_outline,
-                  color: error ? HiveColors.danger : HiveColors.secondary,
-                  size: 20,
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    message,
-                    style: TextStyle(
-                      color: error ? HiveColors.danger : HiveColors.body,
-                    ),
-                  ),
-                ),
-              ],
+            Icon(
+              error ? Icons.error_outline : Icons.info_outline,
+              color: error ? HiveColors.danger : HiveColors.secondary,
+              size: 20,
             ),
-            ?action,
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                message,
+                style: TextStyle(
+                  color: error ? HiveColors.danger : HiveColors.body,
+                ),
+              ),
+            ),
           ],
         ),
-      ),
-    );
+        ?action,
+      ],
+    ),
+  ),
+);
 
 Future<bool> _confirm(
   BuildContext context,
