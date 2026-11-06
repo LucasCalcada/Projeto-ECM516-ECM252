@@ -12,6 +12,7 @@ import 'helpers/core_service.dart';
 import 'helpers/preferences_storage.dart';
 import 'helpers/session_storage.dart';
 import 'helpers/user_data_storage.dart';
+import 'helpers/visitor_service.dart';
 import 'lang/app_localizations.dart';
 import 'lang/login_localizations.dart';
 import 'layouts/app_shell.dart';
@@ -24,6 +25,7 @@ import 'views/complaints.dart';
 import 'views/home.dart';
 import 'views/login.dart';
 import 'views/settings.dart';
+import 'views/visitor_access.dart';
 
 class HiveApp extends StatefulWidget {
   const HiveApp({
@@ -60,6 +62,7 @@ class _HiveAppState extends State<HiveApp> {
   late final AuthService _authService;
   late final CoreService _coreService;
   late final CommunicationService _communicationService;
+  late final VisitorService _visitorService;
   late final SessionStorage _sessionStorage;
   late final UserDataStorage _userDataStorage;
   late final PreferencesStorage _preferencesStorage;
@@ -88,6 +91,9 @@ class _HiveAppState extends State<HiveApp> {
         CommunicationService(
           ApiClient(client: _client, baseUrl: AppConfig.communicationUrl),
         );
+    _visitorService = VisitorService(
+      ApiClient(client: _client, baseUrl: AppConfig.visitorUrl),
+    );
     _locale = widget.locale ?? const Locale(AppConfig.language);
     if (widget.locale == null) _loadLanguage();
   }
@@ -202,6 +208,15 @@ class _HiveAppState extends State<HiveApp> {
             screenKey.currentState?.handleShellBack() ?? Future.value(false),
       );
     }
+    if (route == AppRoutes.visitorAccess) {
+      return AppShellView(
+        child: VisitorAccessView(
+          session: session,
+          service: _visitorService,
+          onSessionExpired: _expireSession,
+        ),
+      );
+    }
     return AppShellView(
       child: route == AppRoutes.settings
           ? SettingsScreen(onLanguageChanged: _changeLanguage)
@@ -244,7 +259,8 @@ class _HiveAppState extends State<HiveApp> {
         }
         if (route == AppRoutes.home ||
             route == AppRoutes.settings ||
-            route == AppRoutes.complaints) {
+            route == AppRoutes.complaints ||
+            route == AppRoutes.visitorAccess) {
           return AppShell(
             session: session!,
             initialRoute: route,

@@ -27,6 +27,11 @@ abstract final class AppConfig {
     return configured.isNotEmpty ? configured : 'http://$_host:8007';
   }
 
+  static String get visitorUrl {
+    const configured = String.fromEnvironment('VISITOR_URL');
+    return configured.isNotEmpty ? configured : 'http://$_host:8003';
+  }
+
   static String get _host =>
       !kIsWeb && defaultTargetPlatform == TargetPlatform.android
       ? '10.0.2.2'
