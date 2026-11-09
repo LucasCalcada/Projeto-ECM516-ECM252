@@ -2,14 +2,15 @@ import BadRequest from '@app/middlewares/error/errors/BadRequest';
 import { Context } from '@app/middlewares/routeWrapper';
 import { Request } from 'express';
 import { MANAGE_COMMUNICATION_POSTS_PERMISSION, requirePermission } from '@app/helpers/permissions';
-import { createPostForRecipients, parsePostPayload } from '@app/helpers/posts';
+import { createPost as createPostForResidencies, parsePostPayload } from '@app/helpers/posts';
 
+// Without residencyIds the post is delivered to the whole building.
 export default async function createPost(req: Request, ctx: Context) {
   requirePermission(ctx, [MANAGE_COMMUNICATION_POSTS_PERMISSION]);
 
-  const { title, description, recipientUserIds, eventAt } = parsePostPayload(req.body);
+  const { title, description, residencyIds, eventAt } = parsePostPayload(req.body);
 
-  if (!title || !description || recipientUserIds.length === 0) {
+  if (!title || !description) {
     throw BadRequest;
   }
 
@@ -17,12 +18,12 @@ export default async function createPost(req: Request, ctx: Context) {
     throw BadRequest;
   }
 
-  return createPostForRecipients({
+  return createPostForResidencies({
     buildingId: ctx.auth.buildingId,
     authorUserId: ctx.auth.userId,
     title,
     description,
-    recipientUserIds,
+    residencyIds,
     eventAt,
   });
 }

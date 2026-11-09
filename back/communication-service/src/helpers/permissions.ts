@@ -6,8 +6,8 @@ export const MANAGE_COMMUNICATION_POSTS_PERMISSION = '@communication:post:manage
 
 export function requirePermission(ctx: Context, permissions: string[]) {
   const userPermissions = ctx.auth.permissions;
-  const allowedPermissions = ['@core:admin', userPermissions];
-  const hasPermission = _.intersection(permissions, allowedPermissions).length > 0;
+  const allowedPermissions = ['@core:admin', ...permissions];
+  const hasPermission = _.intersection(allowedPermissions, userPermissions).length > 0;
 
   if (!hasPermission) {
     throw Unauthorized;
