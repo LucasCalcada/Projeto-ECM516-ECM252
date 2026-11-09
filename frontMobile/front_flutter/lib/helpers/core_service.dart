@@ -1,5 +1,6 @@
 import '../types/account_user.dart';
 import '../types/api_failure.dart';
+import '../types/residency_group.dart';
 import '../types/user_session.dart';
 import 'api_client.dart';
 
@@ -44,6 +45,24 @@ class CoreService {
     } on TypeError {
       throw const ApiException(ApiFailure.invalidResponse);
     } on ArgumentError {
+      throw const ApiException(ApiFailure.invalidResponse);
+    }
+  }
+
+  /// Residencies of the session's building, used to address notifications.
+  Future<List<ResidencyGroup>> listResidencies(UserSession session) async {
+    if (session.isExpired) {
+      throw const ApiException(ApiFailure.unauthorized);
+    }
+    final result = await api.get(
+      '/building/${Uri.encodeComponent(session.buildingId)}/details',
+      token: session.token,
+    );
+    try {
+      return ResidencyGroup.listFromBuildingDetails(result);
+    } on FormatException {
+      throw const ApiException(ApiFailure.invalidResponse);
+    } on TypeError {
       throw const ApiException(ApiFailure.invalidResponse);
     }
   }

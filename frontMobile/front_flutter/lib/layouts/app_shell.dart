@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../components/navigation/app_drawer.dart';
 import '../lang/app_localizations.dart';
 import '../routes/app_routes.dart';
+import '../routes/menu_destination.dart';
 import '../types/api_failure.dart';
 import '../types/user_session.dart';
 
@@ -93,7 +94,12 @@ class _AppShellState extends State<AppShell> with WidgetsBindingObserver {
       appBar: AppBar(
         title: Text(
           strings.text(
-            widget.route == AppRoutes.settings ? 'menu.settings' : 'menu.home',
+            MenuDestination.entries
+                .firstWhere(
+                  (entry) => entry.route == widget.route,
+                  orElse: () => MenuDestination.entries.first,
+                )
+                .label,
           ),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,

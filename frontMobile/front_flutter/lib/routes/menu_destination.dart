@@ -29,6 +29,12 @@ class MenuDestination {
       available: true,
     ),
     MenuDestination(
+      AppRoutes.notifications,
+      'menu.notifications',
+      Icons.notifications_outlined,
+      available: true,
+    ),
+    MenuDestination(
       '/residents',
       'menu.residents',
       Icons.people_outline,

@@ -19,6 +19,7 @@ import 'types/user_session.dart';
 import 'views/building_selector.dart';
 import 'views/home.dart';
 import 'views/login.dart';
+import 'views/notifications.dart';
 import 'views/settings.dart';
 
 class HiveApp extends StatefulWidget {
@@ -193,19 +194,30 @@ class _HiveAppState extends State<HiveApp> {
             onSessionExpired: _expireSession,
           );
         }
-        if (route == AppRoutes.home || route == AppRoutes.settings) {
+        if (route == AppRoutes.home ||
+            route == AppRoutes.notifications ||
+            route == AppRoutes.settings) {
           return AppShell(
             session: session!,
             route: route,
             onSignOut: _signOut,
             onSessionExpired: _expireSession,
-            child: route == AppRoutes.settings
-                ? SettingsScreen(onLanguageChanged: _changeLanguage)
-                : HomeScreen(
-                    service: _communicationService,
-                    session: session,
-                    onSessionExpired: _expireSession,
-                  ),
+            child: switch (route) {
+              AppRoutes.settings => SettingsScreen(
+                onLanguageChanged: _changeLanguage,
+              ),
+              AppRoutes.notifications => NotificationsScreen(
+                service: _communicationService,
+                coreService: _coreService,
+                session: session,
+                onSessionExpired: _expireSession,
+              ),
+              _ => HomeScreen(
+                service: _communicationService,
+                session: session,
+                onSessionExpired: _expireSession,
+              ),
+            },
           );
         }
         return Login(
