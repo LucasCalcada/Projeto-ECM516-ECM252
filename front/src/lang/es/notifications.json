@@ -1,0 +1,63 @@
+{
+  "views": {
+    "inbox": {
+      "label": "Recibidas",
+      "title": "Mis notificaciones"
+    },
+    "create": {
+      "label": "Nueva",
+      "title": "Nueva notificación"
+    },
+    "manage": {
+      "label": "Gestionar",
+      "title": "Notificaciones del edificio"
+    }
+  },
+  "audience": {
+    "building": "Todo el edificio",
+    "myResidency": "Tu residencia",
+    "unknownResidency": "Residencia eliminada",
+    "options": {
+      "building": "Todo el edificio",
+      "residencies": "Residencias específicas"
+    }
+  },
+  "list": {
+    "empty": "No se encontraron notificaciones.",
+    "createdAt": "Enviada el {{date}}",
+    "delete": "Eliminar",
+    "deleting": "Eliminando...",
+    "confirmDelete": "¿Eliminar la notificación \"{{title}}\"?",
+    "toast": {
+      "listError": "No se pudieron cargar las notificaciones.",
+      "deleteTitle": "Notificación eliminada",
+      "deleteMessage": "La notificación fue eliminada.",
+      "deleteError": "No se pudo eliminar la notificación."
+    }
+  },
+  "form": {
+    "title": "Título",
+    "titlePlaceholder": "Ej.: Mantenimiento del ascensor",
+    "descriptionPlaceholder": "Escribe el mensaje para los residentes",
+    "eventAt": "Fecha del evento (opcional)",
+    "eventAtHint": "Con fecha, la notificación también aparece en el calendario.",
+    "audience": "Destinatarios",
+    "residencies": "Residencias",
+    "selectedCount_one": "{{count}} seleccionada",
+    "selectedCount_other": "{{count}} seleccionadas",
+    "selectGroup": "Seleccionar todas",
+    "unselectGroup": "Limpiar",
+    "noResidencies": "No se encontraron residencias.",
+    "submitting": "Enviando...",
+    "submit": "Enviar notificación",
+    "toast": {
+      "requiredTitle": "Campos obligatorios",
+      "requiredMessage": "Indica el título y la descripción.",
+      "residenciesRequired": "Selecciona al menos una residencia.",
+      "loadResidenciesError": "No se pudieron cargar las residencias.",
+      "successTitle": "Notificación enviada",
+      "successMessage": "Los destinatarios ya pueden ver la notificación.",
+      "createError": "No se pudo enviar la notificación."
+    }
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "views": {
+    "inbox": {
+      "label": "Recebidas",
+      "title": "Minhas notificações"
+    },
+    "create": {
+      "label": "Nova",
+      "title": "Nova notificação"
+    },
+    "manage": {
+      "label": "Gerenciar",
+      "title": "Notificações do prédio"
+    }
+  },
+  "audience": {
+    "building": "Todo o prédio",
+    "myResidency": "Sua residência",
+    "unknownResidency": "Residência removida",
+    "options": {
+      "building": "Todo o prédio",
+      "residencies": "Residências específicas"
+    }
+  },
+  "list": {
+    "empty": "Nenhuma notificação encontrada.",
+    "createdAt": "Enviada em {{date}}",
+    "delete": "Excluir",
+    "deleting": "Excluindo...",
+    "confirmDelete": "Excluir a notificação \"{{title}}\"?",
+    "toast": {
+      "listError": "Não foi possível carregar as notificações.",
+      "deleteTitle": "Notificação excluída",
+      "deleteMessage": "A notificação foi removida.",
+      "deleteError": "Não foi possível excluir a notificação."
+    }
+  },
+  "form": {
+    "title": "Título",
+    "titlePlaceholder": "Ex.: Manutenção do elevador",
+    "descriptionPlaceholder": "Escreva a mensagem para os moradores",
+    "eventAt": "Data do evento (opcional)",
+    "eventAtHint": "Com data, a notificação também aparece no calendário.",
+    "audience": "Destinatários",
+    "residencies": "Residências",
+    "selectedCount_one": "{{count}} selecionada",
+    "selectedCount_other": "{{count}} selecionadas",
+    "selectGroup": "Selecionar todas",
+    "unselectGroup": "Limpar",
+    "noResidencies": "Nenhuma residência encontrada.",
+    "submitting": "Enviando...",
+    "submit": "Enviar notificação",
+    "toast": {
+      "requiredTitle": "Campos obrigatórios",
+      "requiredMessage": "Informe o título e a descrição.",
+      "residenciesRequired": "Selecione ao menos uma residência.",
+      "loadResidenciesError": "Não foi possível carregar as residências.",
+      "successTitle": "Notificação enviada",
+      "successMessage": "Os destinatários já podem ver a notificação.",
+      "createError": "Não foi possível enviar a notificação."
+    }
+  }
+}

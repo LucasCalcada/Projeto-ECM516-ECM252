@@ -2,6 +2,7 @@
   "sidebar": {
     "routes": {
       "home": "Home",
+      "notifications": "Notifications",
       "residents": "Residents",
       "reservations": "Reservations",
       "portaria": "Concierge",
