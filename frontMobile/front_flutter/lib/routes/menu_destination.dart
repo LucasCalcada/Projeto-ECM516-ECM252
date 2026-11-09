@@ -56,9 +56,10 @@ class MenuDestination {
       ],
     ),
     MenuDestination(
-      '/visitor-access',
+      AppRoutes.visitorAccess,
       'menu.visitorAccess',
       Icons.shield_outlined,
+      available: true,
       permissions: ['@visitor:view', '@visitor:create'],
     ),
     MenuDestination(

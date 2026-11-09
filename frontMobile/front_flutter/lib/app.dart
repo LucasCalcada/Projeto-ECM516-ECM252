@@ -13,6 +13,7 @@ import 'helpers/packages_service.dart';
 import 'helpers/preferences_storage.dart';
 import 'helpers/session_storage.dart';
 import 'helpers/user_data_storage.dart';
+import 'helpers/visitor_service.dart';
 import 'lang/app_localizations.dart';
 import 'lang/login_localizations.dart';
 import 'layouts/app_shell.dart';
@@ -26,6 +27,7 @@ import 'views/home.dart';
 import 'views/login.dart';
 import 'views/packages.dart';
 import 'views/settings.dart';
+import 'views/visitor_access.dart';
 
 class HiveApp extends StatefulWidget {
   const HiveApp({
@@ -64,6 +66,7 @@ class _HiveAppState extends State<HiveApp> {
   late final AuthService _authService;
   late final CoreService _coreService;
   late final CommunicationService _communicationService;
+  late final VisitorService _visitorService;
   late final SessionStorage _sessionStorage;
   late final UserDataStorage _userDataStorage;
   late final PreferencesStorage _preferencesStorage;
@@ -94,6 +97,9 @@ class _HiveAppState extends State<HiveApp> {
         CommunicationService(
           ApiClient(client: _client, baseUrl: AppConfig.communicationUrl),
         );
+    _visitorService = VisitorService(
+      ApiClient(client: _client, baseUrl: AppConfig.visitorUrl),
+    );
     _locale = widget.locale ?? const Locale(AppConfig.language);
     if (widget.locale == null) _loadLanguage();
   }
@@ -209,12 +215,20 @@ class _HiveAppState extends State<HiveApp> {
             screenKey.currentState?.handleShellBack() ?? Future.value(false),
       );
     }
+<<<<<<< HEAD
     if (route == AppRoutes.packages) {
       return AppShellView(
         child: PackagesView(
           session: session,
           service: _packagesService ??=
               widget.packagesService ?? InMemoryPackagesService(),
+=======
+    if (route == AppRoutes.visitorAccess) {
+      return AppShellView(
+        child: VisitorAccessView(
+          session: session,
+          service: _visitorService,
+>>>>>>> ebcfba2c6ddbbd60c336a94b3a42d28cb22f1e9e
           onSessionExpired: _expireSession,
         ),
       );
@@ -261,8 +275,13 @@ class _HiveAppState extends State<HiveApp> {
         }
         if (route == AppRoutes.home ||
             route == AppRoutes.settings ||
+<<<<<<< HEAD
             route == AppRoutes.packages ||
             route == AppRoutes.complaints) {
+=======
+            route == AppRoutes.complaints ||
+            route == AppRoutes.visitorAccess) {
+>>>>>>> ebcfba2c6ddbbd60c336a94b3a42d28cb22f1e9e
           return AppShell(
             session: session!,
             initialRoute: route,
