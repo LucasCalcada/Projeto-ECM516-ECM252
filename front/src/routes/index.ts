@@ -34,6 +34,8 @@ const routes: RouteConfig[] = [
     viewComponent: Notifications,
     layout: 'sidebar',
     visible: true,
+    permissions: ['@communication:post:manage'],
+    hideWithoutPermission: true,
     display: {
       labelKey: 'sidebar.routes.notifications',
       icon: Bell,

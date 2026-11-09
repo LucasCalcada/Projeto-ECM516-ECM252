@@ -1,38 +1,9 @@
 {
-  "views": {
-    "inbox": {
-      "label": "Received",
-      "title": "My notifications"
-    },
-    "create": {
-      "label": "New",
-      "title": "New notification"
-    },
-    "manage": {
-      "label": "Manage",
-      "title": "Building notifications"
-    }
-  },
+  "title": "New notification",
   "audience": {
-    "building": "Whole building",
-    "myResidency": "Your residence",
-    "unknownResidency": "Removed residence",
     "options": {
       "building": "Whole building",
       "residencies": "Specific residences"
-    }
-  },
-  "list": {
-    "empty": "No notifications found.",
-    "createdAt": "Sent on {{date}}",
-    "delete": "Delete",
-    "deleting": "Deleting...",
-    "confirmDelete": "Delete the notification \"{{title}}\"?",
-    "toast": {
-      "listError": "Could not load notifications.",
-      "deleteTitle": "Notification deleted",
-      "deleteMessage": "The notification was removed.",
-      "deleteError": "Could not delete the notification."
     }
   },
   "form": {

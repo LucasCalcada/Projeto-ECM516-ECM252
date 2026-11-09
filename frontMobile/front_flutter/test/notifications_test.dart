@@ -11,6 +11,8 @@ import 'package:front_flutter/helpers/core_service.dart';
 import 'package:front_flutter/types/api_failure.dart';
 import 'package:front_flutter/types/communication_post.dart';
 import 'package:front_flutter/types/user_session.dart';
+import 'package:front_flutter/routes/app_routes.dart';
+import 'package:front_flutter/views/home.dart';
 import 'package:front_flutter/views/notifications.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
@@ -92,8 +94,6 @@ Future<void> openNotifications(
         return jsonResponse({'token': userToken(permissions: permissions)});
       case ('GET', '/posts'):
         return jsonResponse([buildingPosts.first]);
-      case ('GET', '/posts/admin'):
-        return jsonResponse(buildingPosts);
       case ('GET', '/building/building-1/details'):
         return jsonResponse(buildingDetails);
       case ('POST', '/posts'):
@@ -103,8 +103,6 @@ Future<void> openNotifications(
           'id': 'created',
           'createdAt': '2026-11-01T12:00:00Z',
         });
-      case ('DELETE', '/posts/residency-post'):
-        return jsonResponse(buildingPosts.last);
       default:
         return jsonResponse({}, 404);
     }
@@ -138,8 +136,10 @@ Future<void> openNotifications(
   await tester.pumpAndSettle();
   await tester.tap(find.byIcon(Icons.menu));
   await tester.pumpAndSettle();
-  await tester.tap(find.byKey(const ValueKey('menu-/notifications')));
-  await tester.pumpAndSettle();
+  if (find.byKey(const ValueKey('menu-/notifications')).evaluate().isNotEmpty) {
+    await tester.tap(find.byKey(const ValueKey('menu-/notifications')));
+    await tester.pumpAndSettle();
+  }
 }
 
 void main() {
@@ -203,22 +203,6 @@ void main() {
       expect(post.residencyIds, ['ap-101']);
     });
 
-    test('building listing and delete use the management routes', () async {
-      final calls = <String>[];
-      final service = CommunicationService(
-        api((request) async {
-          calls.add('${request.method} ${request.url.path}');
-          return jsonResponse(
-            request.method == 'GET' ? buildingPosts : buildingPosts.last,
-          );
-        }),
-      );
-      final listed = await service.listBuildingPosts(session);
-      await service.deletePost(session, 'residency-post');
-      expect(listed, hasLength(2));
-      expect(calls, ['GET /posts/admin', 'DELETE /posts/residency-post']);
-    });
-
     test('missing permission is reported as an authorization failure', () {
       final service = CommunicationService(
         api((_) async => http.Response('', 401)),
@@ -245,24 +229,30 @@ void main() {
     });
   });
 
-  testWidgets('residents only see the notifications addressed to them', (
+  testWidgets('residents do not see or open the notifications screen', (
     tester,
   ) async {
     final requests = <http.Request>[];
-    await openNotifications(tester, permissions: [], requests: requests);
-
-    expect(find.byType(NotificationsScreen), findsOneWidget);
-    expect(find.byKey(const Key('notification-modes')), findsNothing);
-    expect(find.text('Assembleia geral'), findsOneWidget);
-    expect(find.text('Todo o prédio'), findsOneWidget);
-    expect(find.byKey(const ValueKey('delete-building-post')), findsNothing);
-    expect(
-      requests.map((request) => request.url.path),
-      isNot(contains('/posts/admin')),
+    await openNotifications(
+      tester,
+      permissions: ['@reservation:create'],
+      requests: requests,
     );
+
+    // The entry is hidden instead of shown locked.
+    expect(find.byKey(const ValueKey('menu-/notifications')), findsNothing);
+    expect(find.byKey(const ValueKey('menu-/residents')), findsOneWidget);
+    expect(find.byType(NotificationsScreen), findsNothing);
+    // Routing directly is also redirected to Home.
+    await tester.tapAt(const Offset(380, 400));
+    await tester.pumpAndSettle();
+    Navigator.of(tester.element(find.byType(HomeScreen)))
+        .pushNamed(AppRoutes.notifications);
+    await tester.pumpAndSettle();
+    expect(find.byType(NotificationsScreen), findsNothing);
   });
 
-  testWidgets('managers create residency notifications and delete them', (
+  testWidgets('admins create notifications for specific residencies', (
     tester,
   ) async {
     final requests = <http.Request>[];
@@ -271,10 +261,8 @@ void main() {
       permissions: [managePermission],
       requests: requests,
     );
-    expect(find.byKey(const Key('notification-modes')), findsOneWidget);
 
-    await tester.tap(find.text('Nova'));
-    await tester.pumpAndSettle();
+    expect(find.byType(NotificationsScreen), findsOneWidget);
     await tester.tap(find.byKey(const Key('submit-notification')));
     await tester.pumpAndSettle();
     expect(find.text('Informe o título e a descrição.'), findsNWidgets(2));
@@ -315,23 +303,5 @@ void main() {
     expect((body['residencyIds'] as List).toSet(), {'ap-101', 'ap-102'});
     expect(body['eventAt'], isNull);
     expect(find.text('Notificação enviada.'), findsOneWidget);
-
-    await tester.tap(find.text('Gerenciar'));
-    await tester.pumpAndSettle();
-    expect(find.text('Apartamento 101A, Apartamento 102A'), findsOneWidget);
-    await tester.tap(find.byKey(const ValueKey('delete-residency-post')));
-    await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('confirm-delete')));
-    await tester.pumpAndSettle();
-    expect(
-      requests.any(
-        (request) =>
-            request.method == 'DELETE' &&
-            request.url.path == '/posts/residency-post',
-      ),
-      isTrue,
-    );
-    expect(find.text('Obra no apartamento'), findsNothing);
-    expect(find.text('Assembleia geral'), findsOneWidget);
   });
 }

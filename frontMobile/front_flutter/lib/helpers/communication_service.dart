@@ -13,10 +13,6 @@ class CommunicationService {
   Future<List<CommunicationPost>> listPosts(UserSession session) =>
       _list('/posts', session);
 
-  /// Every notification of the building. Requires `@communication:post:manage`.
-  Future<List<CommunicationPost>> listBuildingPosts(UserSession session) =>
-      _list('/posts/admin', session);
-
   /// An empty [residencyIds] sends the notification to the whole building.
   Future<CommunicationPost> createPost(
     UserSession session, {
@@ -37,14 +33,6 @@ class CommunicationService {
       },
     );
     return _parse(() => CommunicationPost.fromJson(result));
-  }
-
-  Future<void> deletePost(UserSession session, String postId) async {
-    _ensureActive(session);
-    await api.delete(
-      '/posts/${Uri.encodeComponent(postId)}',
-      token: session.token,
-    );
   }
 
   Future<List<CommunicationPost>> _list(

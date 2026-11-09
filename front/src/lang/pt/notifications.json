@@ -1,38 +1,9 @@
 {
-  "views": {
-    "inbox": {
-      "label": "Recebidas",
-      "title": "Minhas notificações"
-    },
-    "create": {
-      "label": "Nova",
-      "title": "Nova notificação"
-    },
-    "manage": {
-      "label": "Gerenciar",
-      "title": "Notificações do prédio"
-    }
-  },
+  "title": "Nova notificação",
   "audience": {
-    "building": "Todo o prédio",
-    "myResidency": "Sua residência",
-    "unknownResidency": "Residência removida",
     "options": {
       "building": "Todo o prédio",
       "residencies": "Residências específicas"
-    }
-  },
-  "list": {
-    "empty": "Nenhuma notificação encontrada.",
-    "createdAt": "Enviada em {{date}}",
-    "delete": "Excluir",
-    "deleting": "Excluindo...",
-    "confirmDelete": "Excluir a notificação \"{{title}}\"?",
-    "toast": {
-      "listError": "Não foi possível carregar as notificações.",
-      "deleteTitle": "Notificação excluída",
-      "deleteMessage": "A notificação foi removida.",
-      "deleteError": "Não foi possível excluir a notificação."
     }
   },
   "form": {

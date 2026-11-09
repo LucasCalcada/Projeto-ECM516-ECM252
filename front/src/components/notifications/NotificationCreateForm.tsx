@@ -5,7 +5,8 @@ import { useToast } from '../Toast';
 import useService from '../../helpers/useService';
 import useResidencies from '../../helpers/useResidencies';
 import ResidencyPicker from './ResidencyPicker';
-import type { NotificationAudience } from './types';
+
+type NotificationAudience = 'building' | 'residencies';
 
 const inputClass =
   'w-full rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm text-neutral-100';

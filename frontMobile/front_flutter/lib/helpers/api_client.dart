@@ -28,9 +28,6 @@ class ApiClient {
     required Object body,
   }) => _send('POST', path, token: token, body: body);
 
-  Future<Object?> delete(String path, {required String token}) =>
-      _send('DELETE', path, token: token);
-
   Future<Object?> _send(
     String method,
     String path, {

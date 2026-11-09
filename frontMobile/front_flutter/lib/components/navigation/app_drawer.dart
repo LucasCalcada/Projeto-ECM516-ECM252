@@ -68,7 +68,8 @@ class AppDrawer extends StatelessWidget {
                       BuildingHeader(session: session),
                       const Divider(),
                       for (final destination in MenuDestination.entries)
-                        if (destination.route != AppRoutes.settings)
+                        if (destination.route != AppRoutes.settings &&
+                            destination.isVisibleTo(session))
                           entry(destination),
                     ],
                   ),

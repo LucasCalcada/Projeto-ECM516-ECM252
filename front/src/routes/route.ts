@@ -17,6 +17,8 @@ export type VisibleRouteConfig = RouteConfigBase & {
   visible: true;
   display: RouteDisplay;
   permissions?: string[];
+  // Hide the entry instead of showing it locked when permissions are missing.
+  hideWithoutPermission?: boolean;
 };
 
 export type RouteConfig =
