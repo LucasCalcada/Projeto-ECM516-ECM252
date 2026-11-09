@@ -9,6 +9,7 @@ import 'helpers/api_client.dart';
 import 'helpers/auth_service.dart';
 import 'helpers/communication_service.dart';
 import 'helpers/core_service.dart';
+import 'helpers/packages_service.dart';
 import 'helpers/preferences_storage.dart';
 import 'helpers/session_storage.dart';
 import 'helpers/user_data_storage.dart';
@@ -23,6 +24,7 @@ import 'views/building_selector.dart';
 import 'views/complaints.dart';
 import 'views/home.dart';
 import 'views/login.dart';
+import 'views/packages.dart';
 import 'views/settings.dart';
 
 class HiveApp extends StatefulWidget {
@@ -37,6 +39,7 @@ class HiveApp extends StatefulWidget {
     this.client,
     this.locale,
     this.complaintsRepositoryFactory,
+    this.packagesService,
   });
 
   final AuthService? authService;
@@ -48,6 +51,7 @@ class HiveApp extends StatefulWidget {
   final http.Client? client;
   final Locale? locale;
   final ComplaintsRepository Function(UserSession)? complaintsRepositoryFactory;
+  final PackagesService? packagesService;
 
   @override
   State<HiveApp> createState() => _HiveAppState();
@@ -68,6 +72,8 @@ class _HiveAppState extends State<HiveApp> {
   bool _expiring = false;
   int _languageRevision = 0;
   UserSession? _session;
+  // Packages are kept in memory for the selected membership only.
+  PackagesService? _packagesService;
 
   @override
   void initState() {
@@ -149,6 +155,7 @@ class _HiveAppState extends State<HiveApp> {
       return;
     }
     _session = session;
+    _packagesService = null;
     _navigator.currentState!.pushNamedAndRemoveUntil(
       AppRoutes.home,
       (_) => false,
@@ -202,6 +209,16 @@ class _HiveAppState extends State<HiveApp> {
             screenKey.currentState?.handleShellBack() ?? Future.value(false),
       );
     }
+    if (route == AppRoutes.packages) {
+      return AppShellView(
+        child: PackagesView(
+          session: session,
+          service: _packagesService ??=
+              widget.packagesService ?? InMemoryPackagesService(),
+          onSessionExpired: _expireSession,
+        ),
+      );
+    }
     return AppShellView(
       child: route == AppRoutes.settings
           ? SettingsScreen(onLanguageChanged: _changeLanguage)
@@ -244,6 +261,7 @@ class _HiveAppState extends State<HiveApp> {
         }
         if (route == AppRoutes.home ||
             route == AppRoutes.settings ||
+            route == AppRoutes.packages ||
             route == AppRoutes.complaints) {
           return AppShell(
             session: session!,

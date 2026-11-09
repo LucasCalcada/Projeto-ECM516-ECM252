@@ -45,9 +45,10 @@ class MenuDestination {
       ],
     ),
     MenuDestination(
-      '/packages',
+      AppRoutes.packages,
       'menu.packages',
       Icons.inventory_2_outlined,
+      available: true,
       permissions: [
         '@delivery:create',
         '@delivery:view:building',

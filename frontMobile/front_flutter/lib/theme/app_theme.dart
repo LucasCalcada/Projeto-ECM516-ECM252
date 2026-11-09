@@ -10,6 +10,7 @@ abstract final class HiveColors {
   static const body = Color(0xFFD4D4D4);
   static const secondary = Color(0xFFA1A1A1);
   static const primary = Color(0xFF53EAFD);
+  static const success = Color(0xFF05DF72);
   static const warning = Color(0xFFFDC700);
   static const danger = Color(0xFFFF6467);
 }
