@@ -102,4 +102,26 @@ export const userData: UserInsert[] = [
     permissions: [AdminPermission],
     active: true,
   },
+
+  // Bosque Verde: administrador e morador, cada um em uma residência
+
+  {
+    id: ids.users.roberto,
+    accountId: ids.accounts.roberto,
+    residencyId: ids.residencies.casa02,
+    buildingId: ids.buildings.bosque,
+    name: 'Roberto Lima',
+    permissions: [AdminPermission],
+    active: true,
+  },
+
+  {
+    id: ids.users.juliana,
+    accountId: ids.accounts.juliana,
+    residencyId: ids.residencies.casa10,
+    buildingId: ids.buildings.bosque,
+    name: 'Juliana Costa',
+    permissions: commonUserPermissions,
+    active: true,
+  },
 ];
