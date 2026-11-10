@@ -23,7 +23,7 @@ function NavEntry(props: NavEntryProps) {
   const enabled = props.route.permissions ? hasPermission(props.route.permissions) : true;
 
   const content = (
-    <div className="flex items-center gap-2 p-1 px-3">
+    <div className="flex min-h-11 items-center gap-2 px-3 py-2">
       <route.display.icon size="16"></route.display.icon>
       <p className="select-none">{t(route.display.labelKey)}</p>
       {enabled ? null : <LucideLock className="ml-auto" size={16} />}
@@ -40,11 +40,12 @@ function NavEntry(props: NavEntryProps) {
 }
 
 export default function SideNav() {
+  const { t } = useTranslation();
   const visibleRoutes: VisibleRouteConfig[] = routes
     .filter((r): r is VisibleRouteConfig => r.visible)
     .filter((r) => !r.hideWithoutPermission || !r.permissions || hasPermission(r.permissions));
   return (
-    <nav className="flex flex-col gap-2">
+    <nav className="flex flex-col gap-2" aria-label={t('sidebar.navigation')}>
       {visibleRoutes.map((r: RouteConfig) => (
         <NavEntry key={r.path} route={r as VisibleRouteConfig} />
       ))}

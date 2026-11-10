@@ -1,4 +1,4 @@
-import { BrowserRouter, Navigate, Outlet, Route, Routes } from 'react-router';
+import { createBrowserRouter, Navigate, Outlet, Route, RouterProvider, Routes } from 'react-router';
 import routes from './routes';
 import SidebarLayout from './layouts/sidebarLayout';
 import type { RouteConfig } from './routes/route';
@@ -28,7 +28,7 @@ function RequireUserAuth() {
   return <Outlet />;
 }
 
-function App() {
+function AppRoutes() {
   const sidebarViews = routes.filter((r) => r.layout == 'sidebar').map(CreateRouteEntry);
 
   const publicViews = routes
@@ -38,17 +38,22 @@ function App() {
   const accountViews = routes.filter((r) => r.path === '/buildingSelector').map(CreateRouteEntry);
 
   return (
+    <Routes>
+      <Route path="/" element={<Navigate to="/login" replace />} />
+      <Route>{publicViews}</Route>
+      <Route element={<RequireAccountAuth />}>{accountViews}</Route>
+      <Route element={<RequireUserAuth />}>
+        <Route element={<SidebarLayout />}>{sidebarViews}</Route>
+      </Route>
+    </Routes>
+  );
+}
+const router = createBrowserRouter([{ path: '*', element: <AppRoutes /> }]);
+if (import.meta.hot) import.meta.hot.dispose(() => router.dispose());
+function App() {
+  return (
     <ToastProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Navigate to="/login" replace />} />
-          <Route>{publicViews}</Route>
-          <Route element={<RequireAccountAuth />}>{accountViews}</Route>
-          <Route element={<RequireUserAuth />}>
-            <Route element={<SidebarLayout />}>{sidebarViews}</Route>
-          </Route>
-        </Routes>
-      </BrowserRouter>
+      <RouterProvider router={router} />
     </ToastProvider>
   );
 }

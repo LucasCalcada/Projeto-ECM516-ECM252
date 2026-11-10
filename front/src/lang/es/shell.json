@@ -1,5 +1,8 @@
 {
   "sidebar": {
+    "navigation": "Navegación principal",
+    "openMenu": "Abrir menú",
+    "closeMenu": "Cerrar menú",
     "routes": {
       "home": "Inicio",
       "notifications": "Notificaciones",
@@ -8,6 +11,7 @@
       "portaria": "Porteria",
       "packages": "Paquetes",
       "visitorAccess": "Accesos",
+      "complaints": "Reclamaciones",
       "settings": "Configuración"
     },
     "options": {

@@ -6,6 +6,7 @@ import {
   Settings as SettingsIcon,
   PackageIcon,
   Bell,
+  MessageSquareWarning,
 } from 'lucide-react';
 import Home from '../views/Home';
 import Residents from '../views/Residents';
@@ -15,8 +16,10 @@ import Settings from '../views/Settings';
 import Packages from '../views/Packages';
 import VisitorAccess from '../views/VisitorAccess';
 import Notifications from '../views/Notifications';
+import Complaints from '../views/Complaints';
 import BuildingSelector from '../views/BuildingSelector.tsx';
 import type { RouteConfig } from './route';
+import { complaintPermissions } from '../types/Complaint';
 
 const routes: RouteConfig[] = [
   {
@@ -98,6 +101,14 @@ const routes: RouteConfig[] = [
       labelKey: 'sidebar.routes.settings',
       icon: SettingsIcon,
     },
+  },
+  {
+    path: '/complaints',
+    permissions: [...complaintPermissions],
+    viewComponent: Complaints,
+    layout: 'sidebar',
+    visible: true,
+    display: { labelKey: 'sidebar.routes.complaints', icon: MessageSquareWarning },
   },
   {
     path: '/login',

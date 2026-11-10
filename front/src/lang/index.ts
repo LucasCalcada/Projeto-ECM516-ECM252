@@ -16,6 +16,7 @@ i18n.use(initReactI18next).init({
     'packages',
     'visitorAccess',
     'notifications',
+    'complaints',
     'common',
   ],
   defaultNS: 'shell',

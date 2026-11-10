@@ -48,6 +48,15 @@ Handler createApp({
     );
     return _json(200, complaints.map((c) => c.toJson(details: false)).toList());
   });
+  router.get('/complaints/residency', (Request request) async {
+    final actor = authenticate(request.headers['authorization'], jwtSecret);
+    final complaints = await service.list(
+      actor,
+      request.url.queryParameters,
+      mine: true,
+    );
+    return _json(200, complaints.map((c) => c.toJson(details: false)).toList());
+  });
   router.get('/complaints', (Request request) async {
     final actor = authenticate(request.headers['authorization'], jwtSecret);
     final complaints = await service.list(actor, request.url.queryParameters);

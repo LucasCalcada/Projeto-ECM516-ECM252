@@ -40,16 +40,16 @@ void main() {
         expect(actor.userId, _user);
         expect(actor.buildingId, _building);
         expect(actor.residencyId, _residency);
-        expect(actor.canManage, isFalse);
+        expect(actor.canViewBuilding, isFalse);
       }
     });
 
-    test('recognizes management permission and canonicalizes UUIDs', () {
+    test('recognizes building view permission and canonicalizes UUIDs', () {
       final claims = _claims()
         ..['residencyId'] = _residency.toUpperCase()
-        ..['permissions'] = [manageComplaintsPermission];
+        ..['permissions'] = [viewBuildingComplaintsPermission];
       final actor = authenticate(_sign(claims), _secret);
-      expect(actor.canManage, isTrue);
+      expect(actor.canViewBuilding, isTrue);
       expect(actor.residencyId, _residency);
     });
 

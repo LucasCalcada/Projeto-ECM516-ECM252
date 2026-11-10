@@ -5,6 +5,7 @@ interface AppConfig {
   reservationUrl: string;
   visitorAccessUrl: string;
   communicationUrl: string;
+  complaintUrl: string;
 }
 
 const config: AppConfig = {
@@ -14,6 +15,7 @@ const config: AppConfig = {
   reservationUrl: import.meta.env.VITE_RESERVATION_URL ?? 'http://localhost:8005',
   visitorAccessUrl: import.meta.env.VITE_VISITOR_URL ?? 'http://localhost:8003',
   communicationUrl: import.meta.env.VITE_COMMUNICATION_URL ?? 'http://localhost:8006',
+  complaintUrl: import.meta.env.VITE_COMPLAINT_URL ?? 'http://localhost:8007',
 };
 
 export default config;

@@ -56,5 +56,19 @@
   "errors.invalidResponse": "Could not load the received data.",
   "errors.storage": "Could not save changes on this device. Try again.",
   "errors.unexpected": "Could not complete the operation. Try again.",
-  "months": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+  "months": [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec"
+  ],
+  "menu.complaints": "Complaints"
 }

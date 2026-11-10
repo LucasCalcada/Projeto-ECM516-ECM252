@@ -56,5 +56,19 @@
   "errors.invalidResponse": "No se pudieron cargar los datos recibidos.",
   "errors.storage": "No se pudieron guardar los cambios en este dispositivo. Reinténtalo.",
   "errors.unexpected": "No se pudo completar la operación. Reinténtalo.",
-  "months": ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"]
+  "months": [
+    "Ene",
+    "Feb",
+    "Mar",
+    "Abr",
+    "May",
+    "Jun",
+    "Jul",
+    "Ago",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dic"
+  ],
+  "menu.complaints": "Reclamaciones"
 }

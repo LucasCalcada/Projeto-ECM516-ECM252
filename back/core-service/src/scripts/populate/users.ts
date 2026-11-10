@@ -9,6 +9,9 @@ import {
   DeliveryViewPermission,
   DeliveryListPermission,
   VisitorCreatePermission,
+  ComplaintCreatePermission,
+  ComplaintViewResidencyPermission,
+  ComplaintRespondResidencyPermission,
 } from '@app/permissions';
 
 const commonUserPermissions = [
@@ -16,6 +19,9 @@ const commonUserPermissions = [
   ReservationViewResidencyPermission,
   DeliveryViewPermission,
   VisitorCreatePermission,
+  ComplaintCreatePermission,
+  ComplaintViewResidencyPermission,
+  ComplaintRespondResidencyPermission,
 ];
 
 export const userData: UserInsert[] = [

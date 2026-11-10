@@ -20,49 +20,71 @@ class ApiClient {
     String path, {
     required String token,
     Map<String, String>? query,
-  }) => _send('GET', path, token: token, query: query);
+  }) => _request('GET', path, token: token, query: query);
 
   Future<Object?> post(
     String path, {
     required String token,
-    required Object body,
-  }) => _send('POST', path, token: token, body: body);
+    required Map<String, Object?> body,
+  }) => _request('POST', path, token: token, body: body);
 
-  Future<Object?> _send(
+  Future<Object?> patch(
+    String path, {
+    required String token,
+    required Map<String, Object?> body,
+  }) => _request('PATCH', path, token: token, body: body);
+
+  Future<Object?> _request(
     String method,
     String path, {
     required String token,
     Map<String, String>? query,
-    Object? body,
+    Map<String, Object?>? body,
   }) async {
     if (token.isEmpty) {
       throw const ApiException(ApiFailure.unauthorized);
     }
     try {
       final uri = Uri.parse('$baseUrl$path').replace(queryParameters: query);
-      final request = http.Request(method, uri)
-        ..headers.addAll({
-          'Authorization': 'Bearer $token',
-          'Accept': 'application/json',
-        });
-      if (body != null) {
-        request.headers['Content-Type'] = 'application/json; charset=utf-8';
-        request.body = jsonEncode(body);
+      final headers = {
+        'Authorization': 'Bearer $token',
+        'Accept': 'application/json',
+        if (body != null) 'Content-Type': 'application/json',
+      };
+      final response = await (switch (method) {
+        'POST' => client.post(uri, headers: headers, body: jsonEncode(body)),
+        'PATCH' => client.patch(uri, headers: headers, body: jsonEncode(body)),
+        _ => client.get(uri, headers: headers),
+      }).timeout(timeout);
+      String? code;
+      if (response.statusCode >= 400) {
+        try {
+          final value = jsonDecode(utf8.decode(response.bodyBytes));
+          if (value is Map && value['error'] is Map) {
+            final rawCode = (value['error'] as Map)['code'];
+            if (rawCode is String) code = rawCode;
+          }
+        } on FormatException {
+          /* Status still determines the failure. */
+        }
       }
-      final response = await http.Response.fromStream(
-        await client.send(request).timeout(timeout),
-      ).timeout(timeout);
+      Never fail(ApiFailure failure) => throw ApiException(
+        failure,
+        statusCode: response.statusCode,
+        code: code,
+      );
       if (response.statusCode == 401) {
-        throw const ApiException(ApiFailure.unauthorized);
+        fail(ApiFailure.unauthorized);
       }
       if (response.statusCode == 403) {
-        throw const ApiException(ApiFailure.forbidden);
+        fail(ApiFailure.forbidden);
       }
       if (response.statusCode >= 500) {
-        throw const ApiException(ApiFailure.server);
+        fail(ApiFailure.server);
       }
-      if (response.statusCode != 200 && response.statusCode != 201) {
-        throw const ApiException(ApiFailure.invalidResponse);
+      if (response.statusCode != 200 &&
+          !(method == 'POST' && response.statusCode == 201)) {
+        fail(ApiFailure.invalidResponse);
       }
       if (response.bodyBytes.isEmpty) return null;
       return jsonDecode(utf8.decode(response.bodyBytes));

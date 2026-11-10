@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../types/api_failure.dart';
+import 'complaint_messages.dart';
 
 class AppLocalizations {
   const AppLocalizations(this.messages);
@@ -38,7 +39,11 @@ class _AppLocalizationsDelegate
     final source = await rootBundle.loadString(
       'lib/lang/${locale.languageCode}/app.json',
     );
-    return AppLocalizations(jsonDecode(source) as Map<String, dynamic>);
+    return AppLocalizations({
+      ...jsonDecode(source) as Map<String, dynamic>,
+      for (final entry in complaintMessages[locale.languageCode]!.entries)
+        'complaints.${entry.key}': entry.value,
+    });
   }
 
   @override

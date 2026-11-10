@@ -18,3 +18,11 @@ export const VisitorCreatePermission = '@visitor:create';
 export const ReservationCreatePermission = '@reservation:create';
 export const ReservationViewResidencyPermission = '@reservation:view:residency';
 export const ReservationViewBuildingPermission = '@reservation:view:building';
+
+// Complaint Service
+export const ComplaintCreatePermission = '@complaint:create';
+export const ComplaintViewResidencyPermission = '@complaint:view:residency';
+export const ComplaintViewBuildingPermission = '@complaint:view:building';
+export const ComplaintUpdateStatusPermission = '@complaint:update:status';
+export const ComplaintRespondResidencyPermission = '@complaint:respond:residency';
+export const ComplaintRespondBuildingPermission = '@complaint:respond:building';
