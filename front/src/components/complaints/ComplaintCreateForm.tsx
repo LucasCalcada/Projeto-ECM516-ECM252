@@ -159,7 +159,7 @@ export default function ComplaintCreateForm({
           aria-describedby={`${id}-title-help${submitted && invalidTitle ? ` ${id}-title-error` : ''}`}
         />
         <p id={`${id}-title-help`} className="text-xs wrap-anywhere text-neutral-400">
-          {t('form.counter', { count: draft.title.length, max: 200 })}
+          {t('form.counter', { length: draft.title.length, max: 200 })}
         </p>
         {submitted && invalidTitle && (
           <p id={`${id}-title-error`} className="text-sm text-red-400">
@@ -207,7 +207,7 @@ export default function ComplaintCreateForm({
           aria-describedby={`${id}-description-help${submitted && invalidDescription ? ` ${id}-description-error` : ''}`}
         />
         <p id={`${id}-description-help`} className="text-xs wrap-anywhere text-neutral-400">
-          {t('form.counter', { count: draft.description.length, max: 10000 })}
+          {t('form.counter', { length: draft.description.length, max: 10000 })}
         </p>
         {submitted && invalidDescription && (
           <p id={`${id}-description-error`} className="text-sm text-red-400">

@@ -29,7 +29,7 @@ export default function SidebarLayout() {
           >
             <Menu size={24} aria-hidden="true" />
           </button>
-          <span>HiveApp</span>
+          <span>{t('sidebar.appName')}</span>
         </header>
         <main className="@container/app-content min-h-0 w-full min-w-0 flex-1 overflow-auto">
           <Outlet />

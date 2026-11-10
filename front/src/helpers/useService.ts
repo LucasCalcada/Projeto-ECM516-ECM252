@@ -1,7 +1,14 @@
 import axios, { type AxiosInstance } from 'axios';
 import config from '../config';
 
-type Service = 'auth' | 'core' | 'delivery' | 'visitor' | 'communication' | 'reservation' | 'complaint';
+type Service =
+  | 'auth'
+  | 'core'
+  | 'delivery'
+  | 'visitor'
+  | 'communication'
+  | 'reservation'
+  | 'complaint';
 
 const createAxios = (url: string) => {
   const instance = axios.create({
