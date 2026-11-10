@@ -24,6 +24,7 @@ export default defineConfig({
       'reservations:views.*',
       'shell:sidebar.routes.*',
       'visitorAccess:views.*',
+      'notifications:audience.options.*',
     ],
 
     sort: false,

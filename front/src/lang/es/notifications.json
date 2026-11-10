@@ -16,6 +16,7 @@
     "residencies": "Residencias",
     "selectedCount_one": "{{count}} seleccionada",
     "selectedCount_other": "{{count}} seleccionadas",
+    "selectedCount_many": "{{count}} seleccionadas",
     "selectGroup": "Seleccionar todas",
     "unselectGroup": "Limpiar",
     "noResidencies": "No se encontraron residencias.",
