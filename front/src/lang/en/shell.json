@@ -1,5 +1,6 @@
 {
   "sidebar": {
+    "appName": "HiveApp",
     "navigation": "Main navigation",
     "openMenu": "Open menu",
     "closeMenu": "Close menu",

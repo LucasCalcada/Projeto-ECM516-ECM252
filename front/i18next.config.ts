@@ -15,6 +15,11 @@ export default defineConfig({
 
     preservePatterns: [
       'calendar:months.*',
+      'complaints:category.*',
+      'complaints:errors.*',
+      'complaints:notices.*',
+      'complaints:scope.*',
+      'complaints:status.*',
       'packages:statusValue.*',
       'packages:views.*',
       'reservations:calendar.*',
