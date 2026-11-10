@@ -36,9 +36,7 @@ class AppDrawer extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
         child: ListTile(
           key: ValueKey('menu-${destination.route}'),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
           selectedTileColor: Theme.of(context).colorScheme.primary
               .withValues(alpha: 0.16),
           leading: Icon(destination.icon),
@@ -77,7 +75,12 @@ class AppDrawer extends StatelessWidget {
                     child: Column(
                       children: [
                         const Divider(),
-                        entry(MenuDestination.entries.last),
+                        entry(
+                          MenuDestination.entries.firstWhere(
+                            (destination) =>
+                                destination.route == AppRoutes.settings,
+                          ),
+                        ),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 12),
                           child: ListTile(

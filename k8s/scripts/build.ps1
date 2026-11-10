@@ -8,7 +8,7 @@ param(
 $ErrorActionPreference = 'Stop'
 $root = (Resolve-Path (Join-Path $PSScriptRoot '../..')).Path
 $services = @('auth-service', 'core-service', 'delivery-service', 'visitor-service',
-              'reservation-service', 'communication-service', 'event-bus', 'front')
+              'reservation-service', 'communication-service', 'complaint-service', 'event-bus', 'front')
 $images = @()
 foreach ($service in $services) {
     $folder = if ($service -eq 'front') { 'front' } else { "back/$service" }

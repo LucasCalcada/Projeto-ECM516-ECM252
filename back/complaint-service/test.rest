@@ -1,6 +1,6 @@
 @baseUrl = http://localhost:8007
 @residentToken = COLE_O_JWT_DE_USUARIO_MORADOR
-@adminToken = COLE_O_JWT_DE_USUARIO_COM_PERMISSAO_COMPLAINT_MANAGE
+@adminToken = COLE_O_JWT_COM_CORE_ADMIN_OU_PERMISSOES_GRANULARES
 @complaintId = COLE_O_ID_DA_RECLAMACAO
 
 ### Saúde do serviço (pública)
@@ -17,19 +17,26 @@ Content-Type: application/json
   "description": "Música alta na área comum após as 22h."
 }
 
-### RF03/RF06: minhas reclamações com filtros e paginação
-GET {{baseUrl}}/complaints/mine?status=aberta&category=barulho&limit=20&offset=0
+### RF03/RF06: reclamações da residência (complaint:view:residency)
+GET {{baseUrl}}/complaints/residency?status=aberta&category=barulho&limit=20&offset=0
 Authorization: Bearer {{residentToken}}
 
 ### RF05: reclamações do condomínio (administração)
 GET {{baseUrl}}/complaints?limit=20&offset=0
 Authorization: Bearer {{adminToken}}
 
-### RF04/RF10: detalhes, respostas e histórico (autor)
+### RF04/RF10: detalhes, respostas e histórico (leitor da residência)
 GET {{baseUrl}}/complaints/{{complaintId}}
 Authorization: Bearer {{residentToken}}
 
-### RF08: iniciar análise (administração)
+### RF07: responder pela residência (complaint:respond:residency)
+POST {{baseUrl}}/complaints/{{complaintId}}/responses
+Authorization: Bearer {{residentToken}}
+Content-Type: application/json
+
+{ "message": "O problema continua acontecendo na nossa residência." }
+
+### RF08: iniciar análise (complaint:update:status)
 PATCH {{baseUrl}}/complaints/{{complaintId}}/status
 Authorization: Bearer {{adminToken}}
 Content-Type: application/json

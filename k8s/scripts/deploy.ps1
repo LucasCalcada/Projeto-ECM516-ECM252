@@ -12,7 +12,7 @@ $kubeFile = (Resolve-Path -LiteralPath $Kubeconfig).Path
 $kubeArguments = @('--kubeconfig', $kubeFile, '--context', $Context)
 $overlay = (Resolve-Path (Join-Path $PSScriptRoot '../overlays/local')).Path
 $services = @('auth-service', 'core-service', 'delivery-service', 'visitor-service',
-              'reservation-service', 'communication-service', 'event-bus', 'front')
+              'reservation-service', 'communication-service', 'complaint-service', 'event-bus', 'front')
 $jobRun = [Guid]::NewGuid().ToString('N').Substring(0, 8)
 function Invoke-Kube {
     param([Parameter(ValueFromRemainingArguments = $true)][string[]]$Arguments)

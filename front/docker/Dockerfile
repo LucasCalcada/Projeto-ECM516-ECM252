@@ -21,7 +21,8 @@ ENV VITE_CORE_URL=/api/core \
     VITE_DELIVERY_URL=/api/delivery \
     VITE_VISITOR_URL=/api/visitor \
     VITE_RESERVATION_URL=/api/reservation \
-    VITE_COMMUNICATION_URL=/api/communication
+    VITE_COMMUNICATION_URL=/api/communication \
+    VITE_COMPLAINT_URL=/api/complaint
 RUN yarn build
 
 FROM nginx:1.28-alpine AS runtime

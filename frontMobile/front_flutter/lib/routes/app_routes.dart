@@ -3,4 +3,5 @@ abstract final class AppRoutes {
   static const account = '/account';
   static const home = '/home';
   static const settings = '/settings';
+  static const complaints = '/complaints';
 }

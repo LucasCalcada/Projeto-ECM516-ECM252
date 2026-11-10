@@ -16,6 +16,7 @@ class AppShell extends StatefulWidget {
     required this.child,
     required this.onSignOut,
     required this.onSessionExpired,
+    this.onBeforeNavigate,
   });
 
   final UserSession session;
@@ -23,6 +24,7 @@ class AppShell extends StatefulWidget {
   final Widget child;
   final Future<void> Function() onSignOut;
   final VoidCallback onSessionExpired;
+  final Future<bool> Function()? onBeforeNavigate;
 
   @override
   State<AppShell> createState() => _AppShellState();
@@ -56,9 +58,13 @@ class _AppShellState extends State<AppShell> with WidgetsBindingObserver {
     super.dispose();
   }
 
-  void _navigate(String route) {
+  Future<void> _navigate(String route) async {
     Navigator.of(context).pop(); // Close the drawer before changing pages.
     if (route == widget.route) return;
+    if (widget.onBeforeNavigate != null && !await widget.onBeforeNavigate!()) {
+      return;
+    }
+    if (!mounted) return;
     if (route == AppRoutes.home) {
       Navigator.of(context).popUntil((route) => route.isFirst);
     } else {
@@ -68,6 +74,10 @@ class _AppShellState extends State<AppShell> with WidgetsBindingObserver {
 
   Future<void> _signOut() async {
     if (_signingOut) return;
+    if (widget.onBeforeNavigate != null && !await widget.onBeforeNavigate!()) {
+      return;
+    }
+    if (!mounted) return;
     setState(() => _signingOut = true);
     try {
       await widget.onSignOut();
@@ -93,7 +103,11 @@ class _AppShellState extends State<AppShell> with WidgetsBindingObserver {
       appBar: AppBar(
         title: Text(
           strings.text(
-            widget.route == AppRoutes.settings ? 'menu.settings' : 'menu.home',
+            widget.route == AppRoutes.settings
+                ? 'menu.settings'
+                : widget.route == AppRoutes.complaints
+                ? 'menu.complaints'
+                : 'menu.home',
           ),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,

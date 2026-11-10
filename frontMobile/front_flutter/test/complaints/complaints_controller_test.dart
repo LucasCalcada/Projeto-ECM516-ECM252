@@ -9,7 +9,10 @@ import 'package:front_flutter/features/complaints/domain/complaints_repository.d
 ComplaintAccess _access({
   String userId = 'resident-a',
   String buildingId = 'building-a',
-  List<String> permissions = const [],
+  List<String> permissions = const [
+    '@complaint:create',
+    '@complaint:view:residency',
+  ],
   bool residentAccess = true,
   DateTime? expiresAt,
 }) => ComplaintAccess.fromSession(
@@ -17,6 +20,7 @@ ComplaintAccess _access({
   buildingId: buildingId,
   permissions: permissions,
   residentAccess: residentAccess,
+  residencyId: residentAccess ? 'residence-a' : null,
   expiresAt: expiresAt ?? DateTime.now().add(const Duration(hours: 1)),
 );
 
@@ -25,8 +29,8 @@ Complaint _complaint({
   ComplaintStatus status = ComplaintStatus.open,
 }) => Complaint(
   id: id,
-  protocol: 'REC-001',
-  subject: 'Iluminação da garagem',
+  residencyId: 'residence-a',
+  title: 'Iluminação da garagem',
   description: 'As lâmpadas do corredor estão apagadas.',
   createdAt: DateTime.utc(2026, 10, 25, 12),
   status: status,
@@ -34,36 +38,89 @@ Complaint _complaint({
 
 void main() {
   group('presentation access', () {
+    test('each grant authorizes only its own action and residence replies check the record', () {
+      for (final permission in complaintPermissions) {
+        final access = _access(permissions: [permission]);
+        expect(access.canCreate, permission == '@complaint:create');
+        expect(
+          access.canViewBuilding,
+          permission == '@complaint:view:building',
+        );
+        expect(
+          access.canViewResidency,
+          permission == '@complaint:view:residency',
+        );
+        expect(
+          access.canChangeStatus,
+          permission == '@complaint:update:status',
+        );
+        expect(
+          access.canRespondTo(_complaint()),
+          permission == '@complaint:respond:residency' ||
+              permission == '@complaint:respond:building',
+        );
+      }
+      final reply = _access(permissions: ['@complaint:respond:residency']);
+      final foreign = Complaint(
+        id: 'foreign',
+        residencyId: 'other-residence',
+        title: 'Outro',
+        description: 'Texto',
+        createdAt: DateTime.utc(2026),
+        status: ComplaintStatus.open,
+      );
+      expect(reply.canRespondTo(foreign), isFalse);
+      expect(_access(permissions: ['@complaint:manage']).canAccess, isFalse);
+      expect(
+        _access(
+          permissions: ['@complaint:create'],
+          residentAccess: false,
+        ).canCreate,
+        isTrue,
+      );
+    });
+
     test('resident reads and creates only in the personal scope', () {
       final access = _access();
       expect(access.isSignedIn, isTrue);
       expect(access.canRead, isTrue);
       expect(access.canCreate, isTrue);
-      expect(access.canManage, isFalse);
+      expect(access.canChangeStatus, isFalse);
       expect(access.scope, ComplaintScope.mine);
     });
 
-    test('only complaint manage enables building management', () {
-      final manager = _access(
-        permissions: ['@complaint:manage'],
-        residentAccess: false,
-      );
-      final coreAdmin = _access(
-        permissions: ['@core:admin'],
-        residentAccess: false,
-      );
-      expect(manager.canRead, isTrue);
-      expect(manager.canManage, isTrue);
-      expect(manager.canCreate, isFalse);
-      expect(manager.scope, ComplaintScope.building);
-      expect(_access(permissions: ['@complaint:manage']).canCreate, isFalse);
-      expect(coreAdmin.canRead, isFalse);
-      expect(coreAdmin.canManage, isFalse);
-    });
+    test(
+      'building grants are independent and core admin grants every action',
+      () {
+        final manager = _access(
+          permissions: [
+            '@complaint:view:building',
+            '@complaint:respond:building',
+            '@complaint:update:status',
+          ],
+          residentAccess: false,
+        );
+        final coreAdmin = _access(
+          permissions: ['@core:admin'],
+          residentAccess: false,
+        );
+        expect(manager.canRead, isTrue);
+        expect(manager.canChangeStatus, isTrue);
+        expect(manager.canCreate, isFalse);
+        expect(manager.scope, ComplaintScope.building);
+        expect(
+          _access(permissions: ['@complaint:view:building']).canCreate,
+          isFalse,
+        );
+        expect(coreAdmin.canRead, isTrue);
+        expect(coreAdmin.canChangeStatus, isTrue);
+        expect(coreAdmin.canCreate, isTrue);
+      },
+    );
 
     test('missing and expired sessions never grant actions', () {
       final expired = _access(
-        permissions: ['@complaint:manage'],
+        permissions: ['@core:admin'],
         expiresAt: DateTime.now().subtract(const Duration(minutes: 1)),
       );
       for (final access in [
@@ -75,7 +132,7 @@ void main() {
       ]) {
         expect(access.canRead, isFalse);
         expect(access.canCreate, isFalse);
-        expect(access.canManage, isFalse);
+        expect(access.canChangeStatus, isFalse);
       }
       expect(expired.isExpired, isTrue);
       expect(const ComplaintAccess.denied().isSignedIn, isTrue);
@@ -86,8 +143,8 @@ void main() {
       final expiry = DateTime.utc(2030);
       final access = _access(permissions: permissions, expiresAt: expiry);
       final originalIdentity = access.sessionIdentity;
-      permissions.add('@complaint:manage');
-      expect(access.canManage, isFalse);
+      permissions.add('@core:admin');
+      expect(access.canChangeStatus, isFalse);
       expect(access.sessionIdentity, originalIdentity);
       expect(
         _access(userId: 'resident-b', expiresAt: expiry).sessionIdentity,
@@ -116,7 +173,7 @@ void main() {
       () async {
         await controller.load();
         expect(repository.lastScope, ComplaintScope.mine);
-        controller.updateAccess(_access(permissions: ['@complaint:manage']));
+        controller.updateAccess(_access(permissions: ['@core:admin']));
         expect(controller.items, isEmpty);
         expect(repository.listCalls, 1);
         await controller.load();
@@ -157,7 +214,7 @@ void main() {
       'refresh failure preserves data and selection in the same session',
       () async {
         await controller.load();
-        controller.select('complaint-1');
+        await controller.select('complaint-1');
         repository.onList = (_) => Future.error(StateError('unavailable'));
         await controller.load();
         expect(controller.loadFailed, isTrue);
@@ -166,14 +223,11 @@ void main() {
       },
     );
 
-    test('resident and core admin cannot reply or close', () async {
-      for (final access in [
-        _access(),
-        _access(permissions: ['@core:admin']),
-      ]) {
+    test('resident cannot reply or close', () async {
+      for (final access in [_access()]) {
         controller.updateAccess(access);
         await controller.load();
-        controller.select('complaint-1');
+        await controller.select('complaint-1');
         expect(await controller.respond('Resposta'), isFalse);
         expect(await controller.close(), isFalse);
       }
@@ -184,12 +238,12 @@ void main() {
     test(
       'manager can respond and then close but cannot change closed items',
       () async {
-        controller.updateAccess(_access(permissions: ['@complaint:manage']));
+        controller.updateAccess(_access(permissions: ['@core:admin']));
         await controller.load();
-        controller.select('complaint-1');
+        await controller.select('complaint-1');
         expect(await controller.respond('  Será verificado.  '), isTrue);
         expect(repository.lastMessage, 'Será verificado.');
-        expect(controller.selected?.status, ComplaintStatus.answered);
+        expect(controller.selected?.status, ComplaintStatus.open);
         expect(
           controller.selected?.responses.single.message,
           'Será verificado.',
@@ -205,7 +259,7 @@ void main() {
 
     test('create trims text, inserts and selects the result', () async {
       expect(await controller.create('  Assunto  ', '  Descrição  '), isTrue);
-      expect(repository.lastSubject, 'Assunto');
+      expect(repository.lastTitle, 'Assunto');
       expect(repository.lastDescription, 'Descrição');
       expect(controller.items.single.id, 'created');
       expect(controller.selected?.id, 'created');
@@ -229,9 +283,9 @@ void main() {
     );
 
     test('failed mutation keeps selected data and permits a retry', () async {
-      controller.updateAccess(_access(permissions: ['@complaint:manage']));
+      controller.updateAccess(_access(permissions: ['@core:admin']));
       await controller.load();
-      controller.select('complaint-1');
+      await controller.select('complaint-1');
       repository.onRespond = () => Future.error(StateError('unavailable'));
       expect(await controller.respond('Rascunho'), isFalse);
       expect(controller.mutationFailed, isTrue);
@@ -272,7 +326,9 @@ void main() {
 
     test('an older list response cannot overwrite a new complaint', () async {
       final pending = Completer<List<Complaint>>();
-      repository.onList = (_) => pending.future;
+      repository.onList = (_) => repository.listCalls == 1
+          ? pending.future
+          : Future.value([_complaint(id: 'created')]);
       final previousLoad = controller.load();
       expect(await controller.create('Assunto', 'Descrição'), isTrue);
       pending.complete([_complaint(id: 'older-list')]);
@@ -341,7 +397,7 @@ class _FakeRepository implements ComplaintsRepository {
   int respondCalls = 0;
   int closeCalls = 0;
   ComplaintScope? lastScope;
-  String? lastSubject;
+  String? lastTitle;
   String? lastDescription;
   String? lastMessage;
   Future<List<Complaint>> Function(ComplaintScope scope)? onList;
@@ -350,7 +406,13 @@ class _FakeRepository implements ComplaintsRepository {
   Complaint _item = _complaint();
 
   @override
-  Future<List<Complaint>> list({required ComplaintScope scope}) {
+  Future<List<Complaint>> list({
+    required ComplaintScope scope,
+    ComplaintStatus? status,
+    String? category,
+    int limit = 20,
+    int offset = 0,
+  }) {
     listCalls++;
     lastScope = scope;
     return onList?.call(scope) ?? Future.value([_item]);
@@ -358,13 +420,16 @@ class _FakeRepository implements ComplaintsRepository {
 
   @override
   Future<Complaint> create({
-    required String subject,
+    required String title,
+    required String category,
     required String description,
   }) {
     createCalls++;
-    lastSubject = subject;
+    lastTitle = title;
     lastDescription = description;
-    return onCreate?.call() ?? Future.value(_complaint(id: 'created'));
+    if (onCreate != null) return onCreate!();
+    _item = _complaint(id: 'created');
+    return Future.value(_item);
   }
 
   @override
@@ -376,13 +441,26 @@ class _FakeRepository implements ComplaintsRepository {
     lastMessage = message;
     if (onRespond != null) return onRespond!();
     _item = _item.copyWith(
-      status: ComplaintStatus.answered,
+      status: ComplaintStatus.open,
       responses: [
         ..._item.responses,
         ComplaintResponse(message: message, createdAt: DateTime.now()),
       ],
     );
     return Future.value(_item);
+  }
+
+  @override
+  Future<Complaint> getDetail(String id) async => _item;
+
+  @override
+  Future<Complaint> changeStatus({
+    required String complaintId,
+    required ComplaintStatus status,
+  }) async {
+    if (status == ComplaintStatus.closed) closeCalls++;
+    _item = _item.copyWith(status: status);
+    return _item;
   }
 
   @override

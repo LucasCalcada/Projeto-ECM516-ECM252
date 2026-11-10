@@ -26,6 +26,8 @@ class MemoryComplaintRepository implements ComplaintRepository {
                   c.buildingId == query.buildingId &&
                   (query.residentUserId == null ||
                       c.residentUserId == query.residentUserId) &&
+                  (query.residencyId == null ||
+                      c.residencyId == query.residencyId) &&
                   (query.status == null || c.status == query.status) &&
                   (query.category == null || c.category == query.category),
             )
