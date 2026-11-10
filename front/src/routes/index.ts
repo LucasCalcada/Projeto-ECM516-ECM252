@@ -5,6 +5,7 @@ import {
   UserRound,
   Settings as SettingsIcon,
   PackageIcon,
+  Bell,
   MessageSquareWarning,
 } from 'lucide-react';
 import Home from '../views/Home';
@@ -14,6 +15,7 @@ import Reservations from '../views/Reservations';
 import Settings from '../views/Settings';
 import Packages from '../views/Packages';
 import VisitorAccess from '../views/VisitorAccess';
+import Notifications from '../views/Notifications';
 import Complaints from '../views/Complaints';
 import BuildingSelector from '../views/BuildingSelector.tsx';
 import type { RouteConfig } from './route';
@@ -28,6 +30,18 @@ const routes: RouteConfig[] = [
     display: {
       labelKey: 'sidebar.routes.home',
       icon: HomeIcon,
+    },
+  },
+  {
+    path: '/notifications',
+    viewComponent: Notifications,
+    layout: 'sidebar',
+    visible: true,
+    permissions: ['@communication:post:manage'],
+    hideWithoutPermission: true,
+    display: {
+      labelKey: 'sidebar.routes.notifications',
+      icon: Bell,
     },
   },
   {

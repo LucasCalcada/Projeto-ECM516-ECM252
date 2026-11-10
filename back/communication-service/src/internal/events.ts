@@ -1,13 +1,8 @@
 import config from '@app/config';
-import { createPostForRecipients } from '@app/helpers/posts';
+import { createPost } from '@app/helpers/posts';
 import BadRequest from '@app/middlewares/error/errors/BadRequest';
 import Unauthorized from '@app/middlewares/error/errors/Unauthorized';
 import { Express, Request } from 'express';
-
-interface ResidencyUser {
-  id: string;
-  name: string | null;
-}
 
 function validateInternalSecret(req: Request) {
   const secret = req.headers['x-internal-secret'];
@@ -43,37 +38,13 @@ function readPackageArrivedPayload(body: any) {
   };
 }
 
-async function getResidencyUserIds(buildingId: string, residencyId: string) {
-  const url = new URL(`${config.coreUrl}/internal/residencies/${residencyId}/users`);
-  url.searchParams.set('buildingId', buildingId);
-
-  const response = await fetch(url, {
-    headers: {
-      'X-Internal-Secret': config.internalSecret,
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error(`Core-service returned ${response.status} while fetching residency users`);
-  }
-
-  const users = (await response.json()) as ResidencyUser[];
-  return users.map((user) => user.id);
-}
-
 export default function setupInternalEventRoutes(app: Express) {
   app.post('/internal/events/package-arrived', async (req, res) => {
     validateInternalSecret(req);
 
     const event = readPackageArrivedPayload(req.body);
-    const recipientUserIds = await getResidencyUserIds(event.buildingId, event.residencyId);
 
-    if (recipientUserIds.length === 0) {
-      res.status(200).send({ message: 'No recipients found for package event' });
-      return;
-    }
-
-    const post = await createPostForRecipients({
+    const post = await createPost({
       buildingId: event.buildingId,
       authorUserId: event.authorUserId,
       title: 'Nova encomenda recebida',
@@ -81,7 +52,7 @@ export default function setupInternalEventRoutes(app: Express) {
         `A portaria recebeu uma encomenda para sua residencia: ${event.description}.`,
         `Codigo da encomenda: ${event.packageId}`,
       ].join('\n'),
-      recipientUserIds,
+      residencyIds: [event.residencyId],
       eventAt: null,
       skipDuplicate: true,
     });

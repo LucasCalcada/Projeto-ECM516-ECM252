@@ -41,7 +41,9 @@ function NavEntry(props: NavEntryProps) {
 
 export default function SideNav() {
   const { t } = useTranslation();
-  const visibleRoutes: VisibleRouteConfig[] = routes.filter((r) => r.visible);
+  const visibleRoutes: VisibleRouteConfig[] = routes
+    .filter((r): r is VisibleRouteConfig => r.visible)
+    .filter((r) => !r.hideWithoutPermission || !r.permissions || hasPermission(r.permissions));
   return (
     <nav className="flex flex-col gap-2" aria-label={t('sidebar.navigation')}>
       {visibleRoutes.map((r: RouteConfig) => (

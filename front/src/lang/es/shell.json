@@ -5,6 +5,7 @@
     "closeMenu": "Cerrar menú",
     "routes": {
       "home": "Inicio",
+      "notifications": "Notificaciones",
       "residents": "Residentes",
       "reservations": "Reservas",
       "portaria": "Porteria",

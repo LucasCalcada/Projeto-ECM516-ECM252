@@ -21,6 +21,7 @@ import 'types/user_session.dart';
 import 'views/building_selector.dart';
 import 'views/home.dart';
 import 'views/login.dart';
+import 'views/notifications.dart';
 import 'views/settings.dart';
 
 class HiveApp extends StatefulWidget {
@@ -207,6 +208,7 @@ class _HiveAppState extends State<HiveApp> {
           );
         }
         if (route == AppRoutes.home ||
+            route == AppRoutes.notifications ||
             route == AppRoutes.settings ||
             route == AppRoutes.complaints) {
           return AppShell(
@@ -219,28 +221,36 @@ class _HiveAppState extends State<HiveApp> {
                       complaintsKey.currentState?.confirmLeave() ??
                       Future.value(true)
                 : null,
-            child: route == AppRoutes.complaints
-                ? ComplaintsScreen(
-                    key: complaintsKey,
-                    access: ComplaintAccess.fromSession(
-                      userId: session.userId,
-                      buildingId: session.buildingId,
-                      permissions: session.permissions,
-                      expiresAt: session.expiresAt,
-                      residentAccess: session.residencyId?.isNotEmpty == true,
-                      residencyId: session.residencyId,
-                    ),
-                    repository: complaintsRepository!,
-                    buildingName: session.buildingName,
-                    onSessionExpired: _expireSession,
-                  )
-                : route == AppRoutes.settings
-                ? SettingsScreen(onLanguageChanged: _changeLanguage)
-                : HomeScreen(
-                    service: _communicationService,
-                    session: session,
-                    onSessionExpired: _expireSession,
-                  ),
+            child: switch (route) {
+              AppRoutes.complaints => ComplaintsScreen(
+                key: complaintsKey,
+                access: ComplaintAccess.fromSession(
+                  userId: session.userId,
+                  buildingId: session.buildingId,
+                  permissions: session.permissions,
+                  expiresAt: session.expiresAt,
+                  residentAccess: session.residencyId?.isNotEmpty == true,
+                  residencyId: session.residencyId,
+                ),
+                repository: complaintsRepository!,
+                buildingName: session.buildingName,
+                onSessionExpired: _expireSession,
+              ),
+              AppRoutes.settings => SettingsScreen(
+                onLanguageChanged: _changeLanguage,
+              ),
+              AppRoutes.notifications => NotificationsScreen(
+                service: _communicationService,
+                coreService: _coreService,
+                session: session,
+                onSessionExpired: _expireSession,
+              ),
+              _ => HomeScreen(
+                service: _communicationService,
+                session: session,
+                onSessionExpired: _expireSession,
+              ),
+            },
           );
         }
         return Login(

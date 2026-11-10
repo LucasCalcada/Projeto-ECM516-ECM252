@@ -1,7 +1,8 @@
 # HiveApp — Flutter
 
 Aplicativo Flutter com login, seleção de condomínio, menu lateral, Home com
-avisos e eventos, reclamações integradas à API e configurações de idioma.
+avisos e eventos, notificações, reclamações integradas à API e configurações
+de idioma.
 O código Dart fica em `lib`, com arquivos em `snake_case`.
 
 ## Estrutura
@@ -16,12 +17,13 @@ lib/
 ├── components/login_box/        # Logo, campos e botão
 ├── components/navigation/       # Menu lateral e identificação do condomínio
 ├── components/home/             # Seções, conteúdo expansível e data dos eventos
+├── components/notifications/    # Formulário e seletor de residências
 ├── components/shared/           # Feedback de erro, estado vazio e tentativa
 ├── helpers/
 │   ├── auth_service.dart        # Requisição HTTP e classificação de erros
 │   ├── api_client.dart          # GET/POST/PATCH autenticados, timeout e falhas HTTP
-│   ├── core_service.dart        # Listagem e seleção dos vínculos
-│   ├── communication_service.dart # Avisos e eventos do usuário
+│   ├── core_service.dart        # Vínculos e residências do prédio
+│   ├── communication_service.dart # Listagem (Home) e envio de notificações
 │   ├── preferences_storage.dart # Idioma persistido
 │   └── session_storage.dart     # Tokens da conta e do vínculo
 ├── lang/
@@ -39,6 +41,7 @@ lib/
     ├── login.dart               # Formulário e estados da tela
     ├── building_selector.dart   # Seleção do vínculo após o login
     ├── home.dart                # Avisos e calendário em uma única rolagem
+    ├── notifications.dart       # Envio de notificações (somente administradores)
     └── settings.dart            # Troca de idioma
 
 test/                           # Serviço, interface e traduções

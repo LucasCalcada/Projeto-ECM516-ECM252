@@ -16,23 +16,24 @@ export const posts = pgTable(
   (table) => [index('posts_building_id_idx').on(table.buildingId)],
 );
 
-export const postRecipients = pgTable(
-  'post_recipients',
+// A post without residencies targets the whole building.
+export const postResidencies = pgTable(
+  'post_residencies',
   {
     id: uuid('id').primaryKey().notNull().defaultRandom(),
     postId: uuid('post_id')
       .notNull()
       .references(() => posts.id, { onDelete: 'cascade' }),
-    userId: uuid('user_id').notNull(),
+    residencyId: uuid('residency_id').notNull(),
     createdAt: timestamp('created_at').defaultNow().notNull(),
   },
   (table) => [
-    uniqueIndex('post_recipients_post_id_user_id_idx').on(table.postId, table.userId),
-    index('post_recipients_user_id_idx').on(table.userId),
+    uniqueIndex('post_residencies_post_id_residency_id_idx').on(table.postId, table.residencyId),
+    index('post_residencies_residency_id_idx').on(table.residencyId),
   ],
 );
 
 export type Post = InferSelectModel<typeof posts>;
 export type PostInsert = InferInsertModel<typeof posts>;
-export type PostRecipient = InferSelectModel<typeof postRecipients>;
-export type PostRecipientInsert = InferInsertModel<typeof postRecipients>;
+export type PostResidency = InferSelectModel<typeof postResidencies>;
+export type PostResidencyInsert = InferInsertModel<typeof postResidencies>;

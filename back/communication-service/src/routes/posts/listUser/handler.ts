@@ -1,28 +1,42 @@
 import client from '@app/db/client';
-import { postRecipients, posts } from '@app/db/schema/post';
-import { mapPostsWithRecipients } from '@app/helpers/posts';
+import { postResidencies, posts } from '@app/db/schema/post';
+import { mapPostsWithResidencies } from '@app/helpers/posts';
 import { Context } from '@app/middlewares/routeWrapper';
-import { and, desc, eq } from 'drizzle-orm';
+import { and, desc, eq, exists, notExists, or } from 'drizzle-orm';
 import { Request } from 'express';
 
+// Building-wide posts plus the posts addressed to the user's residency.
 export default async function listUserPosts(req: Request, ctx: Context) {
+  const { buildingId, residencyId } = ctx.auth;
+
+  const targetsPost = client
+    .select({ id: postResidencies.id })
+    .from(postResidencies)
+    .where(eq(postResidencies.postId, posts.id));
+
+  const buildingWide = notExists(targetsPost);
+  const audience = residencyId
+    ? or(
+        buildingWide,
+        exists(
+          client
+            .select({ id: postResidencies.id })
+            .from(postResidencies)
+            .where(
+              and(
+                eq(postResidencies.postId, posts.id),
+                eq(postResidencies.residencyId, residencyId),
+              ),
+            ),
+        ),
+      )
+    : buildingWide;
+
   const results = await client
-    .select({
-      id: posts.id,
-      buildingId: posts.buildingId,
-      authorUserId: posts.authorUserId,
-      title: posts.title,
-      description: posts.description,
-      eventAt: posts.eventAt,
-      createdAt: posts.createdAt,
-      updatedAt: posts.updatedAt,
-    })
+    .select()
     .from(posts)
-    .innerJoin(postRecipients, eq(postRecipients.postId, posts.id))
-    .where(
-      and(eq(posts.buildingId, ctx.auth.buildingId), eq(postRecipients.userId, ctx.auth.userId)),
-    )
+    .where(and(eq(posts.buildingId, buildingId), audience))
     .orderBy(desc(posts.createdAt));
 
-  return mapPostsWithRecipients(results);
+  return mapPostsWithResidencies(results);
 }
