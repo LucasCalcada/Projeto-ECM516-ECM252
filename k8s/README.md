@@ -284,7 +284,7 @@ O bootstrap cria contas, condomínio, residências e área comum; cenários agua
  dados existentes nem sobrescrevem identidades; usam IDs e marcadores próprios para
  evitar duplicação. Reexecuções preservam as datas originais. São exclusivos de
  demonstração local, com credenciais públicas documentadas no
- [tutorial da raiz](../README.md#9-dados-fictícios-com-jobs-opcional).
+ [tutorial do Minikube](../docs/minikube.md#9-dados-fictícios-com-jobs-opcional).
 
 Reutilizam a imagem auth-service já carregada e recebem demo.cjs via ConfigMap;
  não exigem rebuild. Para repetir, confira que os dois Jobs estão encerrados e
@@ -336,13 +336,3 @@ Reabra os dois comandos `minikube service` para obter URLs atuais. `stop` preser
 perfil; excluir perfil, namespace ou PVC pode apagar dados. Não há backup automático
 nem importação dos dados do kind/Compose. Não use `minikube delete` como forma de parar.
 
-## Relação com a aula
-
-Deployments/labels, Services ClusterIP/DNS, acesso NodePort, atualização de imagens
-e consulta de logs seguem os conceitos da apostila. Minikube com driver Docker uniformiza Windows/Linux;
-StatefulSet, PVC e Jobs complementam o roteiro. Os arquivos Kustomize apenas agrupam
-YAMLs para `kubectl apply -k`; não exigem uma ferramenta adicional ao kubectl.
-A demonstração é React/Flutter web: não certifica a entrega mobile Android.
-
-Veja [VALIDATION-MINIKUBE.md](VALIDATION-MINIKUBE.md) para esta migração e
-[VALIDATION.md](VALIDATION.md) para evidências históricas do kind.

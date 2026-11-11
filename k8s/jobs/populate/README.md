@@ -2,7 +2,7 @@
 
 Entrada: `kubectl --context hiveapp-minikube apply -k k8s/overlays/local/populate`.
 Execute após as sete migrações e os dez Deployments estarem prontos. Veja os comandos
-de espera, logs, reexecução e contas no [tutorial da raiz](../../../README.md#9-dados-fictícios-com-jobs-opcional).
+de espera, logs, reexecução e contas no [tutorial do Minikube](../../../docs/minikube.md#9-dados-fictícios-com-jobs-opcional).
 
 `bootstrap.yaml` prepara autenticação, core e a área comum por SQL parametrizado.
 É necessário criar as identidades antes de autenticar chamadas às APIs. O último
