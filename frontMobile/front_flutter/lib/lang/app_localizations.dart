@@ -16,6 +16,12 @@ class AppLocalizations {
       Localizations.of<AppLocalizations>(context, AppLocalizations)!;
 
   String text(String key) => messages[key] as String;
+
+  /// Replaces `{name}` placeholders with the given values.
+  String format(String key, Map<String, String> values) => values.entries.fold(
+    text(key),
+    (result, entry) => result.replaceAll('{${entry.key}}', entry.value),
+  );
   String error(ApiFailure failure) => text('errors.${failure.name}');
   String month(int month) => (messages['months'] as List)[month - 1] as String;
 }

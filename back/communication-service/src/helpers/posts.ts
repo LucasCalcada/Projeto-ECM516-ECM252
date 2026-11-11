@@ -1,5 +1,5 @@
 import client from '@app/db/client';
-import { postRecipients, Post, posts } from '@app/db/schema/post';
+import { postResidencies, Post, posts } from '@app/db/schema/post';
 import { and, eq, inArray } from 'drizzle-orm';
 
 export interface PostResponse {
@@ -8,53 +8,52 @@ export interface PostResponse {
   authorUserId: string;
   title: string;
   description: string;
-  recipientUserIds: string[];
+  // Empty means the post targets the whole building.
+  residencyIds: string[];
   eventAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
 }
 
-export async function mapPostsWithRecipients(results: Post[]): Promise<PostResponse[]> {
+export async function mapPostsWithResidencies(results: Post[]): Promise<PostResponse[]> {
   if (results.length === 0) {
     return [];
   }
 
   const postIds = results.map((post) => post.id);
-  const recipients = await client
+  const targets = await client
     .select()
-    .from(postRecipients)
-    .where(inArray(postRecipients.postId, postIds));
+    .from(postResidencies)
+    .where(inArray(postResidencies.postId, postIds));
 
-  const recipientsByPost = new Map<string, string[]>();
+  const residenciesByPost = new Map<string, string[]>();
 
-  recipients.forEach((recipient) => {
-    const current = recipientsByPost.get(recipient.postId) ?? [];
-    current.push(recipient.userId);
-    recipientsByPost.set(recipient.postId, current);
+  targets.forEach((target) => {
+    const current = residenciesByPost.get(target.postId) ?? [];
+    current.push(target.residencyId);
+    residenciesByPost.set(target.postId, current);
   });
 
   return results.map((post) => ({
     ...post,
-    recipientUserIds: recipientsByPost.get(post.id) ?? [],
+    residencyIds: residenciesByPost.get(post.id) ?? [],
   }));
 }
 
 interface PostPayload {
   title: string;
   description: string;
-  recipientUserIds: string[];
+  residencyIds: string[];
   eventAt: Date | null;
 }
 
 export function parsePostPayload(body: any): PostPayload {
   const title = typeof body.title === 'string' ? body.title.trim() : '';
   const description = typeof body.description === 'string' ? body.description.trim() : '';
-  const rawRecipientUserIds: unknown[] = Array.isArray(body.recipientUserIds)
-    ? body.recipientUserIds
-    : [];
-  const recipientUserIds: string[] = [
+  const rawResidencyIds: unknown[] = Array.isArray(body.residencyIds) ? body.residencyIds : [];
+  const residencyIds: string[] = [
     ...new Set(
-      rawRecipientUserIds.filter(
+      rawResidencyIds.filter(
         (id: unknown): id is string => typeof id === 'string' && id.length > 0,
       ),
     ),
@@ -64,7 +63,7 @@ export function parsePostPayload(body: any): PostPayload {
   return {
     title,
     description,
-    recipientUserIds,
+    residencyIds,
     eventAt,
   };
 }
@@ -74,13 +73,13 @@ interface CreatePostInput {
   authorUserId: string;
   title: string;
   description: string;
-  recipientUserIds: string[];
+  residencyIds: string[];
   eventAt: Date | null;
   skipDuplicate?: boolean;
 }
 
-export async function createPostForRecipients(input: CreatePostInput): Promise<PostResponse> {
-  const recipientUserIds = [...new Set(input.recipientUserIds)];
+export async function createPost(input: CreatePostInput): Promise<PostResponse> {
+  const residencyIds = [...new Set(input.residencyIds)];
 
   if (input.skipDuplicate) {
     const [existingPost] = await client
@@ -97,7 +96,7 @@ export async function createPostForRecipients(input: CreatePostInput): Promise<P
       .limit(1);
 
     if (existingPost) {
-      const [mappedPost] = await mapPostsWithRecipients([existingPost]);
+      const [mappedPost] = await mapPostsWithResidencies([existingPost]);
       return mappedPost;
     }
   }
@@ -114,16 +113,18 @@ export async function createPostForRecipients(input: CreatePostInput): Promise<P
       })
       .returning();
 
-    await tx.insert(postRecipients).values(
-      recipientUserIds.map((userId) => ({
-        postId: createdPost.id,
-        userId,
-      })),
-    );
+    if (residencyIds.length > 0) {
+      await tx.insert(postResidencies).values(
+        residencyIds.map((residencyId) => ({
+          postId: createdPost.id,
+          residencyId,
+        })),
+      );
+    }
 
     return createdPost;
   });
 
-  const [response] = await mapPostsWithRecipients([post]);
+  const [response] = await mapPostsWithResidencies([post]);
   return response;
 }

@@ -34,6 +34,7 @@ import 'views/complaints.dart';
 import 'views/home.dart';
 import 'views/login.dart';
 import 'views/packages.dart';
+import 'views/notifications.dart';
 import 'views/settings.dart';
 import 'views/visitor_access.dart';
 import 'views/reservations.dart';
@@ -182,8 +183,9 @@ class _HiveAppState extends State<HiveApp> {
           route = section.route;
         }
       } else if (_validAccountToken(accountToken)) {
-        if (userToken != null || section != null)
+        if (userToken != null || section != null) {
           await _sessionStorage.clearUserToken();
+        }
         authenticated = true;
         route = AppRoutes.account;
       } else if (userToken != null || accountToken != null || section != null) {
@@ -202,8 +204,9 @@ class _HiveAppState extends State<HiveApp> {
   }
 
   Future<void> _rememberSection(UserSession session, String route) async {
-    if (!_authenticated || _endingSession || !identical(_session, session))
+    if (!_authenticated || _endingSession || !identical(_session, session)) {
       return;
+    }
     try {
       await _sessionStorage.saveSection(
         SessionSection(
@@ -215,7 +218,7 @@ class _HiveAppState extends State<HiveApp> {
     } catch (_) {
       if (!mounted || _endingSession || !identical(_session, session)) return;
       final context = _navigator.currentContext;
-      if (context != null) {
+      if (context != null && context.mounted) {
         _messenger.currentState?.showSnackBar(
           SnackBar(
             content: Text(
@@ -319,6 +322,16 @@ class _HiveAppState extends State<HiveApp> {
   }
 
   AppShellView _buildView(String route, UserSession session) {
+    if (route == AppRoutes.notifications) {
+      return AppShellView(
+        child: NotificationsScreen(
+          service: _communicationService,
+          coreService: _coreService,
+          session: session,
+          onSessionExpired: _expireSession,
+        ),
+      );
+    }
     if (route == AppRoutes.reservations) {
       final navigation = ReservationsNavigationController();
       return AppShellView(
@@ -435,6 +448,7 @@ class _HiveAppState extends State<HiveApp> {
           );
         }
         if (route == AppRoutes.home ||
+            route == AppRoutes.notifications ||
             route == AppRoutes.settings ||
             route == AppRoutes.packages ||
             route == AppRoutes.complaints ||
@@ -445,7 +459,7 @@ class _HiveAppState extends State<HiveApp> {
             session: session!,
             initialRoute: route,
             onSectionChanged: (destination) =>
-                _rememberSection(session!, destination),
+                _rememberSection(session, destination),
             viewBuilder: (destination) => _buildView(destination, session),
             onSignOut: _signOut,
             onSessionExpired: _expireSession,

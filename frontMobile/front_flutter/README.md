@@ -1,7 +1,7 @@
 # HiveApp — Flutter
 
 Aplicativo Flutter com login, seleção de condomínio, menu lateral, Home com
-avisos e eventos, visitantes, reservas, gerenciamento de moradores, reclamações
+avisos e eventos, notificações, visitantes, reservas, gerenciamento de moradores, reclamações
 integradas à API e configurações de idioma.
 O código Dart fica em `lib`, com arquivos em `snake_case`.
 
@@ -17,14 +17,15 @@ lib/
 ├── components/login_box/        # Logo, campos e botão
 ├── components/navigation/       # Menu lateral e identificação do condomínio
 ├── components/home/             # Seções, conteúdo expansível e data dos eventos
+├── components/notifications/    # Formulário e seletor de residências
 ├── components/reservations/     # Modos, calendário, cadastro e listas de reservas
 ├── components/residents/        # Grupos, residências, moradores e editor
 ├── components/shared/           # Feedback de erro, estado vazio e tentativa
 ├── helpers/
 │   ├── auth_service.dart        # Requisição HTTP e classificação de erros
 │   ├── api_client.dart          # GET/POST/PATCH/PUT autenticados, timeout e falhas HTTP
-│   ├── core_service.dart        # Listagem e seleção dos vínculos
-│   ├── communication_service.dart # Avisos e eventos do usuário
+│   ├── core_service.dart        # Vínculos e residências do prédio
+│   ├── communication_service.dart # Listagem (Home) e envio de notificações
 │   ├── reservation_service.dart # Áreas comuns e reservas
 │   ├── residents_service.dart   # Consulta e edição de moradores
 │   ├── preferences_storage.dart # Idioma persistido
@@ -45,6 +46,7 @@ lib/
     ├── login.dart               # Formulário e estados da tela
     ├── building_selector.dart   # Seleção do vínculo após o login
     ├── home.dart                # Avisos e calendário responsivos
+    ├── notifications.dart       # Envio de notificações (somente administradores)
     ├── reservations.dart        # Modos autorizados e composição de reservas
     ├── residents.dart           # Acesso e composição do gerenciamento
     └── settings.dart            # Troca de idioma

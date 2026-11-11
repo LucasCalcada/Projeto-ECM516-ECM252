@@ -1,0 +1,34 @@
+{
+  "title": "New notification",
+  "audience": {
+    "options": {
+      "building": "Whole building",
+      "residencies": "Specific residences"
+    }
+  },
+  "form": {
+    "title": "Title",
+    "titlePlaceholder": "E.g.: Elevator maintenance",
+    "descriptionPlaceholder": "Write the message for residents",
+    "eventAt": "Event date (optional)",
+    "eventAtHint": "With a date, the notification also shows on the calendar.",
+    "audience": "Recipients",
+    "residencies": "Residences",
+    "selectedCount_one": "{{count}} selected",
+    "selectedCount_other": "{{count}} selected",
+    "selectGroup": "Select all",
+    "unselectGroup": "Clear",
+    "noResidencies": "No residences found.",
+    "submitting": "Sending...",
+    "submit": "Send notification",
+    "toast": {
+      "requiredTitle": "Required fields",
+      "requiredMessage": "Enter the title and description.",
+      "residenciesRequired": "Select at least one residence.",
+      "loadResidenciesError": "Could not load residences.",
+      "successTitle": "Notification sent",
+      "successMessage": "Recipients can now see the notification.",
+      "createError": "Could not send the notification."
+    }
+  }
+}

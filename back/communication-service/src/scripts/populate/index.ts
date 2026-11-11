@@ -1,15 +1,15 @@
 import client from '@app/db/client';
 
 import { postSeedData } from './posts';
-import { postRecipientSeedData } from './postRecipients';
+import { postResidencySeedData } from './postResidencies';
 
 import { sql } from 'drizzle-orm';
-import { postRecipients, posts } from '@app/db/schema/post';
+import { postResidencies, posts } from '@app/db/schema/post';
 
 async function clearDb() {
   await client.execute(sql`
     TRUNCATE TABLE
-      post_recipients,
+      post_residencies,
       posts
     CASCADE
   `);
@@ -21,8 +21,8 @@ async function seed() {
   console.log('Populating posts...');
   await client.insert(posts).values(postSeedData);
 
-  console.log('Populating post recipients...');
-  await client.insert(postRecipients).values(postRecipientSeedData);
+  console.log('Populating post residencies...');
+  await client.insert(postResidencies).values(postResidencySeedData);
 
   console.log('Populate Finished');
 }

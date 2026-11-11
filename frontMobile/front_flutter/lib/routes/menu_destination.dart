@@ -10,6 +10,7 @@ class MenuDestination {
     this.icon, {
     this.permissions = const [],
     this.available = false,
+    this.hideWithoutPermission = false,
   });
 
   final String route;
@@ -17,6 +18,12 @@ class MenuDestination {
   final IconData icon;
   final List<String> permissions;
   final bool available;
+
+  /// Hides the entry instead of showing it locked when permissions are missing.
+  final bool hideWithoutPermission;
+
+  bool isVisibleTo(UserSession session) =>
+      !hideWithoutPermission || session.allows(permissions);
 
   bool canOpen(UserSession session) =>
       available && !session.isExpired && session.allows(permissions);
@@ -27,6 +34,14 @@ class MenuDestination {
       'menu.home',
       Icons.home_outlined,
       available: true,
+    ),
+    MenuDestination(
+      AppRoutes.notifications,
+      'menu.notifications',
+      Icons.notifications_outlined,
+      permissions: ['@communication:post:manage'],
+      available: true,
+      hideWithoutPermission: true,
     ),
     MenuDestination(
       AppRoutes.residents,

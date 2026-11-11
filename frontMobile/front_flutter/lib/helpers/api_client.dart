@@ -93,6 +93,7 @@ class ApiClient {
           !(method == 'POST' && response.statusCode == 201)) {
         fail(ApiFailure.invalidResponse);
       }
+      if (response.bodyBytes.isEmpty) return null;
       return jsonDecode(utf8.decode(response.bodyBytes));
     } on TimeoutException {
       throw const ApiException(ApiFailure.timeout);

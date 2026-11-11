@@ -1,0 +1,35 @@
+{
+  "title": "Nueva notificación",
+  "audience": {
+    "options": {
+      "building": "Todo el edificio",
+      "residencies": "Residencias específicas"
+    }
+  },
+  "form": {
+    "title": "Título",
+    "titlePlaceholder": "Ej.: Mantenimiento del ascensor",
+    "descriptionPlaceholder": "Escribe el mensaje para los residentes",
+    "eventAt": "Fecha del evento (opcional)",
+    "eventAtHint": "Con fecha, la notificación también aparece en el calendario.",
+    "audience": "Destinatarios",
+    "residencies": "Residencias",
+    "selectedCount_one": "{{count}} seleccionada",
+    "selectedCount_other": "{{count}} seleccionadas",
+    "selectedCount_many": "{{count}} seleccionadas",
+    "selectGroup": "Seleccionar todas",
+    "unselectGroup": "Limpiar",
+    "noResidencies": "No se encontraron residencias.",
+    "submitting": "Enviando...",
+    "submit": "Enviar notificación",
+    "toast": {
+      "requiredTitle": "Campos obligatorios",
+      "requiredMessage": "Indica el título y la descripción.",
+      "residenciesRequired": "Selecciona al menos una residencia.",
+      "loadResidenciesError": "No se pudieron cargar las residencias.",
+      "successTitle": "Notificación enviada",
+      "successMessage": "Los destinatarios ya pueden ver la notificación.",
+      "createError": "No se pudo enviar la notificación."
+    }
+  }
+}

@@ -6,6 +6,7 @@ import calendar from './calendar.json';
 import common from './common.json';
 import packages from './packages.json';
 import visitorAccess from './visitorAccess.json';
+import notifications from './notifications.json';
 import complaints from './complaints.json';
 
 export default {
@@ -18,6 +19,7 @@ export default {
   calendar,
   packages,
   visitorAccess,
+  notifications,
   complaints,
 
   common,

@@ -373,7 +373,7 @@ export default function ComplaintDetail({
                     aria-describedby={`${id}-response-help${submitted && responseInvalid ? ` ${id}-response-error` : ''}`}
                   />
                   <p id={`${id}-response-help`} className="text-xs wrap-anywhere text-neutral-400">
-                    {t('form.counter', { count: response.length, max: 5000 })}
+                    {t('form.counter', { length: response.length, max: 5000 })}
                   </p>
                   {submitted && responseInvalid && (
                     <p id={`${id}-response-error`} className="text-sm text-red-400">

@@ -54,4 +54,23 @@ export const accountData: AccountInsert[] = [
     hashedPassword: '$2b$10$W8XGMd..YoBo/drINWS34.lCyxpiAaO9SrLFv41uh87vSRx62CdCG',
     active: true,
   },
+
+  // Senha de teste: senha123
+  {
+    id: '11111111-1111-1111-1111-111111111117',
+    name: 'Roberto Lima',
+    email: 'roberto@example.com',
+    phone: '11999990007',
+    hashedPassword: '$2b$10$dng4UHP5OUy8p5Kr2RdjE.iQOKZy13wKOjLn1.pUNyioH2Y7eKOkS',
+    active: true,
+  },
+
+  {
+    id: '11111111-1111-1111-1111-111111111118',
+    name: 'Juliana Costa',
+    email: 'juliana@example.com',
+    phone: '11999990008',
+    hashedPassword: '$2b$10$dng4UHP5OUy8p5Kr2RdjE.iQOKZy13wKOjLn1.pUNyioH2Y7eKOkS',
+    active: true,
+  },
 ];

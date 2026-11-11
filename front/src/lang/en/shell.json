@@ -1,10 +1,12 @@
 {
   "sidebar": {
+    "appName": "HiveApp",
     "navigation": "Main navigation",
     "openMenu": "Open menu",
     "closeMenu": "Close menu",
     "routes": {
       "home": "Home",
+      "notifications": "Notifications",
       "residents": "Residents",
       "reservations": "Reservations",
       "portaria": "Concierge",

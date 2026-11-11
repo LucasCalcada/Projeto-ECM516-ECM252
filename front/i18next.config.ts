@@ -15,6 +15,11 @@ export default defineConfig({
 
     preservePatterns: [
       'calendar:months.*',
+      'complaints:category.*',
+      'complaints:errors.*',
+      'complaints:notices.*',
+      'complaints:scope.*',
+      'complaints:status.*',
       'packages:statusValue.*',
       'packages:views.*',
       'reservations:calendar.*',
@@ -24,6 +29,7 @@ export default defineConfig({
       'reservations:views.*',
       'shell:sidebar.routes.*',
       'visitorAccess:views.*',
+      'notifications:audience.options.*',
     ],
 
     sort: false,

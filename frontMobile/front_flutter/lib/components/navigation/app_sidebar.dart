@@ -134,7 +134,9 @@ class AppSidebar extends StatelessWidget {
       width: expanded ? 240 : 64,
       child: Material(
         color: HiveColors.raised,
-        shape: Border(right: BorderSide(color: HiveColors.boundary.withValues(alpha: 0.35))),
+        shape: Border(
+          right: BorderSide(color: HiveColors.boundary.withValues(alpha: 0.35)),
+        ),
         child: LayoutBuilder(
           builder: (context, constraints) => SingleChildScrollView(
             child: ConstrainedBox(
@@ -161,7 +163,8 @@ class AppSidebar extends StatelessWidget {
                         ),
                       const SizedBox(height: 16),
                       for (final destination in MenuDestination.entries)
-                        if (destination.route != AppRoutes.settings)
+                        if (destination.route != AppRoutes.settings &&
+                            destination.isVisibleTo(session))
                           entry(destination),
                     ],
                   ),

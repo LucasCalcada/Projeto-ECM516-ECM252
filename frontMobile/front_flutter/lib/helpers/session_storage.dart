@@ -1,8 +1,13 @@
 import 'dart:convert';
+
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class SessionSection {
-  const SessionSection({required this.userId, required this.buildingId, required this.route});
+  const SessionSection({
+    required this.userId,
+    required this.buildingId,
+    required this.route,
+  });
   final String userId;
   final String buildingId;
   final String route;
@@ -32,7 +37,7 @@ class SecureSessionStorage implements SessionStorage {
   // A cleanup always runs after writes already requested, even if one failed.
   Future<void> _write(Future<void> Function() action) {
     final result = _writes.then((_) => action());
-    _writes = result.then<void>((_) {}, onError: (Object _, StackTrace __) {});
+    _writes = result.then<void>((_) {}, onError: (Object _, StackTrace _) {});
     return result;
   }
 
@@ -74,20 +79,35 @@ class SecureSessionStorage implements SessionStorage {
     if (raw == null) return null;
     try {
       final data = jsonDecode(raw);
-      if (data is! Map<String, dynamic> || data['userId'] is! String ||
-          data['buildingId'] is! String || data['route'] is! String) return null;
-      return SessionSection(userId: data['userId'], buildingId: data['buildingId'], route: data['route']);
+      if (data is! Map<String, dynamic> ||
+          data['userId'] is! String ||
+          data['buildingId'] is! String ||
+          data['route'] is! String) {
+        return null;
+      }
+      return SessionSection(
+        userId: data['userId'],
+        buildingId: data['buildingId'],
+        route: data['route'],
+      );
     } on FormatException {
       return null;
     }
   }
 
   @override
-  Future<void> saveSection(SessionSection section) => _write(() => _storage.write(
-    key: _sectionKey,
-    value: jsonEncode({'userId': section.userId, 'buildingId': section.buildingId, 'route': section.route}),
-  ));
+  Future<void> saveSection(SessionSection section) => _write(
+    () => _storage.write(
+      key: _sectionKey,
+      value: jsonEncode({
+        'userId': section.userId,
+        'buildingId': section.buildingId,
+        'route': section.route,
+      }),
+    ),
+  );
 
   @override
-  Future<void> clearSection() => _write(() => _storage.delete(key: _sectionKey));
+  Future<void> clearSection() =>
+      _write(() => _storage.delete(key: _sectionKey));
 }
