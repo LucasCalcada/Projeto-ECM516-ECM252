@@ -34,6 +34,12 @@ class ApiClient {
     required Map<String, Object?> body,
   }) => _request('PATCH', path, token: token, body: body);
 
+  Future<Object?> put(
+    String path, {
+    required String token,
+    required Map<String, Object?> body,
+  }) => _request('PUT', path, token: token, body: body);
+
   Future<Object?> _request(
     String method,
     String path, {
@@ -54,6 +60,7 @@ class ApiClient {
       final response = await (switch (method) {
         'POST' => client.post(uri, headers: headers, body: jsonEncode(body)),
         'PATCH' => client.patch(uri, headers: headers, body: jsonEncode(body)),
+        'PUT' => client.put(uri, headers: headers, body: jsonEncode(body)),
         _ => client.get(uri, headers: headers),
       }).timeout(timeout);
       String? code;

@@ -1,9 +1,16 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+
+import 'components/shared/request_feedback.dart';
+
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:http/http.dart' as http;
 
 import 'config.dart';
-import 'features/complaints/complaints.dart';
+import 'helpers/complaint_access.dart';
+import 'helpers/complaints_repository.dart';
+import 'helpers/http_complaints_repository.dart';
 import 'theme/app_theme.dart';
 import 'helpers/api_client.dart';
 import 'helpers/auth_service.dart';
@@ -12,8 +19,9 @@ import 'helpers/core_service.dart';
 import 'helpers/packages_service.dart';
 import 'helpers/preferences_storage.dart';
 import 'helpers/session_storage.dart';
-import 'helpers/user_data_storage.dart';
 import 'helpers/visitor_service.dart';
+import 'helpers/reservation_service.dart';
+import 'helpers/residents_service.dart';
 import 'lang/app_localizations.dart';
 import 'lang/login_localizations.dart';
 import 'layouts/app_shell.dart';
@@ -28,16 +36,19 @@ import 'views/login.dart';
 import 'views/packages.dart';
 import 'views/settings.dart';
 import 'views/visitor_access.dart';
+import 'views/reservations.dart';
+import 'views/residents.dart';
 
 class HiveApp extends StatefulWidget {
   const HiveApp({
     super.key,
     this.authService,
     this.sessionStorage,
-    this.userDataStorage,
     this.preferencesStorage,
     this.coreService,
     this.communicationService,
+    this.reservationService,
+    this.residentsService,
     this.client,
     this.locale,
     this.complaintsRepositoryFactory,
@@ -46,10 +57,11 @@ class HiveApp extends StatefulWidget {
 
   final AuthService? authService;
   final SessionStorage? sessionStorage;
-  final UserDataStorage? userDataStorage;
   final PreferencesStorage? preferencesStorage;
   final CoreService? coreService;
   final CommunicationService? communicationService;
+  final ReservationService? reservationService;
+  final ResidentsService? residentsService;
   final http.Client? client;
   final Locale? locale;
   final ComplaintsRepository Function(UserSession)? complaintsRepositoryFactory;
@@ -67,15 +79,19 @@ class _HiveAppState extends State<HiveApp> {
   late final CoreService _coreService;
   late final CommunicationService _communicationService;
   late final VisitorService _visitorService;
+  late final ReservationService _reservationService;
+  late final ResidentsService _residentsService;
   late final SessionStorage _sessionStorage;
-  late final UserDataStorage _userDataStorage;
   late final PreferencesStorage _preferencesStorage;
   late Locale _locale;
   bool _authenticated = false;
   bool _expiring = false;
+  bool _restoring = true;
+  bool _restoreFailure = false;
+  bool _endingSession = false;
+  String _initialRoute = AppRoutes.login;
   int _languageRevision = 0;
   UserSession? _session;
-  // Packages are kept in memory for the selected membership only.
   PackagesService? _packagesService;
 
   @override
@@ -86,7 +102,6 @@ class _HiveAppState extends State<HiveApp> {
         widget.authService ??
         AuthService(client: _client, baseUrl: AppConfig.authUrl);
     _sessionStorage = widget.sessionStorage ?? const SecureSessionStorage();
-    _userDataStorage = widget.userDataStorage ?? LocalUserDataStorage();
     _preferencesStorage =
         widget.preferencesStorage ?? const SecurePreferencesStorage();
     _coreService =
@@ -100,8 +115,116 @@ class _HiveAppState extends State<HiveApp> {
     _visitorService = VisitorService(
       ApiClient(client: _client, baseUrl: AppConfig.visitorUrl),
     );
+    _reservationService =
+        widget.reservationService ??
+        ReservationService(
+          ApiClient(client: _client, baseUrl: AppConfig.reservationUrl),
+        );
+    _residentsService =
+        widget.residentsService ??
+        ResidentsService(
+          ApiClient(client: _client, baseUrl: AppConfig.coreUrl),
+        );
     _locale = widget.locale ?? const Locale(AppConfig.language);
     if (widget.locale == null) _loadLanguage();
+    _restoreSession();
+  }
+
+  bool _validAccountToken(String? token) {
+    try {
+      if (token == null || token.split('.').length != 3) return false;
+      final data = jsonDecode(
+        utf8.decode(base64Url.decode(base64Url.normalize(token.split('.')[1]))),
+      );
+      return data is Map<String, dynamic> &&
+          data['tokenKind'] == 'account' &&
+          data['accountId'] is String &&
+          (data['accountId'] as String).isNotEmpty &&
+          data['exp'] is int &&
+          (data['exp'] as int) > DateTime.now().millisecondsSinceEpoch ~/ 1000;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<void> _restoreSession() async {
+    setState(() => _restoreFailure = false);
+    try {
+      // Finish reads before cleanup: a read failure must not erase credentials.
+      final userToken = await _sessionStorage.readUserToken();
+      final accountToken = await _sessionStorage.readAccountToken();
+      final section = await _sessionStorage.readSection();
+      UserSession? session;
+      if (userToken != null && userToken.isNotEmpty) {
+        try {
+          final candidate = UserSession.fromToken(userToken);
+          if (!candidate.isExpired) session = candidate;
+        } on FormatException {
+          // Invalid saved token; fall back to the account session.
+        } on TypeError {
+          // Invalid claim type.
+        } on ArgumentError {
+          // Invalid encoding or expiry.
+        }
+      }
+      var route = AppRoutes.login;
+      var authenticated = false;
+      if (session != null) {
+        authenticated = true;
+        route = AppRoutes.home;
+        if (section != null &&
+            section.userId == session.userId &&
+            section.buildingId == session.buildingId &&
+            MenuDestination.entries.any(
+              (entry) =>
+                  entry.route == section.route && entry.canOpen(session!),
+            )) {
+          route = section.route;
+        }
+      } else if (_validAccountToken(accountToken)) {
+        if (userToken != null || section != null)
+          await _sessionStorage.clearUserToken();
+        authenticated = true;
+        route = AppRoutes.account;
+      } else if (userToken != null || accountToken != null || section != null) {
+        await _sessionStorage.clearSession();
+      }
+      if (!mounted) return;
+      setState(() {
+        _session = session;
+        _authenticated = authenticated;
+        _initialRoute = route;
+        _restoring = false;
+      });
+    } catch (_) {
+      if (mounted) setState(() => _restoreFailure = true);
+    }
+  }
+
+  Future<void> _rememberSection(UserSession session, String route) async {
+    if (!_authenticated || _endingSession || !identical(_session, session))
+      return;
+    try {
+      await _sessionStorage.saveSection(
+        SessionSection(
+          userId: session.userId,
+          buildingId: session.buildingId,
+          route: route,
+        ),
+      );
+    } catch (_) {
+      if (!mounted || _endingSession || !identical(_session, session)) return;
+      final context = _navigator.currentContext;
+      if (context != null) {
+        _messenger.currentState?.showSnackBar(
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context).error(ApiFailure.storage),
+            ),
+          ),
+        );
+      }
+    }
   }
 
   Future<void> _loadLanguage() async {
@@ -140,7 +263,12 @@ class _HiveAppState extends State<HiveApp> {
   }
 
   Future<void> _signOut() async {
-    await _clearStoredSession();
+    _endingSession = true;
+    try {
+      await _clearStoredSession();
+    } finally {
+      _endingSession = false;
+    }
     if (!mounted) return;
     _authenticated = false;
     _session = null;
@@ -150,10 +278,7 @@ class _HiveAppState extends State<HiveApp> {
     );
   }
 
-  Future<void> _clearStoredSession() => Future.wait<void>([
-    _sessionStorage.clearSession(),
-    _userDataStorage.clearUserData(),
-  ]);
+  Future<void> _clearStoredSession() => _sessionStorage.clearSession();
 
   void _onSelected(UserSession session) {
     if (session.isExpired) {
@@ -194,8 +319,30 @@ class _HiveAppState extends State<HiveApp> {
   }
 
   AppShellView _buildView(String route, UserSession session) {
+    if (route == AppRoutes.reservations) {
+      final navigation = ReservationsNavigationController();
+      return AppShellView(
+        child: ReservationsView(
+          session: session,
+          service: _reservationService,
+          navigation: navigation,
+          onSessionExpired: _expireSession,
+        ),
+        onBeforeLeave: navigation.onBeforeLeave,
+        onBack: navigation.onBack,
+      );
+    }
+    if (route == AppRoutes.residents) {
+      return AppShellView(
+        child: ResidentsView(
+          session: session,
+          service: _residentsService,
+          onSessionExpired: _expireSession,
+        ),
+      );
+    }
     if (route == AppRoutes.complaints) {
-      final screenKey = GlobalKey<ComplaintsScreenState>();
+      final navigation = ComplaintsNavigationController();
       final repository =
           widget.complaintsRepositoryFactory?.call(session) ??
           HttpComplaintsRepository(
@@ -204,31 +351,46 @@ class _HiveAppState extends State<HiveApp> {
           );
       return AppShellView(
         child: ComplaintsView(
-          session: session,
+          access: ComplaintAccess.fromSession(
+            userId: session.userId,
+            buildingId: session.buildingId,
+            permissions: session.permissions,
+            expiresAt: session.expiresAt,
+            residentAccess: session.residencyId?.isNotEmpty == true,
+            residencyId: session.residencyId,
+          ),
+          buildingName: session.buildingName,
+          shellManaged: true,
           repository: repository,
-          screenKey: screenKey,
+          navigation: navigation,
           onSessionExpired: _expireSession,
         ),
-        onBeforeLeave: () =>
-            screenKey.currentState?.confirmLeave() ?? Future.value(true),
-        onBack: () =>
-            screenKey.currentState?.handleShellBack() ?? Future.value(false),
+        onBeforeLeave: navigation.confirmLeave,
+        onBack: navigation.handleBack,
       );
     }
-<<<<<<< HEAD
     if (route == AppRoutes.packages) {
       return AppShellView(
         child: PackagesView(
           session: session,
           service: _packagesService ??=
-              widget.packagesService ?? InMemoryPackagesService(),
-=======
+              widget.packagesService ??
+              HttpPackagesService(
+                delivery: ApiClient(
+                  client: _client,
+                  baseUrl: AppConfig.deliveryUrl,
+                ),
+                core: ApiClient(client: _client, baseUrl: AppConfig.coreUrl),
+              ),
+          onSessionExpired: _expireSession,
+        ),
+      );
+    }
     if (route == AppRoutes.visitorAccess) {
       return AppShellView(
         child: VisitorAccessView(
           session: session,
           service: _visitorService,
->>>>>>> ebcfba2c6ddbbd60c336a94b3a42d28cb22f1e9e
           onSessionExpired: _expireSession,
         ),
       );
@@ -267,7 +429,6 @@ class _HiveAppState extends State<HiveApp> {
           return BuildingSelector(
             coreService: _coreService,
             sessionStorage: _sessionStorage,
-            userDataStorage: _userDataStorage,
             onSelected: _onSelected,
             onSignOut: _signOut,
             onSessionExpired: _expireSession,
@@ -275,16 +436,16 @@ class _HiveAppState extends State<HiveApp> {
         }
         if (route == AppRoutes.home ||
             route == AppRoutes.settings ||
-<<<<<<< HEAD
             route == AppRoutes.packages ||
-            route == AppRoutes.complaints) {
-=======
             route == AppRoutes.complaints ||
+            route == AppRoutes.reservations ||
+            route == AppRoutes.residents ||
             route == AppRoutes.visitorAccess) {
->>>>>>> ebcfba2c6ddbbd60c336a94b3a42d28cb22f1e9e
           return AppShell(
             session: session!,
             initialRoute: route,
+            onSectionChanged: (destination) =>
+                _rememberSection(session!, destination),
             viewBuilder: (destination) => _buildView(destination, session),
             onSignOut: _signOut,
             onSessionExpired: _expireSession,
@@ -293,7 +454,6 @@ class _HiveAppState extends State<HiveApp> {
         return Login(
           authService: _authService,
           sessionStorage: _sessionStorage,
-          userDataStorage: _userDataStorage,
           onAuthenticated: _onAuthenticated,
         );
       },
@@ -303,15 +463,34 @@ class _HiveAppState extends State<HiveApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      key: ValueKey(_restoring),
       title: 'HiveApp',
       debugShowCheckedModeBanner: false,
-      navigatorKey: _navigator,
+      navigatorKey: _restoring ? null : _navigator,
       scaffoldMessengerKey: _messenger,
-      initialRoute: AppRoutes.login,
-      onGenerateRoute: _route,
-      onGenerateInitialRoutes: (_) => [
-        _route(const RouteSettings(name: AppRoutes.login)),
-      ],
+      home: _restoring
+          ? Scaffold(
+              body: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 480),
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: _restoreFailure
+                        ? RequestFeedback(
+                            failure: ApiFailure.storage,
+                            onRetry: _restoreSession,
+                          )
+                        : const CircularProgressIndicator(),
+                  ),
+                ),
+              ),
+            )
+          : null,
+      initialRoute: _restoring ? null : _initialRoute,
+      onGenerateRoute: _restoring ? null : _route,
+      onGenerateInitialRoutes: _restoring
+          ? null
+          : (_) => [_route(RouteSettings(name: _initialRoute))],
       locale: _locale,
       supportedLocales: LoginLocalizations.supportedLocales,
       localizationsDelegates: const [

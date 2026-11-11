@@ -10,3 +10,4 @@ resources:
   - ../services/communication-service
   - ../services/complaint-service
   - ../front
+  - ../flutter-web

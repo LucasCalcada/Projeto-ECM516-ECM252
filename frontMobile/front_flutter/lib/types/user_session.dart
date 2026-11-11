@@ -10,7 +10,6 @@ class UserSession {
     required this.expiresAt,
     this.residencyName,
     this.residencyId,
-    this.claims = const {},
   });
 
   final String token;
@@ -22,8 +21,6 @@ class UserSession {
   final List<String> permissions;
   final DateTime expiresAt;
 
-  /// Original decoded claims for persistence; views use the typed fields above.
-  final Map<String, dynamic> claims;
 
   bool get isExpired => !expiresAt.isAfter(DateTime.now());
 
@@ -61,10 +58,6 @@ class UserSession {
       residencyName: data['residencyName'] as String?,
       residencyId: data['residencyId'] as String?,
       permissions: List<String>.unmodifiable(data['permissions'] as List),
-      claims: Map<String, dynamic>.unmodifiable({
-        ...data,
-        'permissions': List<String>.unmodifiable(data['permissions'] as List),
-      }),
       expiresAt: DateTime.fromMillisecondsSinceEpoch(
         (data['exp'] as int) * 1000,
         isUtc: true,

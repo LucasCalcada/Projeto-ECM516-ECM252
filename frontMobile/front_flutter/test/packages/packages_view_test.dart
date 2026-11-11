@@ -14,6 +14,7 @@ import 'package:front_flutter/theme/app_theme.dart';
 import 'package:front_flutter/types/delivery_package.dart';
 import 'package:front_flutter/types/user_session.dart';
 import 'package:front_flutter/views/packages.dart';
+import 'fake_packages_service.dart';
 
 UserSession _session(List<String> permissions, {String? residencyId}) =>
     UserSession(

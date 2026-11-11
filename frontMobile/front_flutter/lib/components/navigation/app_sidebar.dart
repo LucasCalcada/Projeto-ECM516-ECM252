@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../lang/app_localizations.dart';
 import '../../routes/app_routes.dart';
 import '../../routes/menu_destination.dart';
+import '../../theme/app_theme.dart';
 import '../../types/user_session.dart';
 import 'building_header.dart';
 
@@ -42,7 +43,7 @@ class AppSidebar extends StatelessWidget {
     }) {
       final description = explanation == null ? label : '$label. $explanation';
       return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+        padding: const EdgeInsets.symmetric(horizontal: 8),
         child: Tooltip(
           message: description,
           excludeFromSemantics: true,
@@ -60,7 +61,7 @@ class AppSidebar extends StatelessWidget {
                 padding: WidgetStatePropertyAll(
                   EdgeInsets.symmetric(
                     horizontal: expanded ? 12 : 0,
-                    vertical: 12,
+                    vertical: 6,
                   ),
                 ),
                 backgroundColor: WidgetStatePropertyAll(
@@ -132,7 +133,8 @@ class AppSidebar extends StatelessWidget {
       key: const Key('app-sidebar'),
       width: expanded ? 240 : 64,
       child: Material(
-        color: colors.surface,
+        color: HiveColors.raised,
+        shape: Border(right: BorderSide(color: HiveColors.boundary.withValues(alpha: 0.35))),
         child: LayoutBuilder(
           builder: (context, constraints) => SingleChildScrollView(
             child: ConstrainedBox(

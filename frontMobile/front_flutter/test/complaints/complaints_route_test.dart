@@ -9,7 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:front_flutter/app.dart';
-import 'package:front_flutter/features/complaints/presentation/complaints_screen.dart';
+import 'package:front_flutter/views/complaints.dart';
 import 'package:front_flutter/views/home.dart';
 import 'package:front_flutter/views/login.dart';
 import 'package:front_flutter/views/settings.dart';
@@ -139,7 +139,6 @@ Future<void> _launch(
         child: HiveApp(
           client: client,
           sessionStorage: FakeSessionStorage(),
-          userDataStorage: FakeUserDataStorage(),
           preferencesStorage: FakePreferencesStorage(),
           locale: Locale(language),
         ),
@@ -154,7 +153,7 @@ Future<void> _launch(
   await _tap(tester, find.byKey(const ValueKey('building-user-1')));
   expect(find.byType(HomeScreen), findsOneWidget);
   await _menu(tester, '/complaints');
-  expect(find.byType(ComplaintsScreen), findsOneWidget);
+  expect(find.byType(ComplaintsView), findsOneWidget);
 }
 
 Future<void> _captureImage(WidgetTester tester, String name) async {
@@ -245,7 +244,7 @@ void main() {
     (tester) async {
       final api = _Api();
       await _launch(tester, api);
-      final state = tester.state(find.byType(ComplaintsScreen));
+      final state = tester.state(find.byType(ComplaintsView));
       final reads = api.requests
           .where((request) => request.url.path == '/complaints/residency')
           .length;
@@ -258,7 +257,7 @@ void main() {
       for (final width in [320.0, 768.0, 1024.0, 1440.0]) {
         tester.view.physicalSize = Size(width, 900);
         await tester.pumpAndSettle();
-        expect(tester.state(find.byType(ComplaintsScreen)), same(state));
+        expect(tester.state(find.byType(ComplaintsView)), same(state));
         expect(
           tester
               .widget<TextFormField>(
@@ -274,13 +273,13 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byType(AlertDialog), findsOneWidget);
       await _tap(tester, find.widgetWithText(FilledButton, 'Descartar'));
-      expect(find.byType(ComplaintsScreen), findsOneWidget);
+      expect(find.byType(ComplaintsView), findsOneWidget);
       expect(find.byKey(const ValueKey('complaint-subject')), findsNothing);
       await tester.binding.handlePopRoute();
       await tester.pumpAndSettle();
       expect(find.byType(HomeScreen), findsOneWidget);
       await _menu(tester, '/complaints');
-      expect(tester.state(find.byType(ComplaintsScreen)), isNot(same(state)));
+      expect(tester.state(find.byType(ComplaintsView)), isNot(same(state)));
       expect(
         api.requests
             .where((request) => request.url.path == '/complaints/residency')
@@ -316,7 +315,7 @@ void main() {
       await tester.ensureVisible(destination);
       await tester.tap(destination);
       await tester.pump(const Duration(milliseconds: 100));
-      expect(find.byType(ComplaintsScreen), findsOneWidget);
+      expect(find.byType(ComplaintsView), findsOneWidget);
       expect(find.byType(AlertDialog), findsNothing);
     }
     await tester.binding.handlePopRoute();

@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 import '../components/shared/request_feedback.dart';
 import '../helpers/core_service.dart';
 import '../helpers/session_storage.dart';
-import '../helpers/load_user_data.dart';
-import '../helpers/user_data_storage.dart';
+import '../helpers/persist_user_session.dart';
 import '../lang/app_localizations.dart';
 import '../types/account_user.dart';
 import '../types/api_failure.dart';
@@ -15,7 +14,6 @@ class BuildingSelector extends StatefulWidget {
     super.key,
     required this.coreService,
     required this.sessionStorage,
-    required this.userDataStorage,
     required this.onSelected,
     required this.onSignOut,
     required this.onSessionExpired,
@@ -23,7 +21,6 @@ class BuildingSelector extends StatefulWidget {
 
   final CoreService coreService;
   final SessionStorage sessionStorage;
-  final UserDataStorage userDataStorage;
   final ValueChanged<UserSession> onSelected;
   final Future<void> Function() onSignOut;
   final VoidCallback onSessionExpired;
@@ -97,11 +94,10 @@ class _BuildingSelectorState extends State<BuildingSelector> {
         user,
       );
       if (!mounted) return;
-      final session = await loadUserData(
+      final session = await persistUserSession(
         token,
         selectedUser: user,
         sessionStorage: widget.sessionStorage,
-        userDataStorage: widget.userDataStorage,
       );
       if (mounted) widget.onSelected(session);
     } catch (error) {

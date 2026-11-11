@@ -150,6 +150,7 @@ class _PackageCreateFormState extends State<PackageCreateForm> {
     final descriptionField = TextFormField(
       key: const ValueKey('packages-description'),
       controller: _description,
+      maxLength: 255,
       enabled: !_submitting,
       textInputAction: TextInputAction.done,
       onFieldSubmitted: (_) => _submit(),

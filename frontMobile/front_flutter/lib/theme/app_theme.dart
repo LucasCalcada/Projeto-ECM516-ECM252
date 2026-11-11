@@ -5,6 +5,7 @@ abstract final class HiveColors {
   static const canvas = Color(0xFF0A0A0A);
   static const surface = Color(0xFF171717);
   static const raised = Color(0xFF262626);
+  static const divider = Color(0xFF262626);
   static const boundary = Color(0xFF737373);
   static const text = Color(0xFFF5F5F5);
   static const body = Color(0xFFD4D4D4);

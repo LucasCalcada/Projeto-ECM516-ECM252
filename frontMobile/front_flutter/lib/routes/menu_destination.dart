@@ -29,15 +29,17 @@ class MenuDestination {
       available: true,
     ),
     MenuDestination(
-      '/residents',
+      AppRoutes.residents,
       'menu.residents',
       Icons.people_outline,
+      available: true,
       permissions: ['@core:user:manage'],
     ),
     MenuDestination(
-      '/reservations',
+      AppRoutes.reservations,
       'menu.reservations',
       Icons.event_available_outlined,
+      available: true,
       permissions: [
         '@reservation:create',
         '@reservation:view:residency',

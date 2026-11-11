@@ -1,9 +1,10 @@
+import 'package:front_flutter/types/complaint_failure.dart';
+
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:front_flutter/features/complaints/data/http_complaints_repository.dart';
-import 'package:front_flutter/features/complaints/domain/complaint.dart';
-import 'package:front_flutter/features/complaints/domain/complaints_repository.dart';
+import 'package:front_flutter/helpers/http_complaints_repository.dart';
+import 'package:front_flutter/types/complaint.dart';
 import 'package:front_flutter/helpers/api_client.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';

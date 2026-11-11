@@ -39,6 +39,12 @@ class DeliveryPackage {
   final DateTime createdAt;
   final DateTime? deliveredAt;
 
+  DeliveryPackage withResidencyName(String name) => DeliveryPackage(
+    id: id, buildingId: buildingId, residencyId: residencyId,
+    residencyName: name, description: description, status: status,
+    createdAt: createdAt, deliveredAt: deliveredAt,
+  );
+
   DeliveryPackage copyWith({DeliveryStatus? status, DateTime? deliveredAt}) =>
       DeliveryPackage(
         id: id,
@@ -59,7 +65,7 @@ class DeliveryPackage {
       id: map['id'] as String,
       buildingId: map['buildingId'] as String,
       residencyId: map['residencyId'] as String,
-      residencyName: map['residencyName'] as String,
+      residencyName: map['residencyName'] as String? ?? map['residencyId'] as String,
       description: map['description'] as String,
       status: DeliveryStatus.parse(map['status']),
       createdAt: DateTime.parse(map['createdAt'] as String),

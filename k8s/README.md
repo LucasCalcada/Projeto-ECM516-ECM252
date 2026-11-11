@@ -1,197 +1,348 @@
-# HiveApp no Kubernetes local
+# HiveApp no Kubernetes com Minikube
 
-Esta implantação usa kind, um cluster Kubernetes local executado no Docker.
-Requisitos: Docker com containers Linux, kubectl, kind e PowerShell 5.1 ou superior.
-Reserve recursos para o cluster e as aplicações (como ponto inicial, 4 CPUs e 8 GB
-de memória disponíveis ao Docker). Instale kind conforme o
-[guia oficial](https://kind.sigs.k8s.io/docs/user/quick-start/).
+A implantação é feita diretamente com Docker, Minikube e kubectl, usando os YAMLs
+versionados e Kustomize (`kubectl apply -k`). Não há scripts próprios de automação.
+Execute os comandos da raiz do repositório e avance somente quando cada etapa
+terminar com sucesso. Não execute duas implantações simultâneas no namespace.
 
-Todos os comandos abaixo partem da raiz do repositório. O namespace é `hiveapp`.
-Os scripts exigem um kubeconfig explícito e usam o contexto `kind-hiveapp`; não
-alteram o contexto global do kubectl. Para outro cluster, passe `-Context` e
-disponibilize as imagens e uma StorageClass padrão com provisionamento dinâmico.
+## 1. Pré-requisitos e cluster
 
-## Primeira implantação
+Windows: Docker Desktop executando containers Linux, Minikube, kubectl e PowerShell.
+Linux: Docker Engine, Minikube, kubectl e Bash. Flutter SDK não é necessário no host.
+Não habilite o Kubernetes integrado do Docker Desktop para este fluxo.
 
-```powershell
-New-Item -ItemType Directory -Force k8s/.local | Out-Null
-kind create cluster --name hiveapp --kubeconfig ./k8s/.local/kubeconfig --wait 120s
-./k8s/scripts/init-secrets.ps1
-./k8s/scripts/build.ps1 -ImageTag k8s-v1 -KindCluster hiveapp
-./k8s/scripts/deploy.ps1 -Kubeconfig ./k8s/.local/kubeconfig -ImageTag k8s-v1
-```
-
-Se kind não estiver no PATH, use o caminho do executável no comando de criação e
-o parâmetro `-KindPath` no build. O build reutiliza os nove Dockerfiles existentes
-e carrega as imagens no kind, sem exigir um registry. Em outro cluster, publique
-as imagens num registry acessível e use os mesmos `-ImagePrefix` e `-ImageTag`
-nos scripts de build e deploy. O script de build não faz push ao registry.
-
-`init-secrets.ps1` gera senhas aleatórias em `overlays/local/secrets.env` e preserva
-o arquivo quando já existe. Esse arquivo e `.local/` são ignorados pelo Git;
-toda a pasta `k8s/` fica fora do contexto das imagens Docker. O exemplo em
-`overlays/local/secrets.example.env` documenta as quatro variáveis necessárias.
-As credenciais PostgreSQL devem usar letras, números, `_` e `-`, pois compõem
-a URL de conexão. Não regenere a senha de um banco já inicializado sem também
-alterá-la no próprio PostgreSQL: mudar o Secret não modifica a senha no banco.
-
-A implantação segue esta sequência e interrompe em caso de erro:
-
-1. Aplica namespace, configurações, Secret, PostgreSQL e event bus.
-2. Aguarda banco e event bus ficarem prontos.
-3. Cria sete Jobs de migração e aguarda todos terminarem.
-4. Aplica as sete APIs e o frontend; aguarda os nove Deployments, incluindo event bus.
-
-Cada backend possui init container que verifica seu banco antes de iniciar a API.
-As seis APIs TypeScript também aguardam o endpoint `/health` do event bus; o serviço
-Dart de reclamações não depende desse bus. Não há população automática.
-Execute somente um deploy por vez no namespace para evitar migrações concorrentes.
-
-## Acessar e verificar
+Instalação Windows (reabra o terminal após instalar):
 
 ```powershell
-kubectl --kubeconfig ./k8s/.local/kubeconfig --context kind-hiveapp -n hiveapp port-forward service/front 5173:80
+winget install --id Kubernetes.minikube --exact
+minikube version
 ```
 
-Mantenha esse terminal aberto e acesse http://localhost:5173. Se a porta estiver
-ocupada pelo Compose, use `5174:80`. O Nginx encaminha `/api/auth`, `/api/core`,
-`/api/delivery`, `/api/visitor`, `/api/reservation`, `/api/communication` e `/api/complaint` aos
-Services internos. Atualizar uma rota do React diretamente continua funcionando.
-Banco, APIs e event bus não são publicados em portas do host. O pgAdmin não faz
-parte desta implantação; permanece disponível pelo Compose quando necessário.
+No Linux x86-64, após instalar Docker Engine e kubectl conforme suas documentações:
 
-Em outro terminal:
-
-```powershell
-./k8s/scripts/deploy.ps1 -Kubeconfig ./k8s/.local/kubeconfig -Action Status
-Invoke-RestMethod http://localhost:5173/health
-Invoke-RestMethod http://localhost:5173/api/auth/health/ready
-Invoke-RestMethod http://localhost:5173/api/core/health/ready
-Invoke-RestMethod http://localhost:5173/api/delivery/health/ready
-Invoke-RestMethod http://localhost:5173/api/visitor/health/ready
-Invoke-RestMethod http://localhost:5173/api/reservation/health/ready
-Invoke-RestMethod http://localhost:5173/api/communication/health/ready
-Invoke-RestMethod http://localhost:5173/api/complaint/health
-kubectl --kubeconfig ./k8s/.local/kubeconfig --context kind-hiveapp -n hiveapp logs deployment/communication-service --tail=50
+```bash
+curl -LO https://github.com/kubernetes/minikube/releases/latest/download/minikube-linux-amd64
+sudo install minikube-linux-amd64 /usr/local/bin/minikube
+minikube version
 ```
 
-As seis APIs TypeScript respondem `200 {"status":"ok"}` em `/health/live` e
-`200 {"status":"ready"}` em `/health/ready` quando seu banco responde a `SELECT 1`.
-Se o banco falhar, readiness retorna 503; liveness continua independente do banco.
-Readiness não certifica todas as funcionalidades nem verifica o event bus.
+Para Linux ARM64, substitua `amd64` por `arm64` no download e no nome do arquivo.
+O usuário deve conseguir executar `docker info` sem sudo. Instruções oficiais:
+[Minikube](https://minikube.sigs.k8s.io/docs/start/),
+[Docker Engine](https://docs.docker.com/engine/install/) e
+[kubectl](https://kubernetes.io/docs/tasks/tools/).
 
-O serviço Dart de reclamações usa `/health` para readiness e retorna
-`200 {"status":"ok"}` quando seu banco está acessível, ou 503 em falha de banco.
-Startup e liveness verificam a porta TCP 8007, sem depender da disponibilidade do
-banco. Não existem rotas `/health/live` ou `/health/ready` nessa API.
+Use inicialmente 4 CPUs e 6 GiB para o perfil. Disponibilize mais memória ao Docker
+que a reserva do cluster; builds também consomem recursos. Confira espaço livre no
+host e dentro do armazenamento Docker. As imagens TypeScript atuais são grandes;
+reserve espaço adicional aos 20 GB mínimos do Minikube. Não execute limpeza automática
+nem exclua o cluster antigo para liberar recursos.
 
-## Popular os bancos de desenvolvimento
+Comandos iguais nos dois sistemas:
 
-Os Jobs reutilizam exclusivamente os quatro scripts `db:populate` já existentes.
-**Eles limpam tabelas antes de inserir exemplos.** Para executá-los explicitamente:
-
-```powershell
-./k8s/scripts/deploy.ps1 -Kubeconfig ./k8s/.local/kubeconfig -ImageTag k8s-v1 -Action Populate -ResetDevelopmentData
+```sh
+docker info
+docker system df
+kubectl version --client
+kubectl config current-context
+minikube version
+minikube profile list
+minikube start -p hiveapp-minikube --driver=docker --cpus=4 --memory=6144 --keep-context
+minikube status -p hiveapp-minikube
+kubectl --context hiveapp-minikube version
+kubectl --context hiveapp-minikube get nodes
+kubectl --context hiveapp-minikube get storageclass
 ```
 
-As contas de exemplo incluem `joao@example.com` e `fernanda@example.com`. Os scripts
-originais contêm hashes e não documentam a senha em texto. A senha temporária usada
-na validação anterior do Compose não é aplicada neste cluster. Para entrar com os
-exemplos, será necessário conhecer a senha original ou definir uma senha de teste
-explicitamente nessa base. A implantação não altera contas, senhas de usuários ou
-regras de autenticação.
+Use a versão estável padrão do Minikube e registre as versões efetivas. O kubectl deve
+estar no máximo uma versão minor acima/abaixo do servidor. Se necessário, use o cliente
+compatível fornecido por `minikube -p hiveapp-minikube kubectl -- <argumentos>`.
 
-## Organização e persistência
+O perfil e contexto são `hiveapp-minikube`; o namespace da aplicação é `hiveapp`.
+`--keep-context` solicita preservar a seleção anterior, e todos os comandos de aplicação deste guia especificam
+o contexto. Anote a seleção antes de começar (`current-context is not set` significa
+que nenhuma estava selecionada) e confira novamente após iniciar o perfil e abrir
+os túneis. Na validação, foi necessário restaurar a ausência de seleção ao final.
+Se houver diferença, restaure apenas o estado anotado: `kubectl config use-context NOME_ANTERIOR`
+para uma seleção existente, ou `kubectl config unset current-context` somente se
+ela já estava ausente. Isso não remove clusters nem credenciais.
+O Minikube administra as referências/certificados em seu kubeconfig usual;
+não reutilize o kubeconfig específico do kind. Não copie PVCs ou dados do cluster antigo.
+O novo banco começa vazio. A mesma imagem Docker pode ser reutilizada, mas precisa ser
+carregada no novo cluster.
 
-| Local                            | Conteúdo                                                        |
-| -------------------------------- | --------------------------------------------------------------- |
-| `base/`                          | Infraestrutura: namespace, configuração, PostgreSQL e event bus |
-| `base/apps/`                     | Conjunto das APIs e frontend                                    |
-| `base/services/` e `base/front/` | Deployments, Services, recursos e probes                        |
-| `jobs/migrations/`               | Jobs separados das APIs, com nomes únicos por execução          |
-| `jobs/populate/`                 | Jobs manuais dos scripts de exemplos                            |
-| `overlays/local/`                | Configuração local e geração do Secret                          |
-| `scripts/`                       | Criação de segredos, build e implantação em etapas              |
-| `../back/*-service/migrations/`  | Histórico SQL e snapshots versionados                           |
+Confirme uma StorageClass padrão com provisionamento dinâmico antes de aplicar o banco.
+Se os addons padrão estiverem desabilitados, habilite-os e confira novamente:
 
-O PostgreSQL 17 usa um StatefulSet de uma réplica e o PVC `postgres-data-db-0`
-de 2 GiB, provisionado pela StorageClass padrão. A primeira inicialização cria os
-sete bancos. `base/postgres/init.yaml` contém o mesmo SQL de `back/init-dbs.sql`;
-ao adicionar um banco, mantenha ambos sincronizados. Reiniciar ou substituir um
-Pod não apaga o PVC. Não há replicação do banco nem backup automático nesta versão.
-Os dados do Compose não são importados automaticamente.
-
-O init container do Job `migrate-complaint-service` também executa esse SQL antes
-da migração: cria somente bancos ausentes, inclusive `complaintDb` em PVCs antigos,
-sem remover bancos ou dados existentes. O SQL usa lock consultivo para serializar
-execuções concorrentes. Não é necessário recriar o volume nem executar população.
-
-## Migrações e atualização de imagens
-
-Kubernetes sobrescreve o comando das imagens para iniciar apenas a API. O Compose
-mantém seu comportamento de inicialização de cada serviço. Os Jobs das seis APIs
-TypeScript usam `drizzle.k8s.config.ts` e o diretório `migrations/`,
-separados do histórico local ignorado em `drizzle/`. A migração inicial corresponde
-ao schema existente e se destina a bancos novos; não a aplique diretamente sobre
-uma base criada por `push` sem antes reconciliar seu histórico.
-
-Reclamações usa a imagem `hiveapp/complaint-service:local` (ou prefixo/tag dos
-scripts), com o binário `/app/bin/server`. Seu Job executa `/app/bin/migrate`,
-reutilizando o SQL versionado do serviço e a configuração/Secret existentes.
-O Deployment não repete a migração no startup. O Service `complaint-service:8007`
-também fornece o DNS esperado pelo novo proxy Nginx; use o fluxo completo de build
-e deploy para atualizar o frontend e a API de reclamações juntos.
-
-Para uma futura alteração de schema, gere e revise uma migração no serviço afetado:
-
-```powershell
-cd back/core-service
-yarn drizzle-kit generate --config=drizzle.k8s.config.ts --name=descricao_da_alteracao
-cd ../..
+```sh
+minikube -p hiveapp-minikube addons enable storage-provisioner
+minikube -p hiveapp-minikube addons enable default-storageclass
 ```
 
-Versione o SQL e os metadados de `migrations/`. Para implantar uma nova versão:
+Se o perfil já existir, confirme que é o ambiente desejado e retome-o com o mesmo comando
+start; não o exclua. Se faltar memória, interrompa e ajuste os recursos do Docker ou pare
+explicitamente o ambiente antigo, preservando seus dados. Kind e Compose não são removidos.
 
-```powershell
-./k8s/scripts/build.ps1 -ImageTag k8s-v2 -KindCluster hiveapp
-./k8s/scripts/deploy.ps1 -Kubeconfig ./k8s/.local/kubeconfig -ImageTag k8s-v2
+Se o início ficar sem progresso em `Downloading Kubernetes ... preload`, interrompa
+essa tentativa com Ctrl+C e repita desabilitando somente o download opcional do
+pacote de imagens pré-carregadas:
+
+```sh
+minikube start -p hiveapp-minikube --driver=docker --cpus=4 --memory=6144 --keep-context --preload=false
 ```
 
-Use uma tag nova por versão. As migrações já registradas não são reaplicadas.
-Os Jobs recebem nomes únicos e expiram uma hora após terminar. As APIs existentes
-podem continuar atendendo durante as migrações; mudanças futuras precisam ser
-compatíveis com a versão anterior ou ter uma janela explícita de manutenção.
-Reverter a imagem não reverte migrações do banco.
+Isso não exclui o perfil nem seus dados. No primeiro início, as imagens de sistema
+ainda precisarão ser obtidas dos registries; em uma retomada, podem estar no nó.
+Essa alternativa foi necessária na validação Windows por falta de progresso no
+download do pacote do GitHub.
 
-## Reinícios e limites do event bus
+## 2. Credenciais
 
-O event bus mantém uma única réplica com atualização `Recreate`, pois seu registro
-de inscrições fica em memória. O serviço de comunicação renova a mesma inscrição
-a cada 15 segundos e tenta novamente após 3 segundos quando há falhas. Cada chamada
-tem timeout de 5 segundos. As renovações usam a URL estável do Service e não acumulam
-inscrições duplicadas no Set do event bus.
+Se `k8s/overlays/local/secrets.env` não existir, copie `secrets.example.env` para esse
+nome e edite os quatro valores. Não sobrescreva um arquivo de credenciais existente.
+Use senhas e segredos aleatórios próprios; não deixe `CHANGE_ME`. Para POSTGRES_USER
+e POSTGRES_PASSWORD, use apenas letras, números, `_` e `-`, pois entram na URL do banco.
+O arquivo é ignorado pelo Git. Não publique a saída de `kubectl kustomize` da infraestrutura,
+pois ela contém o Secret codificado em base64.
 
-```powershell
-kubectl --kubeconfig ./k8s/.local/kubeconfig --context kind-hiveapp -n hiveapp rollout restart deployment/event-bus
-kubectl --kubeconfig ./k8s/.local/kubeconfig --context kind-hiveapp -n hiveapp rollout status deployment/event-bus
+Mudar o Secret não muda a senha de um PostgreSQL já inicializado: preserve a senha
+associada ao PVC. Nesta execução manual, não há validação automática de placeholders.
+
+## 3. Construir e carregar as imagens
+
+As APIs, barramento e React usam `local`; Flutter usa a tag versionada indicada abaixo. Construa todas as imagens antes de aplicar os recursos:
+
+```sh
+docker build -f back/auth-service/docker/Dockerfile -t hiveapp/auth-service:local .
+docker build -f back/core-service/docker/Dockerfile -t hiveapp/core-service:local .
+docker build -f back/delivery-service/docker/Dockerfile -t hiveapp/delivery-service:local .
+docker build -f back/visitor-service/docker/Dockerfile -t hiveapp/visitor-service:local .
+docker build -f back/reservation-service/docker/Dockerfile -t hiveapp/reservation-service:local .
+docker build -f back/communication-service/docker/Dockerfile -t hiveapp/communication-service:local .
+docker build -f back/complaint-service/docker/Dockerfile -t hiveapp/complaint-service:local .
+docker build -f back/event-bus/docker/Dockerfile -t hiveapp/event-bus:local .
+docker build -f front/docker/Dockerfile -t hiveapp/front:local .
+docker build -f frontMobile/front_flutter/docker/Dockerfile -t hiveapp/flutter-web:complaints-refactor-20261111-071233 .
+minikube -p hiveapp-minikube image load hiveapp/auth-service:local --daemon
+minikube -p hiveapp-minikube image load hiveapp/core-service:local --daemon
+minikube -p hiveapp-minikube image load hiveapp/delivery-service:local --daemon
+minikube -p hiveapp-minikube image load hiveapp/visitor-service:local --daemon
+minikube -p hiveapp-minikube image load hiveapp/reservation-service:local --daemon
+minikube -p hiveapp-minikube image load hiveapp/communication-service:local --daemon
+minikube -p hiveapp-minikube image load hiveapp/complaint-service:local --daemon
+minikube -p hiveapp-minikube image load hiveapp/event-bus:local --daemon
+minikube -p hiveapp-minikube image load hiveapp/front:local --daemon
+minikube -p hiveapp-minikube image load hiveapp/flutter-web:complaints-refactor-20261111-071233 --daemon
 ```
 
-A recuperação é eventual; eventos enviados durante a interrupção podem ser perdidos.
-Esta implementação não adiciona fila durável nem garantia de entrega. A inscrição
-é recuperada sem exigir reinício do serviço de comunicação.
+Aguarde o carregamento terminar. O Docker Hub não é necessário. A imagem PostgreSQL
+é obtida do registry pelo cluster. Os mesmos Dockerfiles continuam sendo usados
+pelo Compose; seus dados e volumes são independentes.
 
-## Parar preservando os dados
+Alternativa à carga individual: exportar todas as imagens em um único arquivo,
+compartilhando camadas comuns. Isso reduz a transferência das imagens grandes.
+Crie `k8s/.local` se necessário (diretório ignorado pelo Git) e execute, nos dois sistemas:
 
-Encerre o port-forward com Ctrl+C. Para parar as aplicações e o banco sem excluir o PVC:
-
-```powershell
-kubectl --kubeconfig ./k8s/.local/kubeconfig --context kind-hiveapp -n hiveapp scale deployment --all --replicas=0
-kubectl --kubeconfig ./k8s/.local/kubeconfig --context kind-hiveapp -n hiveapp scale statefulset/db --replicas=0
+```sh
+docker image save -o k8s/.local/minikube-images.tar hiveapp/auth-service:local hiveapp/core-service:local hiveapp/delivery-service:local hiveapp/visitor-service:local hiveapp/reservation-service:local hiveapp/communication-service:local hiveapp/complaint-service:local hiveapp/event-bus:local hiveapp/front:local hiveapp/flutter-web:complaints-refactor-20261111-071233
+minikube -p hiveapp-minikube image load k8s/.local/minikube-images.tar
+minikube -p hiveapp-minikube image ls
 ```
 
-Execute novamente `deploy.ps1` para retomar. Excluir o namespace/PVC ou apagar o
-cluster kind remove o armazenamento desta instalação local; essas ações não são
-equivalentes a parar os Pods.
+Escolha uma das formas de carga; não é necessário executar ambas. Após uma atualização,
+gere novamente o arquivo antes de carregá-lo para não reutilizar imagens antigas.
 
-Os manifests tratam a infraestrutura. As falhas funcionais identificadas na
-validação anterior não são corrigidas por esta implantação.
+## 4. Aplicar os YAMLs em etapas
+
+Infraestrutura: namespace, configurações, Secret, PostgreSQL e barramento:
+
+```sh
+kubectl --context hiveapp-minikube apply -k k8s/overlays/local
+kubectl --context hiveapp-minikube -n hiveapp rollout status statefulset/db --timeout=300s
+kubectl --context hiveapp-minikube -n hiveapp rollout status deployment/event-bus --timeout=180s
+```
+
+Migrações (sete Jobs). Em uma nova implantação, crie e aguarde:
+
+```sh
+kubectl --context hiveapp-minikube apply -k k8s/overlays/local/migrations
+kubectl --context hiveapp-minikube -n hiveapp wait --for=condition=complete job -l hiveapp/task=migrate --timeout=210s
+```
+
+Se algum Job falhar, consulte seus logs antes de continuar:
+
+```sh
+kubectl --context hiveapp-minikube -n hiveapp get jobs
+kubectl --context hiveapp-minikube -n hiveapp logs job/migrate-auth-service --all-containers=true --tail=80
+```
+
+APIs e frontends, somente depois das migrações concluírem:
+
+```sh
+kubectl --context hiveapp-minikube apply -k k8s/overlays/local/apps
+kubectl --context hiveapp-minikube -n hiveapp rollout status deployment --timeout=240s
+kubectl --context hiveapp-minikube -n hiveapp get pods,services,pvc,jobs
+```
+
+Resultado esperado: dez Deployments disponíveis, PostgreSQL pronto e PVC Bound.
+O banco usa StatefulSet, sete bases e volume de 2 GiB; as APIs usam init containers
+para aguardar suas dependências. Healthchecks não certificam todos os fluxos funcionais.
+
+Para validar os quatro conjuntos no servidor, com o namespace já criado, sem
+executar os Jobs opcionais de população:
+
+```sh
+kubectl --context hiveapp-minikube apply --dry-run=server -k k8s/overlays/local
+kubectl --context hiveapp-minikube apply --dry-run=server -k k8s/overlays/local/migrations
+kubectl --context hiveapp-minikube apply --dry-run=server -k k8s/overlays/local/apps
+kubectl --context hiveapp-minikube apply --dry-run=server -k k8s/overlays/local/populate
+```
+
+## 5. Acessar e verificar
+
+Os frontends conservam NodePorts 30080 (React) e 30081 (Flutter web). Obtenha seus
+endereços executando cada comando em um terminal separado:
+
+```sh
+minikube -p hiveapp-minikube service front -n hiveapp --url
+minikube -p hiveapp-minikube service flutter-web -n hiveapp --url
+```
+
+Abra as URLs retornadas. No Windows com Docker, mantenha os terminais abertos para
+preservar os túneis; as portas são atribuídas pelo Minikube e podem mudar ao reabri-los.
+Não presuma `localhost:8080/8081` nem acesso direto pelo IP do nó no Windows.
+No Linux nativo, o comando pode retornar diretamente IP do nó e NodePort.
+Veja [acesso no Minikube](https://minikube.sigs.k8s.io/docs/handbook/accessing/).
+
+Os Nginx encaminham `/api/*` aos Services internos, usando a mesma origem no navegador.
+APIs, PostgreSQL e barramento permanecem internos. A mudança de porta externa não
+exige alterações no frontend nem nos destinos de proxy.
+
+Abra `/health` nos dois endereços. Para as APIs, verifique `/api/auth/health/ready`,
+`/api/core/health/ready`, `/api/delivery/health/ready`, `/api/visitor/health/ready`,
+`/api/reservation/health/ready`, `/api/communication/health/ready` e
+`/api/complaint/health`. Espera-se HTTP 200 e status `ready` nas rotas de readiness,
+e `ok` em `/health`. Saúde não substitui os testes funcionais.
+
+Para diagnóstico:
+
+```sh
+kubectl --context hiveapp-minikube -n hiveapp get pods,services,pvc,jobs
+kubectl --context hiveapp-minikube -n hiveapp get events --sort-by=.metadata.creationTimestamp
+kubectl --context hiveapp-minikube -n hiveapp logs deployment/communication-service --tail=50
+```
+
+## 6. Atualizações e repetição das migrações
+
+Preferencialmente, use uma nova tag por versão: altere `image:` nos YAMLs dos Deployments,
+Jobs e init containers correspondentes; construa/carregue as imagens com a mesma tag.
+A alteração do template dispara o rollout ao aplicar os YAMLs novamente.
+
+Para uma atualização local mantendo `:local`, reconstrua/carregue as imagens e,
+depois de aplicar os manifests e concluir as migrações, reinicie os Deployments:
+
+```sh
+kubectl --context hiveapp-minikube -n hiveapp rollout restart deployment
+kubectl --context hiveapp-minikube -n hiveapp rollout status deployment --timeout=240s
+```
+
+Esse reinício também é necessário após mudar ConfigMap/Secret consumidos como variáveis
+de ambiente. A antiga substituição automática de tags/checksum não faz parte do fluxo.
+
+Jobs têm nomes fixos e seus templates são imutáveis. Antes de repetir migrações ou
+alterar suas imagens, confirme que não há Jobs de migração em execução. Remova somente
+os Jobs encerrados desse grupo e reaplique:
+
+```sh
+kubectl --context hiveapp-minikube -n hiveapp get jobs -l hiveapp/task=migrate
+kubectl --context hiveapp-minikube -n hiveapp delete jobs -l hiveapp/task=migrate
+kubectl --context hiveapp-minikube apply -k k8s/overlays/local/migrations
+kubectl --context hiveapp-minikube -n hiveapp wait --for=condition=complete job -l hiveapp/task=migrate --timeout=210s
+```
+
+A exclusão desses Jobs não exclui o PVC. Nas seis APIs TypeScript, o histórico de migração fica no banco e evita
+reaplicar SQL registrado. Reclamações (Dart) reexecuta seus SQLs idempotentes com
+`IF NOT EXISTS` e lock consultivo; não possui o mesmo histórico do Drizzle. Nunca interrompa uma migração em andamento com essa limpeza.
+Jobs também expiram uma hora após terminar. As migrações TypeScript versionadas se
+destinam a bases novas; bases criadas por `push` precisam de reconciliação do histórico.
+Novas migrações devem ser compatíveis com a aplicação anterior; rollback de imagem
+não reverte alterações no banco.
+
+## 7. Dados fictícios (opcional)
+
+Após as migrações e as aplicações estarem prontas, execute os dois Jobs novos:
+
+```sh
+kubectl --context hiveapp-minikube apply -k k8s/overlays/local/populate
+kubectl --context hiveapp-minikube -n hiveapp wait --for=condition=complete job/populate-demo-bootstrap job/populate-demo-scenarios --timeout=450s
+kubectl --context hiveapp-minikube -n hiveapp logs job/populate-demo-bootstrap
+kubectl --context hiveapp-minikube -n hiveapp logs job/populate-demo-scenarios
+```
+
+O bootstrap cria contas, condomínio, residências e área comum; cenários aguarda as
+ dependências e cria exemplos pelas APIs, incluindo encomenda/notificação. Não apagam
+ dados existentes nem sobrescrevem identidades; usam IDs e marcadores próprios para
+ evitar duplicação. Reexecuções preservam as datas originais. São exclusivos de
+ demonstração local, com credenciais públicas documentadas no
+ [tutorial da raiz](../README.md#9-dados-fictícios-com-jobs-opcional).
+
+Reutilizam a imagem auth-service já carregada e recebem demo.cjs via ConfigMap;
+ não exigem rebuild. Para repetir, confira que os dois Jobs estão encerrados e
+ remova somente esses Jobs antes de reaplicar:
+
+```sh
+kubectl --context hiveapp-minikube -n hiveapp get jobs -l hiveapp/demo=v1
+```
+
+Somente se ambos estiverem Complete/Failed ou ausentes (TTL):
+
+```sh
+kubectl --context hiveapp-minikube -n hiveapp delete job populate-demo-bootstrap populate-demo-scenarios --ignore-not-found
+kubectl --context hiveapp-minikube apply -k k8s/overlays/local/populate
+kubectl --context hiveapp-minikube -n hiveapp wait --for=condition=complete job/populate-demo-bootstrap job/populate-demo-scenarios --timeout=450s
+```
+
+A exclusão dos Jobs não exclui os exemplos. Não interrompa Jobs ativos. Os antigos
+ quatro Jobs destrutivos foram substituídos; os scripts do Compose continuam
+ disponíveis e destrutivos. O fixture antigo scripts/populate-local.cjs não está
+ nesta revisão. Consulte [comportamento e limites](jobs/populate/README.md).
+
+## 8. Reinícios e parada preservando dados
+
+O barramento usa uma réplica e `Recreate`: suas inscrições são mantidas em memória.
+Comunicação renova a inscrição a cada 15 segundos e repete tentativas após falhas.
+Eventos durante a interrupção podem ser perdidos; não há fila durável.
+
+```sh
+kubectl --context hiveapp-minikube -n hiveapp rollout restart deployment/event-bus
+kubectl --context hiveapp-minikube -n hiveapp rollout status deployment/event-bus --timeout=180s
+```
+
+Para parar o perfil preservando seus dados:
+
+```sh
+minikube stop -p hiveapp-minikube
+```
+
+Para retomar:
+
+```sh
+minikube start -p hiveapp-minikube --driver=docker --cpus=4 --memory=6144 --keep-context
+kubectl --context hiveapp-minikube -n hiveapp rollout status statefulset/db --timeout=300s
+kubectl --context hiveapp-minikube -n hiveapp rollout status deployment --timeout=240s
+```
+
+Reabra os dois comandos `minikube service` para obter URLs atuais. `stop` preserva o
+perfil; excluir perfil, namespace ou PVC pode apagar dados. Não há backup automático
+nem importação dos dados do kind/Compose. Não use `minikube delete` como forma de parar.
+
+## Relação com a aula
+
+Deployments/labels, Services ClusterIP/DNS, acesso NodePort, atualização de imagens
+e consulta de logs seguem os conceitos da apostila. Minikube com driver Docker uniformiza Windows/Linux;
+StatefulSet, PVC e Jobs complementam o roteiro. Os arquivos Kustomize apenas agrupam
+YAMLs para `kubectl apply -k`; não exigem uma ferramenta adicional ao kubectl.
+A demonstração é React/Flutter web: não certifica a entrega mobile Android.
+
+Veja [VALIDATION-MINIKUBE.md](VALIDATION-MINIKUBE.md) para esta migração e
+[VALIDATION.md](VALIDATION.md) para evidências históricas do kind.

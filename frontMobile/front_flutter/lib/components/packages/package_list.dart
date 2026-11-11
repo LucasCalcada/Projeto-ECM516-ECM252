@@ -153,6 +153,7 @@ class _PackageListState extends State<PackageList> {
       ],
     );
   }
+
 }
 
 class _PackageCard extends StatelessWidget {

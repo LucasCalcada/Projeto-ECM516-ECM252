@@ -28,6 +28,7 @@ class AppShell extends StatefulWidget {
     required this.viewBuilder,
     required this.onSignOut,
     required this.onSessionExpired,
+    this.onSectionChanged,
   });
 
   final UserSession session;
@@ -35,6 +36,7 @@ class AppShell extends StatefulWidget {
   final AppShellView Function(String route) viewBuilder;
   final Future<void> Function() onSignOut;
   final VoidCallback onSessionExpired;
+  final ValueChanged<String>? onSectionChanged;
 
   @override
   State<AppShell> createState() => _AppShellState();
@@ -90,6 +92,7 @@ class _AppShellState extends State<AppShell> with WidgetsBindingObserver {
       _view = widget.viewBuilder(route);
       _storage = PageStorageBucket();
     });
+    widget.onSectionChanged?.call(route);
   }
 
   Future<void> _navigate(String route) async {

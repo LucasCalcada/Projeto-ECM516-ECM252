@@ -144,9 +144,7 @@ class _VisitorAccessResidencyListState
         ),
         children: [
           TableRow(
-            children: [
-              for (final header in headers) _headerCell(header),
-            ],
+            children: [for (final header in headers) _headerCell(header)],
           ),
           for (final access in items)
             TableRow(
@@ -165,10 +163,8 @@ class _VisitorAccessResidencyListState
 }
 
 TextStyle _secondary(BuildContext context) =>
-    Theme.of(context).textTheme.labelMedium!.copyWith(
-      color: HiveColors.secondary,
-      fontWeight: FontWeight.w400,
-    );
+    Theme.of(context).textTheme.labelMedium!
+        .copyWith(color: HiveColors.secondary, fontWeight: FontWeight.w400);
 
 Widget _headerCell(String label) {
   return Padding(
@@ -202,5 +198,7 @@ Widget _cell(String value) {
 String _formatEntry(BuildContext context, DateTime value) {
   final local = value.toLocal();
   final locale = MaterialLocalizations.of(context);
-  return '${locale.formatShortDate(local)} ${locale.formatTimeOfDay(TimeOfDay.fromDateTime(local))}';
+  final hour = local.hour.toString().padLeft(2, '0');
+  final minute = local.minute.toString().padLeft(2, '0');
+  return '${locale.formatShortDate(local)} $hour:$minute';
 }

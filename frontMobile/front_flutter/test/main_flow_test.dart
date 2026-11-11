@@ -37,7 +37,6 @@ http.Response jsonResponse(Object value, [int status = 200]) => http.Response(
 Future<void> launch(
   WidgetTester tester, {
   FakeSessionStorage? storage,
-  FakeUserDataStorage? userData,
   FakePreferencesStorage? preferences,
   Future<http.Response> Function(http.Request)? handler,
   String? language = 'pt',
@@ -68,7 +67,6 @@ Future<void> launch(
         child: HiveApp(
           client: client,
           sessionStorage: storage ?? FakeSessionStorage(),
-          userDataStorage: userData ?? FakeUserDataStorage(),
           preferencesStorage: preferences ?? FakePreferencesStorage(),
           locale: language == null ? null : Locale(language),
         ),
@@ -169,22 +167,17 @@ void main() {
       mobileSize(tester, const Size(390, 844));
       final storage = FakeSessionStorage();
       final preferences = FakePreferencesStorage();
-      final userData = FakeUserDataStorage()..data = {'userId': 'old-user'};
       await launch(
         tester,
         storage: storage,
-        userData: userData,
         preferences: preferences,
       );
       await login(tester);
-      expect(userData.data, isNull);
       expect(find.byType(BuildingSelector), findsOneWidget);
       await preview(tester, 'building-selector');
       await selectBuilding(tester);
       expect(find.byType(HomeScreen), findsOneWidget);
       expect(storage.userToken, isNotNull);
-      expect(userData.data?['userId'], 'user-1');
-      expect(userData.data?['permissions'], ['@reservation:create']);
       expect(find.text('Manutenção dos elevadores'), findsOneWidget);
       expect(
         Navigator.of(tester.element(find.byType(HomeScreen))).canPop(),
@@ -201,8 +194,8 @@ void main() {
       );
       expect(residents.properties.enabled, isFalse);
       expect(residents.properties.label, contains('permissão'));
-      expect(reservations.properties.enabled, isFalse);
-      expect(reservations.properties.label, contains('Em breve'));
+      expect(reservations.properties.enabled, isTrue);
+      expect(reservations.properties.label, isNot(contains('Em breve')));
       await preview(tester, 'menu');
       await tester.ensureVisible(find.byKey(const ValueKey('menu-/settings')));
       await tester.tap(find.byKey(const ValueKey('menu-/settings')));
@@ -225,7 +218,6 @@ void main() {
       expect(find.byType(Login), findsOneWidget);
       expect(storage.token, isNull);
       expect(storage.userToken, isNull);
-      expect(userData.data, isNull);
       expect(preferences.language, 'en');
       expect(
         Navigator.of(tester.element(find.byType(Login))).canPop(),
@@ -247,16 +239,14 @@ void main() {
   );
 
   testWidgets(
-    'selection prevents duplicates and waits for token and local-data persistence',
+    'selection prevents duplicates and waits for token persistence',
     (tester) async {
       final storage = FakeSessionStorage()
         ..pendingUserWrite = Completer<void>();
-      final userData = FakeUserDataStorage()..pendingWrite = Completer<void>();
       var selections = 0;
       await launch(
         tester,
         storage: storage,
-        userData: userData,
         handler: (request) async {
           if (request.url.path == '/auth/login') {
             return jsonResponse({'token': 'account-token'});
@@ -278,13 +268,6 @@ void main() {
       expect(selections, 1);
       expect(find.byType(HomeScreen), findsNothing);
       storage.pendingUserWrite!.complete();
-      await tester.pump();
-      expect(storage.userToken, isNotNull);
-      expect(find.byType(HomeScreen), findsNothing);
-      await tester.tap(item);
-      await tester.pump();
-      expect(selections, 1);
-      userData.pendingWrite!.complete();
       await tester.pumpAndSettle();
       expect(find.byType(HomeScreen), findsOneWidget);
       await tester.pumpWidget(const SizedBox());
@@ -307,64 +290,29 @@ void main() {
     },
   );
 
-  testWidgets('local-data write failure prevents home and permits retry', (
-    tester,
-  ) async {
+  testWidgets('restart restores the session and the last section', (tester) async {
     final storage = FakeSessionStorage();
-    final userData = FakeUserDataStorage()..failWrite = true;
-    await launch(tester, storage: storage, userData: userData);
+    await launch(tester, storage: storage);
     await login(tester);
     await selectBuilding(tester);
-    expect(find.byType(BuildingSelector), findsOneWidget);
-    expect(find.byType(HomeScreen), findsNothing);
-    expect(find.textContaining('Não foi possível salvar'), findsOneWidget);
-    expect(storage.token, 'account-token');
-    expect(storage.userToken, isNull);
-    expect(userData.data, isNull);
-    userData.failWrite = false;
-    await selectBuilding(tester);
-    expect(find.byType(HomeScreen), findsOneWidget);
-    expect(userData.data?['userId'], 'user-1');
+    await openSettings(tester);
+    expect(storage.section?.route, AppRoutes.settings);
+    await tester.pumpWidget(const SizedBox());
+    await launch(tester, storage: storage);
+    expect(find.byType(SettingsScreen), findsOneWidget);
+    expect(find.byType(Login), findsNothing);
   });
 
-  testWidgets(
-    'persisted tokens and local claims do not bypass login after restart',
-    (tester) async {
-      final storage = FakeSessionStorage();
-      final userData = FakeUserDataStorage();
-      await launch(tester, storage: storage, userData: userData);
-      await login(tester);
-      await selectBuilding(tester);
-      expect(userData.data, isNotNull);
-      await tester.pumpWidget(const SizedBox());
-      await launch(tester, storage: storage, userData: userData);
-      expect(find.byType(Login), findsOneWidget);
-      expect(find.byType(HomeScreen), findsNothing);
-      expect(storage.userToken, isNotNull);
-      expect(userData.data, isNotNull);
-      await login(tester);
-      expect(userData.data, isNull);
-      expect(storage.userToken, isNull);
-      expect(find.byType(BuildingSelector), findsOneWidget);
-    },
-  );
-
-  testWidgets('failed local cleanup blocks a new login until retry succeeds', (
-    tester,
-  ) async {
-    final storage = FakeSessionStorage();
-    final userData = FakeUserDataStorage()
-      ..data = {'userId': 'old-user'}
-      ..failClear = true;
-    await launch(tester, storage: storage, userData: userData);
-    await login(tester);
-    expect(find.byType(Login), findsOneWidget);
-    expect(storage.token, isNull);
-    expect(find.byType(BuildingSelector), findsNothing);
-    userData.failClear = false;
-    await login(tester);
-    expect(userData.data, isNull);
-    expect(find.byType(BuildingSelector), findsOneWidget);
+  testWidgets('storage read failure retains tokens and permits retry', (tester) async {
+    final storage = FakeSessionStorage()..userToken = userToken()..failRead = true;
+    await launch(tester, storage: storage);
+    expect(find.byType(Login), findsNothing);
+    expect(find.byType(HomeScreen), findsNothing);
+    expect(storage.userToken, isNotNull);
+    storage.failRead = false;
+    await tester.tap(find.byIcon(Icons.refresh));
+    await tester.pumpAndSettle();
+    expect(find.byType(HomeScreen), findsOneWidget);
   });
 
   testWidgets('protected routes cannot bypass login or membership selection', (
@@ -425,11 +373,9 @@ void main() {
       tester,
     ) async {
       final storage = FakeSessionStorage();
-      final userData = FakeUserDataStorage();
       await launch(
         tester,
         storage: storage,
-        userData: userData,
         handler: (request) async {
           if (request.url.path == endpoint) return jsonResponse({}, 401);
           if (request.url.path == '/auth/login') {
@@ -444,7 +390,6 @@ void main() {
       expect(find.byType(Login), findsOneWidget);
       expect(storage.token, isNull);
       expect(storage.userToken, isNull);
-      expect(userData.data, isNull);
       expect(find.text('Sua sessão expirou. Entre novamente.'), findsOneWidget);
     });
   }

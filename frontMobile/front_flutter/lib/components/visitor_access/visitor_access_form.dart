@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../helpers/visitor_service.dart';
+import '../../helpers/visitor_entry_datetime.dart';
 import '../../lang/app_localizations.dart';
 import '../../theme/app_theme.dart';
 import '../../types/api_failure.dart';
@@ -31,7 +32,7 @@ class _VisitorAccessFormState extends State<VisitorAccessForm> {
   final _nameFocus = FocusNode();
   final _cpfFocus = FocusNode();
   final _rgFocus = FocusNode();
-  DateTime? _entryAt;
+  final _entryFocus = FocusNode();
   bool _submitting = false;
 
   @override
@@ -43,39 +44,12 @@ class _VisitorAccessFormState extends State<VisitorAccessForm> {
     _nameFocus.dispose();
     _cpfFocus.dispose();
     _rgFocus.dispose();
+    _entryFocus.dispose();
     super.dispose();
   }
 
   String? _required(String? value, String message) =>
       value == null || value.trim().isEmpty ? message : null;
-
-  Future<void> _pickEntry() async {
-    if (_submitting) return;
-    final now = DateTime.now();
-    final date = await showDatePicker(
-      context: context,
-      initialDate: _entryAt ?? now,
-      firstDate: DateTime(now.year - 5),
-      lastDate: DateTime(now.year + 1),
-    );
-    if (date == null || !mounted) return;
-    final time = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.fromDateTime(_entryAt ?? now),
-    );
-    if (time == null || !mounted) return;
-    final selected = DateTime(
-      date.year,
-      date.month,
-      date.day,
-      time.hour,
-      time.minute,
-    );
-    setState(() {
-      _entryAt = selected;
-      _entry.text = _formatEntry(context, selected);
-    });
-  }
 
   Future<void> _submit() async {
     if (_submitting) return;
@@ -86,15 +60,17 @@ class _VisitorAccessFormState extends State<VisitorAccessForm> {
         _nameFocus.requestFocus();
       } else if (_cpf.text.trim().isEmpty) {
         _cpfFocus.requestFocus();
-      } else {
+      } else if (_rg.text.trim().isEmpty) {
         _rgFocus.requestFocus();
+      } else {
+        _entryFocus.requestFocus();
       }
       return;
     }
     final name = _name.text.trim();
     final cpf = _cpf.text.trim();
     final rg = _rg.text.trim();
-    final entryAt = _entryAt;
+    final entryAt = parseVisitorEntryDateTime(_entry.text);
     setState(() => _submitting = true);
     try {
       await widget.service.register(
@@ -109,7 +85,6 @@ class _VisitorAccessFormState extends State<VisitorAccessForm> {
       _cpf.clear();
       _rg.clear();
       _entry.clear();
-      setState(() => _entryAt = null);
       _notify(strings.text('visitorAccess.form.success'));
     } on ApiException catch (error) {
       if (!mounted) return;
@@ -178,8 +153,15 @@ class _VisitorAccessFormState extends State<VisitorAccessForm> {
                   key: const Key('visitor-entry'),
                   label: strings.text('visitorAccess.form.dateTime'),
                   controller: _entry,
-                  readOnly: true,
-                  onTap: _pickEntry,
+                  focus: _entryFocus,
+                  hint: strings.text('visitorAccess.form.dateTimePlaceholder'),
+                  helper: strings.text('visitorAccess.form.dateTimeHelp'),
+                  validator: (value) =>
+                      value == null ||
+                          value.trim().isEmpty ||
+                          parseVisitorEntryDateTime(value) != null
+                      ? null
+                      : strings.text('visitorAccess.form.dateTimeError'),
                   textInputAction: TextInputAction.done,
                 ),
               ];
@@ -208,10 +190,7 @@ class _VisitorAccessFormState extends State<VisitorAccessForm> {
   List<Widget> _rows(List<Widget> fields, bool wide) {
     if (!wide) {
       return [
-        for (final field in fields) ...[
-          field,
-          const SizedBox(height: 12),
-        ],
+        for (final field in fields) ...[field, const SizedBox(height: 12)],
       ];
     }
     final rows = <Widget>[];
@@ -244,8 +223,8 @@ class _VisitorAccessFormState extends State<VisitorAccessForm> {
     FocusNode? focus,
     String? hint,
     String? error,
-    bool readOnly = false,
-    VoidCallback? onTap,
+    String? helper,
+    FormFieldValidator<String>? validator,
     TextInputAction textInputAction = TextInputAction.next,
   }) {
     return Column(
@@ -254,10 +233,8 @@ class _VisitorAccessFormState extends State<VisitorAccessForm> {
       children: [
         Text(
           label,
-          style: Theme.of(context).textTheme.labelMedium?.copyWith(
-            color: HiveColors.body,
-            fontWeight: FontWeight.w400,
-          ),
+          style: Theme.of(context).textTheme.labelMedium
+              ?.copyWith(color: HiveColors.body, fontWeight: FontWeight.w400),
         ),
         const SizedBox(height: 4),
         TextFormField(
@@ -265,28 +242,30 @@ class _VisitorAccessFormState extends State<VisitorAccessForm> {
           controller: controller,
           focusNode: focus,
           enabled: !_submitting,
-          readOnly: readOnly,
-          onTap: _submitting ? null : onTap,
+          autovalidateMode: validator != null
+              ? AutovalidateMode.onUserInteraction
+              : AutovalidateMode.disabled,
           textInputAction: textInputAction,
-          decoration: InputDecoration(hintText: hint),
+          decoration: InputDecoration(
+            hintText: hint,
+            helperText: helper,
+            helperMaxLines: 3,
+            errorMaxLines: 3,
+          ),
           style: const TextStyle(
             fontSize: 14,
             height: 20 / 14,
             color: HiveColors.text,
           ),
-          validator: (value) {
-            final message = error;
-            if (message == null) return null;
-            return _required(value, message);
-          },
+          validator:
+              validator ??
+              (value) {
+                final message = error;
+                if (message == null) return null;
+                return _required(value, message);
+              },
         ),
       ],
     );
   }
-}
-
-String _formatEntry(BuildContext context, DateTime value) {
-  final local = value.toLocal();
-  final locale = MaterialLocalizations.of(context);
-  return '${locale.formatShortDate(local)} ${locale.formatTimeOfDay(TimeOfDay.fromDateTime(local))}';
 }

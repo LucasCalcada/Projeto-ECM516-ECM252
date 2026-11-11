@@ -28,6 +28,16 @@ class _HomeScreenState extends State<HomeScreen> {
   List<CommunicationPost>? _posts;
   bool _loading = false;
   ApiFailure? _error;
+  final _expandedPosts = <String>{};
+  final _announcementsScroll = ScrollController();
+  final _eventsScroll = ScrollController();
+
+  @override
+  void dispose() {
+    _announcementsScroll.dispose();
+    _eventsScroll.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -43,7 +53,12 @@ class _HomeScreenState extends State<HomeScreen> {
     });
     try {
       final posts = await widget.service.listPosts(widget.session);
-      if (mounted) setState(() => _posts = posts);
+      if (mounted) {
+        setState(() {
+          _posts = posts;
+          _expandedPosts.retainAll(posts.map((post) => post.id).toSet());
+        });
+      }
     } catch (error) {
       if (!mounted) return;
       final failure = error is ApiException
@@ -62,10 +77,56 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final strings = AppLocalizations.of(context);
-    return Center(
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 800),
-        child: RefreshIndicator(
+    final header = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          widget.session.buildingName.isEmpty
+              ? strings.text('selector.unnamedBuilding')
+              : widget.session.buildingName,
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
+        const SizedBox(height: 8),
+        Text(strings.text('home.subtitle')),
+        const SizedBox(height: 8),
+        TextButton.icon(
+          key: const Key('refresh-home'),
+          onPressed: _loading ? null : _load,
+          icon: const Icon(Icons.refresh),
+          label: Text(strings.text('refresh')),
+        ),
+        if (_loading) const LinearProgressIndicator(),
+        if (_error != null) RequestFeedback(failure: _error, onRetry: _load),
+      ],
+    );
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (constraints.maxWidth >= 768) {
+          return Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                header,
+                if (_posts != null) ...[
+                  const SizedBox(height: 24),
+                  Expanded(
+                    child: Row(
+                      key: const Key('home-columns'),
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(child: _desktopSection(false)),
+                        const SizedBox(width: 24),
+                        Expanded(child: _desktopSection(true)),
+                      ],
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          );
+        }
+        return RefreshIndicator(
           onRefresh: _load,
           child: CustomScrollView(
             key: const PageStorageKey('home-scroll'),
@@ -73,57 +134,67 @@ class _HomeScreenState extends State<HomeScreen> {
             slivers: [
               SliverPadding(
                 padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-                sliver: SliverToBoxAdapter(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.session.buildingName.isEmpty
-                            ? strings.text('selector.unnamedBuilding')
-                            : widget.session.buildingName,
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(strings.text('home.subtitle')),
-                      const SizedBox(height: 8),
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: TextButton.icon(
-                          key: const Key('refresh-home'),
-                          onPressed: _loading ? null : _load,
-                          icon: const Icon(Icons.refresh),
-                          label: Text(strings.text('refresh')),
-                        ),
-                      ),
-                      if (_loading) const LinearProgressIndicator(),
-                      if (_error != null)
-                        RequestFeedback(failure: _error, onRetry: _load),
-                    ],
-                  ),
-                ),
+                sliver: SliverToBoxAdapter(child: header),
               ),
               if (_posts != null) ...[
-                SliverPadding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  sliver: PostsSection(
-                    posts: _posts!
-                        .where((post) => post.eventAt == null)
-                        .toList(),
-                    events: false,
-                  ),
-                ),
-                SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-                  sliver: PostsSection(
-                    posts: _posts!
-                        .where((post) => post.eventAt != null)
-                        .toList(),
-                    events: true,
-                  ),
-                ),
+                _mobileSection(false),
+                _mobileSection(true),
+                const SliverToBoxAdapter(child: SizedBox(height: 24)),
               ],
             ],
           ),
+        );
+      },
+    );
+  }
+
+  Widget _section(bool events, {bool showHeader = true}) => PostsSection(
+    posts: _posts!.where((post) => (post.eventAt != null) == events).toList(),
+    events: events,
+    showHeader: showHeader,
+    expandedPosts: _expandedPosts,
+    onTogglePost: (id) => setState(() {
+      if (!_expandedPosts.add(id)) _expandedPosts.remove(id);
+    }),
+  );
+
+  Widget _mobileSection(bool events) => SliverPadding(
+    padding: const EdgeInsets.fromLTRB(16, 24, 16, 0),
+    sliver: DecoratedSliver(
+      key: ValueKey(events ? 'home-events-panel' : 'home-announcements-panel'),
+      decoration: homeListDecoration,
+      sliver: SliverPadding(
+        padding: const EdgeInsets.all(16),
+        sliver: _section(events),
+      ),
+    ),
+  );
+
+  Widget _desktopSection(bool events) {
+    final controller = events ? _eventsScroll : _announcementsScroll;
+    return DecoratedBox(
+      key: ValueKey(events ? 'home-events-panel' : 'home-announcements-panel'),
+      decoration: homeListDecoration,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            PostsSectionHeader(events: events),
+            Expanded(
+              child: Scrollbar(
+                controller: controller,
+                child: CustomScrollView(
+                  key: PageStorageKey(
+                    events ? 'home-events-scroll' : 'home-announcements-scroll',
+                  ),
+                  controller: controller,
+                  primary: false,
+                  slivers: [_section(events, showHeader: false)],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

@@ -11,3 +11,9 @@
 !**/.env.example
 k8s/
 output/
+frontMobile/front_flutter/build/
+frontMobile/front_flutter/.dart_tool/
+frontMobile/front_flutter/.pub-cache/
+frontMobile/front_flutter/.pub/
+frontMobile/front_flutter/.flutter-plugins-dependencies
+frontMobile/front_flutter/coverage/

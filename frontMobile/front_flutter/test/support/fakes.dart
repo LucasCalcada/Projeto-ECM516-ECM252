@@ -3,11 +3,26 @@ import 'dart:convert';
 
 import 'package:front_flutter/helpers/preferences_storage.dart';
 import 'package:front_flutter/helpers/session_storage.dart';
-import 'package:front_flutter/helpers/user_data_storage.dart';
 
 class FakeSessionStorage implements SessionStorage {
   String? token;
   String? userToken;
+  SessionSection? section;
+  bool failRead = false;
+  bool failSectionWrite = false;
+
+  @override
+  Future<SessionSection?> readSection() async {
+    if (failRead) throw StateError("storage unavailable");
+    return section;
+  }
+  @override
+  Future<void> saveSection(SessionSection value) async {
+    if (failSectionWrite) throw StateError("storage unavailable");
+    section = value;
+  }
+  @override
+  Future<void> clearSection() async => section = null;
   int writes = 0;
   int userWrites = 0;
   bool failWrite = false;
@@ -21,6 +36,7 @@ class FakeSessionStorage implements SessionStorage {
     writes++;
     if (failWrite) throw StateError('storage unavailable');
     if (pendingWrite != null) await pendingWrite!.future;
+    section = null;
     userToken = null;
     token = value;
   }
@@ -33,6 +49,7 @@ class FakeSessionStorage implements SessionStorage {
     userWrites++;
     if (failUserWrite) throw StateError('storage unavailable');
     if (pendingUserWrite != null) await pendingUserWrite!.future;
+    section = null;
     userToken = value;
   }
 
@@ -42,6 +59,7 @@ class FakeSessionStorage implements SessionStorage {
   @override
   Future<void> clearUserToken() async {
     if (failClear) throw StateError('storage unavailable');
+    section = null;
     userToken = null;
   }
 
@@ -49,32 +67,8 @@ class FakeSessionStorage implements SessionStorage {
   Future<void> clearSession() async {
     if (failClear) throw StateError('storage unavailable');
     token = null;
+    section = null;
     userToken = null;
-  }
-}
-
-class FakeUserDataStorage implements UserDataStorage {
-  Map<String, dynamic>? data;
-  bool failWrite = false;
-  bool failClear = false;
-  int writes = 0;
-  Completer<void>? pendingWrite;
-
-  @override
-  Future<Map<String, dynamic>?> readUserData() async => data;
-
-  @override
-  Future<void> saveUserData(Map<String, dynamic> value) async {
-    writes++;
-    if (pendingWrite != null) await pendingWrite!.future;
-    if (failWrite) throw StateError('storage unavailable');
-    data = jsonDecode(jsonEncode(value)) as Map<String, dynamic>;
-  }
-
-  @override
-  Future<void> clearUserData() async {
-    if (failClear) throw StateError('storage unavailable');
-    data = null;
   }
 }
 
