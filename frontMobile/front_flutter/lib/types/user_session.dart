@@ -21,6 +21,7 @@ class UserSession {
   final List<String> permissions;
   final DateTime expiresAt;
 
+
   bool get isExpired => !expiresAt.isAfter(DateTime.now());
 
   bool allows(List<String> requiredPermissions) =>

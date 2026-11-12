@@ -12,10 +12,10 @@ class EventDateBadge extends StatelessWidget {
     label: MaterialLocalizations.of(context).formatFullDate(date),
     excludeSemantics: true,
     child: Container(
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.14),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(6),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,

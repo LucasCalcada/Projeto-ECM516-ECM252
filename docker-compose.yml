@@ -198,6 +198,29 @@ services:
       complaint-service:
         condition: service_started
 
+  flutter-web:
+    build:
+      context: .
+      dockerfile: frontMobile/front_flutter/docker/Dockerfile
+    restart: unless-stopped
+    ports:
+      - '5174:80'
+    depends_on:
+      core-service:
+        condition: service_started
+      auth-service:
+        condition: service_started
+      delivery-service:
+        condition: service_started
+      visitor-service:
+        condition: service_started
+      reservation-service:
+        condition: service_started
+      communication-service:
+        condition: service_started
+      complaint-service:
+        condition: service_started
+
 volumes:
   postgres-data:
   pgadmin-data:

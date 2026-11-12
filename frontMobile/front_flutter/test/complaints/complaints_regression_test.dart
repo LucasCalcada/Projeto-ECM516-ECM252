@@ -1,10 +1,12 @@
+import 'package:front_flutter/types/complaint_failure.dart';
+
 import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:front_flutter/features/complaints/application/complaints_controller.dart';
-import 'package:front_flutter/features/complaints/domain/complaint.dart';
-import 'package:front_flutter/features/complaints/domain/complaint_access.dart';
-import 'package:front_flutter/features/complaints/domain/complaints_repository.dart';
+import 'package:front_flutter/helpers/complaints_controller.dart';
+import 'package:front_flutter/types/complaint.dart';
+import 'package:front_flutter/helpers/complaint_access.dart';
+import 'package:front_flutter/helpers/complaints_repository.dart';
 
 Complaint _item(String id, {bool details = true}) => Complaint(
   id: id,

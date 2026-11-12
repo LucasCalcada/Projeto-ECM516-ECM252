@@ -44,15 +44,17 @@ class MenuDestination {
       hideWithoutPermission: true,
     ),
     MenuDestination(
-      '/residents',
+      AppRoutes.residents,
       'menu.residents',
       Icons.people_outline,
+      available: true,
       permissions: ['@core:user:manage'],
     ),
     MenuDestination(
-      '/reservations',
+      AppRoutes.reservations,
       'menu.reservations',
       Icons.event_available_outlined,
+      available: true,
       permissions: [
         '@reservation:create',
         '@reservation:view:residency',
@@ -60,9 +62,10 @@ class MenuDestination {
       ],
     ),
     MenuDestination(
-      '/packages',
+      AppRoutes.packages,
       'menu.packages',
       Icons.inventory_2_outlined,
+      available: true,
       permissions: [
         '@delivery:create',
         '@delivery:view:building',
@@ -70,9 +73,10 @@ class MenuDestination {
       ],
     ),
     MenuDestination(
-      '/visitor-access',
+      AppRoutes.visitorAccess,
       'menu.visitorAccess',
       Icons.shield_outlined,
+      available: true,
       permissions: ['@visitor:view', '@visitor:create'],
     ),
     MenuDestination(

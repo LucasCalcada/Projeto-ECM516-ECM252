@@ -1,10 +1,14 @@
+import 'package:front_flutter/types/complaint_failure.dart';
+
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:front_flutter/features/complaints/domain/complaint.dart';
-import 'package:front_flutter/features/complaints/domain/complaint_access.dart';
-import 'package:front_flutter/features/complaints/domain/complaints_repository.dart';
-import 'package:front_flutter/features/complaints/presentation/complaint_strings.dart';
-import 'package:front_flutter/features/complaints/presentation/complaints_screen.dart';
+import 'package:front_flutter/types/complaint.dart';
+import 'package:front_flutter/helpers/complaint_access.dart';
+import 'package:front_flutter/helpers/complaints_repository.dart';
+import 'package:front_flutter/lang/complaint_strings.dart';
+import 'package:front_flutter/views/complaints.dart';
 
 final _strings = ComplaintStrings.forLanguage('pt');
 const _newComplaint = ValueKey('new-complaint');
@@ -48,6 +52,7 @@ class _FakeRepository implements ComplaintsRepository {
     List<Complaint>? mine,
     List<Complaint>? building,
     this.listFailures = 0,
+    this.pending = false,
     this.createFailures = 0,
     this.administrativeReplies = true,
   }) : mine = List.of(mine ?? [_report()]),
@@ -56,6 +61,7 @@ class _FakeRepository implements ComplaintsRepository {
   final List<Complaint> mine;
   final List<Complaint> building;
   final List<ComplaintScope> requestedScopes = [];
+  final bool pending;
   int listFailures;
   int createFailures;
   final bool administrativeReplies;
@@ -76,6 +82,7 @@ class _FakeRepository implements ComplaintsRepository {
     int limit = 20,
     int offset = 0,
   }) async {
+    if (pending) return Completer<List<Complaint>>().future;
     requestedScopes.add(scope);
     if (listFailures > 0) {
       listFailures--;
@@ -181,6 +188,7 @@ Future<void> _mount(
   Brightness brightness = Brightness.dark,
   double textScale = 1,
   VoidCallback? onSignIn,
+  bool settle = true,
 }) async {
   tester.view.devicePixelRatio = 1;
   tester.view.physicalSize = size;
@@ -198,17 +206,21 @@ Future<void> _mount(
         child: child!,
       ),
       home: Scaffold(
-        body: ComplaintsScreen(
+        body: ComplaintsView(
           access: access,
           repository: repository,
           buildingName: 'Condomínio Jardim das Flores',
-          languageCode: 'pt',
+          strings: ComplaintStrings.forLanguage('pt'),
           onSignIn: onSignIn,
         ),
       ),
     ),
   );
-  await tester.pumpAndSettle();
+  if (settle) {
+    await tester.pumpAndSettle();
+  } else {
+    await tester.pump(const Duration(milliseconds: 100));
+  }
 }
 
 Future<void> _tapVisible(WidgetTester tester, Finder finder) async {
@@ -233,6 +245,43 @@ Future<void> _finish(WidgetTester tester) async {
 }
 
 void main() {
+  for (final width in [390.0, 1280.0]) {
+    for (final state in [
+      'list',
+      'detail',
+      'create',
+      'empty',
+      'error',
+      'loading',
+    ]) {
+      testWidgets('visual baseline ${width.toInt()} $state', (tester) async {
+        final repository = _FakeRepository(
+          mine: state == 'empty' ? [] : null,
+          listFailures: state == 'error' ? 1 : 0,
+          pending: state == 'loading',
+        );
+        await _mount(
+          tester,
+          repository: repository,
+          access: _access(permissions: ['@core:admin']),
+          size: Size(width, 900),
+          settle: state != 'loading',
+        );
+        if (state == 'detail') {
+          await _selectReport(tester, 'Iluminação da garagem');
+        }
+        if (state == 'create') {
+          await _tapVisible(tester, find.byKey(_newComplaint));
+        }
+        await expectLater(
+          find.byType(Scaffold),
+          matchesGoldenFile('goldens/complaints-${width.toInt()}-$state.png'),
+        );
+        await _finish(tester);
+      });
+    }
+  }
+
   testWidgets('sem permissao nao consulta nem cadastra reclamacoes', (
     tester,
   ) async {
@@ -442,7 +491,7 @@ void main() {
       isEmpty,
     );
 
-    ScaffoldMessenger.of(tester.element(find.byType(ComplaintsScreen)))
+    ScaffoldMessenger.of(tester.element(find.byType(ComplaintsView)))
         .removeCurrentSnackBar();
     await tester.pumpAndSettle();
     await _tapVisible(tester, find.byKey(_closeComplaint));

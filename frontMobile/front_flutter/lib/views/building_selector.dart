@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../components/shared/request_feedback.dart';
 import '../helpers/core_service.dart';
 import '../helpers/session_storage.dart';
+import '../helpers/persist_user_session.dart';
 import '../lang/app_localizations.dart';
 import '../types/account_user.dart';
 import '../types/api_failure.dart';
@@ -88,16 +89,16 @@ class _BuildingSelectorState extends State<BuildingSelector> {
       _error = null;
     });
     try {
-      final session = await widget.coreService.selectUser(
+      final token = await widget.coreService.selectUser(
         await _accountToken(),
         user,
       );
       if (!mounted) return;
-      try {
-        await widget.sessionStorage.saveUserToken(session.token);
-      } catch (_) {
-        throw const ApiException(ApiFailure.storage);
-      }
+      final session = await persistUserSession(
+        token,
+        selectedUser: user,
+        sessionStorage: widget.sessionStorage,
+      );
       if (mounted) widget.onSelected(session);
     } catch (error) {
       _handleError(error);

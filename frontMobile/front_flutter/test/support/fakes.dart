@@ -7,6 +7,22 @@ import 'package:front_flutter/helpers/session_storage.dart';
 class FakeSessionStorage implements SessionStorage {
   String? token;
   String? userToken;
+  SessionSection? section;
+  bool failRead = false;
+  bool failSectionWrite = false;
+
+  @override
+  Future<SessionSection?> readSection() async {
+    if (failRead) throw StateError("storage unavailable");
+    return section;
+  }
+  @override
+  Future<void> saveSection(SessionSection value) async {
+    if (failSectionWrite) throw StateError("storage unavailable");
+    section = value;
+  }
+  @override
+  Future<void> clearSection() async => section = null;
   int writes = 0;
   int userWrites = 0;
   bool failWrite = false;
@@ -20,6 +36,7 @@ class FakeSessionStorage implements SessionStorage {
     writes++;
     if (failWrite) throw StateError('storage unavailable');
     if (pendingWrite != null) await pendingWrite!.future;
+    section = null;
     userToken = null;
     token = value;
   }
@@ -32,6 +49,7 @@ class FakeSessionStorage implements SessionStorage {
     userWrites++;
     if (failUserWrite) throw StateError('storage unavailable');
     if (pendingUserWrite != null) await pendingUserWrite!.future;
+    section = null;
     userToken = value;
   }
 
@@ -39,9 +57,17 @@ class FakeSessionStorage implements SessionStorage {
   Future<String?> readUserToken() async => userToken;
 
   @override
+  Future<void> clearUserToken() async {
+    if (failClear) throw StateError('storage unavailable');
+    section = null;
+    userToken = null;
+  }
+
+  @override
   Future<void> clearSession() async {
     if (failClear) throw StateError('storage unavailable');
     token = null;
+    section = null;
     userToken = null;
   }
 }

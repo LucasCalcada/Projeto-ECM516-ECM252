@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:ui' as ui;
@@ -8,7 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:front_flutter/app.dart';
-import 'package:front_flutter/features/complaints/presentation/complaints_screen.dart';
+import 'package:front_flutter/views/complaints.dart';
 import 'package:front_flutter/views/home.dart';
 import 'package:front_flutter/views/login.dart';
 import 'package:front_flutter/views/settings.dart';
@@ -38,6 +39,7 @@ class _Api {
   _Api({this.manager = false, this.resident = true});
   final bool manager, resident;
   final List<http.Request> requests = [];
+  Completer<void>? pendingWrite;
   final Map<String, Object?> item = {
     'id': 'complaint-1',
     'residencyId': 'residence-1',
@@ -84,6 +86,7 @@ class _Api {
     }
     final body = jsonDecode(request.body) as Map<String, dynamic>;
     if (request.method == 'POST' && path == '/complaints') {
+      if (pendingWrite != null) await pendingWrite!.future;
       expect(body.keys.toSet(), {'title', 'category', 'description'});
       item.addAll(body);
       return json(item, 201);
@@ -114,12 +117,14 @@ Future<void> _tap(WidgetTester tester, Finder finder) async {
 }
 
 Future<void> _menu(WidgetTester tester, String destination) async {
-  await tester.tap(find.byIcon(Icons.menu));
-  await tester.pumpAndSettle();
   await _tap(tester, find.byKey(ValueKey('menu-$destination')));
 }
 
-Future<void> _launch(WidgetTester tester, _Api api) async {
+Future<void> _launch(
+  WidgetTester tester,
+  _Api api, {
+  String language = 'pt',
+}) async {
   tester.view.devicePixelRatio = 1;
   tester.view.physicalSize = const Size(390, 844);
   addTearDown(tester.view.resetPhysicalSize);
@@ -135,7 +140,7 @@ Future<void> _launch(WidgetTester tester, _Api api) async {
           client: client,
           sessionStorage: FakeSessionStorage(),
           preferencesStorage: FakePreferencesStorage(),
-          locale: const Locale('pt'),
+          locale: Locale(language),
         ),
       ),
     );
@@ -148,7 +153,7 @@ Future<void> _launch(WidgetTester tester, _Api api) async {
   await _tap(tester, find.byKey(const ValueKey('building-user-1')));
   expect(find.byType(HomeScreen), findsOneWidget);
   await _menu(tester, '/complaints');
-  expect(find.byType(ComplaintsScreen), findsOneWidget);
+  expect(find.byType(ComplaintsView), findsOneWidget);
 }
 
 Future<void> _captureImage(WidgetTester tester, String name) async {
@@ -228,13 +233,126 @@ void main() {
       expect(find.byType(SettingsScreen), findsOneWidget);
       await _menu(tester, '/home');
       expect(find.byType(HomeScreen), findsOneWidget);
-      await tester.tap(find.byIcon(Icons.menu));
-      await tester.pumpAndSettle();
       await _tap(tester, find.byKey(const Key('menu-sign-out')));
       expect(find.byType(Login), findsOneWidget);
       expect(tester.takeException(), isNull);
     },
   );
+
+  testWidgets(
+    'Back closes the local form then returns Home and reopening reloads',
+    (tester) async {
+      final api = _Api();
+      await _launch(tester, api);
+      final state = tester.state(find.byType(ComplaintsView));
+      final reads = api.requests
+          .where((request) => request.url.path == '/complaints/residency')
+          .length;
+      await _tap(tester, find.byKey(const ValueKey('new-complaint')));
+      await tester.enterText(
+        find.byKey(const ValueKey('complaint-subject')),
+        'Rascunho',
+      );
+      tester.testTextInput.hide();
+      for (final width in [320.0, 768.0, 1024.0, 1440.0]) {
+        tester.view.physicalSize = Size(width, 900);
+        await tester.pumpAndSettle();
+        expect(tester.state(find.byType(ComplaintsView)), same(state));
+        expect(
+          tester
+              .widget<TextFormField>(
+                find.byKey(const ValueKey('complaint-subject')),
+              )
+              .controller!
+              .text,
+          'Rascunho',
+        );
+        expect(tester.takeException(), isNull);
+      }
+      await tester.binding.handlePopRoute();
+      await tester.pumpAndSettle();
+      expect(find.byType(AlertDialog), findsOneWidget);
+      await _tap(tester, find.widgetWithText(FilledButton, 'Descartar'));
+      expect(find.byType(ComplaintsView), findsOneWidget);
+      expect(find.byKey(const ValueKey('complaint-subject')), findsNothing);
+      await tester.binding.handlePopRoute();
+      await tester.pumpAndSettle();
+      expect(find.byType(HomeScreen), findsOneWidget);
+      await _menu(tester, '/complaints');
+      expect(tester.state(find.byType(ComplaintsView)), isNot(same(state)));
+      expect(
+        api.requests
+            .where((request) => request.url.path == '/complaints/residency')
+            .length,
+        reads + 1,
+      );
+    },
+  );
+
+  testWidgets('submission blocks sidebar, logout and Back until completion', (
+    tester,
+  ) async {
+    final api = _Api()..pendingWrite = Completer<void>();
+    await _launch(tester, api);
+    await _tap(tester, find.byKey(const ValueKey('new-complaint')));
+    await tester.enterText(
+      find.byKey(const ValueKey('complaint-subject')),
+      'Iluminação do corredor',
+    );
+    await tester.enterText(
+      find.byKey(const ValueKey('complaint-description')),
+      'A iluminação do corredor precisa de manutenção.',
+    );
+    tester.testTextInput.hide();
+    await _tap(tester, find.byKey(const ValueKey('complaint-category')));
+    await _tap(tester, find.text('Outros').last);
+    final submit = find.byKey(const ValueKey('submit-complaint'));
+    await tester.ensureVisible(submit);
+    await tester.tap(submit);
+    await tester.pump(const Duration(milliseconds: 200));
+    for (final key in ['menu-/settings', 'menu-sign-out']) {
+      final destination = find.byKey(ValueKey(key));
+      await tester.ensureVisible(destination);
+      await tester.tap(destination);
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(find.byType(ComplaintsView), findsOneWidget);
+      expect(find.byType(AlertDialog), findsNothing);
+    }
+    await tester.binding.handlePopRoute();
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(find.byKey(const ValueKey('complaint-subject')), findsOneWidget);
+    api.pendingWrite!.complete();
+    await tester.pumpAndSettle();
+    await _menu(tester, '/settings');
+    expect(find.byType(SettingsScreen), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  for (final language in ['pt', 'en', 'es']) {
+    testWidgets(
+      'integrated complaints fits narrow panel at 200% in $language',
+      (tester) async {
+        await _launch(tester, _Api(manager: true), language: language);
+        tester.view.physicalSize = const Size(320, 800);
+        tester.platformDispatcher.textScaleFactorTestValue = 2;
+        addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+        await tester.pumpAndSettle();
+        expect(tester.takeException(), isNull);
+        await _tap(
+          tester,
+          find.byKey(const ValueKey('complaint-toggle-complaint-1')),
+        );
+        expect(tester.takeException(), isNull);
+        await _tap(tester, find.byKey(const ValueKey('new-complaint')));
+        expect(tester.takeException(), isNull);
+        await tester.ensureVisible(
+          find.byKey(const ValueKey('submit-complaint')),
+        );
+        await tester.pumpAndSettle();
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
 
   testWidgets(
     'core administrator manages through integrated route without complaint grant',
@@ -270,6 +388,9 @@ void main() {
         1,
       );
       await _captureImage(tester, 'flutter-complaints-route-admin');
+      // Let the success feedback finish before the next action in the content.
+      await tester.pump(const Duration(seconds: 5));
+      await tester.pumpAndSettle();
       await _tap(tester, find.byKey(const ValueKey('close-complaint')));
       final dialog = find.byType(AlertDialog);
       await _tap(
@@ -287,7 +408,7 @@ void main() {
   );
 
   testWidgets(
-    'system back and drawer navigation confirm draft discard and preserve settings',
+    'system back and sidebar navigation confirm draft discard and preserve settings',
     (tester) async {
       final api = _Api();
       await _launch(tester, api);
@@ -345,8 +466,6 @@ void main() {
       await _menu(tester, '/settings');
       await _tap(tester, find.widgetWithText(FilledButton, 'Descartar'));
       expect(find.byType(SettingsScreen), findsOneWidget);
-      await tester.tap(find.byIcon(Icons.menu));
-      await tester.pumpAndSettle();
       expect(find.byKey(const ValueKey('menu-/complaints')), findsOneWidget);
       expect(find.byKey(const ValueKey('menu-/settings')), findsOneWidget);
       expect(tester.takeException(), isNull);

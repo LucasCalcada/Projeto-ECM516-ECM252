@@ -134,8 +134,7 @@ Future<void> openNotifications(
   await tester.pumpAndSettle();
   await tester.tap(find.byKey(const ValueKey('building-user-1')));
   await tester.pumpAndSettle();
-  await tester.tap(find.byIcon(Icons.menu));
-  await tester.pumpAndSettle();
+  expect(find.byKey(const Key('app-sidebar')), findsOneWidget);
   if (find.byKey(const ValueKey('menu-/notifications')).evaluate().isNotEmpty) {
     await tester.tap(find.byKey(const ValueKey('menu-/notifications')));
     await tester.pumpAndSettle();

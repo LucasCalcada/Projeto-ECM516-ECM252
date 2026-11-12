@@ -21,7 +21,7 @@ class CoreService {
     }
   }
 
-  Future<UserSession> selectUser(String accountToken, AccountUser user) async {
+  Future<String> selectUser(String accountToken, AccountUser user) async {
     final result = await api.get(
       '/auth',
       token: accountToken,
@@ -31,15 +31,7 @@ class CoreService {
       if (result is! Map<String, dynamic> || result['token'] is! String) {
         throw const FormatException();
       }
-      final session = UserSession.fromToken(result['token'] as String);
-      if (session.userId != user.userId ||
-          (user.buildingId != null && session.buildingId != user.buildingId)) {
-        throw const FormatException();
-      }
-      if (session.isExpired) {
-        throw const ApiException(ApiFailure.unauthorized);
-      }
-      return session;
+      return result['token'] as String;
     } on FormatException {
       throw const ApiException(ApiFailure.invalidResponse);
     } on TypeError {

@@ -27,6 +27,21 @@ abstract final class AppConfig {
     return configured.isNotEmpty ? configured : 'http://$_host:8007';
   }
 
+  static String get visitorUrl {
+    const configured = String.fromEnvironment('VISITOR_URL');
+    return configured.isNotEmpty ? configured : 'http://$_host:8003';
+  }
+
+  static String get reservationUrl {
+    const configured = String.fromEnvironment('RESERVATION_URL');
+    return configured.isNotEmpty ? configured : 'http://$_host:8005';
+  }
+
+  static String get deliveryUrl {
+    const configured = String.fromEnvironment('DELIVERY_URL');
+    return configured.isNotEmpty ? configured : 'http://$_host:8002';
+  }
+
   static String get _host =>
       !kIsWeb && defaultTargetPlatform == TargetPlatform.android
       ? '10.0.2.2'
