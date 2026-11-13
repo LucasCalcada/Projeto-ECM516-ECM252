@@ -68,8 +68,11 @@ residência/condomínio, resposta por residência/condomínio e mudança de stat
 permissões independentes; `@core:admin` concede todas dentro do condomínio do token.
 A organização da interface Flutter está no [guia do Flutter](../frontMobile/front_flutter/README.md#organização-de-reclamações).
 
-Os backends executam TypeScript com `tsx`, como nos scripts existentes, e aceitam
-`PORT`, `DATABASE_URL`, `JWT_SECRET`, `INTERNAL_SECRET`, `CORE_URL`, `EVENT_BUS_URL`
+Nas imagens Docker, os backends TypeScript são compilados previamente e executam
+JavaScript diretamente com `node dist/index.js`, contendo apenas as dependências de runtime
+necessárias em imagens Alpine multi-stage otimizadas. Fora do Docker ou em modo de desenvolvimento,
+os scripts com `tsx` continuam disponíveis (`yarn start:dev` ou `yarn start:watch`).
+Eles aceitam `PORT`, `DATABASE_URL`, `JWT_SECRET`, `INTERNAL_SECRET`, `CORE_URL`, `EVENT_BUS_URL`
 e `SERVICE_URL`, conforme as configurações de cada serviço. Fora do Docker, os
 valores locais anteriores continuam sendo usados. O Compose fornece os nomes
 dos containers nas URLs internas; `JWT_SECRET` e `INTERNAL_SECRET` podem ser

@@ -7,6 +7,8 @@
     "back/*"
   ],
   "scripts": {
+    "build:back": "yarn workspaces run build",
+    "build": "yarn build:back && yarn workspace front build",
     "lint:front": "eslint 'front/**/*.{ts,tsx}' 'back/**/*.{ts,js,json}'",
     "format:check": "prettier --check 'front/**/*.{ts,tsx,js,json,css}' 'back/**/*.{ts,js,json}'",
     "format": "prettier --write 'front/**/*.{ts,tsx,js,json,css}' 'back/**/*.{ts,js,json}'",

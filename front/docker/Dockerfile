@@ -1,4 +1,4 @@
-FROM node:22-bookworm-slim AS dependencies
+FROM node:22-alpine AS dependencies
 WORKDIR /app
 
 # Install from the monorepo lockfile and preserve Yarn's workspace dependency layout.

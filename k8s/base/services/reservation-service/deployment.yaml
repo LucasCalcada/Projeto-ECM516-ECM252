@@ -24,9 +24,7 @@ spec:
           imagePullPolicy: IfNotPresent
           command:
             - node
-            - --import
-            - tsx
-            - src/index.ts
+            - dist/index.js
           ports:
             - name: http
               containerPort: 8005
