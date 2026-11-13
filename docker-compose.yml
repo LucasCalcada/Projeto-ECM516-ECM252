@@ -13,6 +13,7 @@ x-backend-environment: &backend-environment
   INTERNAL_SECRET: ${INTERNAL_SECRET:-internal-service-token}
   CORE_URL: http://core-service:8000
   EVENT_BUS_URL: http://event-bus:8004
+  POPULATE_DB: ${POPULATE_DB:-true}
 
 services:
   db:

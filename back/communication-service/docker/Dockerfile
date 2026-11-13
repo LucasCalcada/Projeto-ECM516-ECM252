@@ -35,7 +35,8 @@ RUN yarn install --frozen-lockfile --production --non-interactive \
 
 # Stage 3: Runtime
 FROM node:22-alpine AS runtime
-ENV NODE_ENV=production
+ENV NODE_ENV=production \
+    POPULATE_DB=false
 WORKDIR /app
 
 COPY --from=prod-dependencies --chown=node:node /app/node_modules ./node_modules
@@ -52,4 +53,4 @@ COPY --chown=node:node back/communication-service/migrations/ ./migrations/
 
 USER node
 EXPOSE 8006
-CMD ["sh", "-c", "yarn drizzle-kit push && exec node dist/index.js"]
+CMD ["sh", "-c", "yarn drizzle-kit push && if [ \"$POPULATE_DB\" = \"true\" ] || [ \"$POPULATE_DB\" = \"1\" ]; then [ -f \"dist/scripts/populate.js\" ] && node dist/scripts/populate.js; fi && exec node dist/index.js"]

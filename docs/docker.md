@@ -89,9 +89,19 @@ exijam confirmação do Drizzle devem ser revisadas antes da inicialização.
 Os dados ficam no volume `postgres-data`, e as configurações do pgAdmin no
 volume `pgadmin-data`, inclusive depois de `docker compose down`.
 
-Os bancos começam sem dados de exemplo. Para carregar os exemplos, execute
-explicitamente os comandos abaixo **somente em um banco de desenvolvimento**:
-os scripts existentes limpam as tabelas correspondentes antes de inserir os dados.
+Por padrão no Docker Compose local, a variável `POPULATE_DB` está configurada como `true`,
+executando a população automática dos bancos de desenvolvimento durante a inicialização dos containers.
+
+Para desabilitar a população automática (por exemplo, em ambientes de produção, homologação ou para manter dados persistidos existentes):
+- Defina `POPULATE_DB=false` no seu arquivo `.env` ou execute:
+
+```sh
+POPULATE_DB=false docker compose up -d
+```
+
+Nas imagens Docker isoladas, a variável tem como padrão seguro `POPULATE_DB=false`.
+
+Caso queira executar os scripts de população manualmente:
 
 ```sh
 docker compose exec auth-service yarn db:populate
@@ -100,8 +110,7 @@ docker compose exec reservation-service yarn db:populate
 docker compose exec communication-service yarn db:populate
 ```
 
-Nenhum script de população é executado automaticamente ao iniciar ou reiniciar
-containers. Para parar a stack preservando os volumes:
+Para parar a stack preservando os volumes:
 
 ```sh
 docker compose down
