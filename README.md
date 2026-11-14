@@ -15,7 +15,7 @@ O app HiveApp oferece um sistema de gerenciamento para condomínios, com o foco 
 
 ## 🎥 Vídeo de apresentação
 
-**Link do vídeo:** 
+**Link do vídeo:** <https://youtu.be/b3erwli6hxs>
 
 ## 📚 Documentação
 
@@ -24,5 +24,3 @@ O app HiveApp oferece um sistema de gerenciamento para condomínios, com o foco 
 - [Guia técnico do Kubernetes](k8s/README.md)
 - [Dados de demonstração e contas de teste](docs/minikube.md#9-dados-fictícios-com-jobs-opcional)
 - [Aplicativo Flutter](frontMobile/front_flutter/README.md)
-
-
